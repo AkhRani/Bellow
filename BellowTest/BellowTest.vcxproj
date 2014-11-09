@@ -85,7 +85,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>BellowEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(GTestDir)\msvc\gtest\Release\gtest.lib;$(GTestDir)\msvc\gtest\Release\gtest_main.lib;BellowEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
