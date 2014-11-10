@@ -1,7 +1,12 @@
+/** Per-player information.
+ * This class will encapsulate or aggregate racials, tech advances,
+ * which systems have been explored, etc.
+ */
 #include <stdint.h>
 
 class Player {
   public:
+    //! Basic Constructor
     Player();
 
     //! New population per unit of population

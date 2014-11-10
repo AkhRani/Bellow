@@ -90,6 +90,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="coverage.cc" />
     <ClCompile Include="unittest_planet.cc" />
     <ClCompile Include="unittest_product.cc" />
   </ItemGroup>

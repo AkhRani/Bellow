@@ -21,5 +21,8 @@
     <ClCompile Include="unittest_product.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="coverage.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

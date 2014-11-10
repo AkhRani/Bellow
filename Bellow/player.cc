@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "player.h"
 
 #define POP_GROWTH_RATE .05
