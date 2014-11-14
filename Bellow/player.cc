@@ -9,22 +9,22 @@
 
 Player::Player() {}
 
-double Player::getPopGrowthRate() {
+double Player::GetPopGrowthRate() {
   return POP_GROWTH_RATE;
 }
 
-double Player::getProductionPerPop() {
+double Player::GetProductionPerPop() {
   return PRODUCTION_PER_POP;
 }
 
-uint32_t Player::getFactoriesPerPop() {
+uint32_t Player::GetFactoriesPerPop() {
   return FACTORIES_PER_POP;
 }
 
-double Player::getFactoryCost() {
+double Player::GetFactoryCost() {
   return FACTORY_COST;
 }
 
-double Player::getProductionPerFactory() {
+double Player::GetProductionPerFactory() {
   return PRODUCTION_PER_FACTORY;
 }

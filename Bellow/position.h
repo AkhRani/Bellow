@@ -8,13 +8,13 @@
  *
  * I might also use pImpl here, if it turns out to help unit tests.
  */
-class Position {
+struct Position {
   public:
     //! Basic Constructor
-    Position(double x, double y) : m_x(x), m_y(y) {};
+    Position(double x, double y) : x(x), y(y) {};
 
     //! Update Position
-    void Move(double dx, double dy) { m_x += dx; m_y += dy; };
+    void Move(double dx, double dy) { x += dx; y += dy; };
 
     double x;   //!< Coordinate
     double y;   //!< Coordinate

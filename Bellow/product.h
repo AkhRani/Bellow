@@ -26,20 +26,20 @@ class Product {
         m_amount(amount),
         m_max(max) {}
 
-    void setAmount(uint32_t amount);    // Sets fractional amount to zero.
-    void setMax(uint32_t max);          // POST(getAmount() <= getMax())
-    void setCost(double cost) { m_cost = cost; }
-    void setGrowthRate(double rate) { m_growthRate = rate; }
+    void SetAmount(uint32_t amount);    // Sets fractional amount to zero.
+    void SetMax(uint32_t max);          // POST(GetAmount() <= GetMax())
+    void SetCost(double cost) { m_cost = cost; }
+    void SetGrowthRate(double rate) { m_growthRate = rate; }
 
-    uint32_t getAmount() { return m_amount; };
-    uint32_t getMax() { return m_max; };
-    double getCost() { return m_cost; };
-    double getGrowthRate() { return m_growthRate; }
-    uint32_t projectGrowth(double capital);
-    void grow(double capital);
+    uint32_t GetAmount() { return m_amount; };
+    uint32_t GetMax() { return m_max; };
+    double GetCost() { return m_cost; };
+    double GetGrowthRate() { return m_growthRate; }
+    uint32_t ProjectGrowth(double capital);
+    void Grow(double capital);
 
   protected:
-    void limitAmount();
+    void LimitAmount();
 
   private:
     double m_growthRate;

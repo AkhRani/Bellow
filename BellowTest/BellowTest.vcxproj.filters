@@ -24,5 +24,8 @@
     <ClCompile Include="coverage.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="unittest_galaxy.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
