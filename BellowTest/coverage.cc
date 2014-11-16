@@ -6,6 +6,8 @@
 ExcludeFromCodeCoverage(Exclusion1, L"testing::*");
 ExcludeFromCodeCoverage(Exclusion2, L"testing_internal::*");
 ExcludeSourceFromCodeCoverage(Exclusion3, L"*\\unittest.*.cc");
+// Exclude Lua from coverage
+ExcludeSourceFromCodeCoverage(Exclusion4, L"*\\l*.c");
 
 // After setting exclusions, restore the previous managed/unmanaged state:
 #pragma managed(pop)
