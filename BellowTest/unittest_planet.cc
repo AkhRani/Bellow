@@ -25,6 +25,19 @@ TEST(PlanetTest, Load) {
   EXPECT_EQ(100, p->GetMaxPopulation());
 }
 
+TEST(PlanetTest, Save) {
+  Planet p(100);
+  std::string serialized = "return ";
+  p.Save(serialized);
+
+  lua_State *L = luaL_newstate();
+  EXPECT_EQ(false, luaL_dostring(L, serialized.c_str()));
+  EXPECT_EQ(true, lua_istable(L, -1));
+  Planet *restored = Planet::Load(L);
+  EXPECT_NE(nullptr, restored);
+  EXPECT_EQ(100, restored->GetMaxPopulation());
+}
+
 TEST(PlanetTest, Growth) {
   int i;
   Player owner;

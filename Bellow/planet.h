@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string>
 #include "product.h"
 
 class Player;
@@ -14,6 +15,10 @@ class Planet {
     //! Basic constructor.  TODO: planetary class (minimal, hostile, etc)
     Planet(uint32_t maxPop);
 
+    //! Serializer
+    void Save(std::string &rep);
+
+    //! Deserializer, Factory style
     static Planet *Load(lua_State *L);
 
     //! Set or change the owner of a planet

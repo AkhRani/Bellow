@@ -7,6 +7,9 @@ extern "C" {
 #include "lua.h"
 }
 
+using std::string;
+using std::min;
+
 #define POP_GROWTH_MODIFIER 1.
 
 Planet::Planet(uint32_t maxPop) :
@@ -16,15 +19,25 @@ Planet::Planet(uint32_t maxPop) :
 {
 }
 
+void Planet::Save(string &serialized) {
+  serialized.append("\n{ name = \"");
+  serialized.append("dummy\"");
+  serialized.append(", population =");
+  m_population.Save(serialized);
+  serialized.append(", factories =");
+  m_factories.Save(serialized);
+  serialized.append(" }");
+}
+
 /** Create a planet from the table on top of the Lua stack.
  * structure: { name = "earth", population = { cur = 10, max = 100 } }
  */
 Planet *Planet::Load(lua_State *L) {
   lua_getfield(L, -1, "population");
-  lua_getfield(L, -1, "max");
-  int maxpop = lua_tointeger(L, -1);
-  lua_pop(L, 2);
-  return new Planet(maxpop);
+  Product pop;
+  pop.Load(L);
+  lua_pop(L, 1);
+  return new Planet(pop.GetMax());
 }
 
 void Planet::Colonize(Player *owner, uint32_t pop) {

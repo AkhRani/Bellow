@@ -1,4 +1,9 @@
 #include <stdint.h>
+#include <string>
+
+extern "C" {
+  struct lua_State;
+}
 
 /** Base class for things that are built / grow on planets.
  *
@@ -25,6 +30,12 @@ class Product {
         m_fractional(0.),
         m_amount(amount),
         m_max(max) {}
+
+    //! Deserializer
+    void Load(lua_State *L);
+
+    //! Serializer
+    void Save(std::string &serialized);
 
     void SetAmount(uint32_t amount);    // Sets fractional amount to zero.
     void SetMax(uint32_t max);          // POST(GetAmount() <= GetMax())
