@@ -8,8 +8,11 @@ extern "C" {
 }
 
 /** Per-Planet info
-* Collection of per-planet information
-*/
+ * Stuff on planets is divided into two categories, products and improvements.
+ * Products are multiple copies of the same thing, while improvements are
+ * singular.  Population, factories, and missile bases are products.  Soil
+ * Enrichment, Terraforming, and planetary shields are improvements.
+ */
 class Planet {
   public:
     //! Basic constructor.  TODO: planetary class (minimal, hostile, etc)
@@ -29,6 +32,7 @@ class Planet {
     uint32_t GetMaxPopulation() { return m_population.GetMax(); };
 
     uint32_t GetFactories() { return m_factories.GetAmount(); };
+    uint32_t GetMaxFactories() { return m_factories.GetMax(); };
 
     //! Called once between turns
     void Update();
@@ -37,6 +41,7 @@ class Planet {
     // double GetProduction();
 
   private:
+    uint32_t m_basePop;   //!< Planet population cap without facilities
     Player *m_pOwner;     //!< Current owner, may be null
     Product m_population; //!< Population
     Product m_factories;  //!< Factories

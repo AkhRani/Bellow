@@ -18,11 +18,14 @@ TEST(PlanetTest, Creation) {
 
 TEST(PlanetTest, Load) {
   lua_State *L = luaL_newstate();
-  EXPECT_EQ(false, luaL_dostring(L, "return { name = \"earth\", population = { cur = 10, max = 100 } }"));
+  EXPECT_EQ(false, luaL_dostring(L, "return { name = \"earth\", base_population = 100, population = { amount = 10, fractional = 0. } }"));
   EXPECT_EQ(true, lua_istable(L, -1));
   Planet *p = Planet::Load(L);
   EXPECT_NE(nullptr, p);
   EXPECT_EQ(100, p->GetMaxPopulation());
+  EXPECT_EQ(10, p->GetPopulation());
+
+  // TODO:  Test Error Handling
 }
 
 TEST(PlanetTest, Save) {

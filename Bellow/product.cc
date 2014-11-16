@@ -9,19 +9,24 @@ extern "C" {
 #include "lua.h"
 }
 
+/** Load state from Lua
+ * Structure: { amount = 10, fractional = 0. }
+ */
 void Product::Load(lua_State *L) {
   int success;
-  lua_getfield(L, -1, "max");
-  m_max = lua_tointegerx(L, -1, &success);
+  lua_getfield(L, -1, "amount");
+  m_amount = lua_tointegerx(L, -1, &success);
+  lua_pop(L, 1);
+  lua_getfield(L, -1, "fractional");
+  m_fractional = lua_tonumberx(L, -1, &success);
   lua_pop(L, 1);
 }
 
 void Product::Save(string &serialized) {
-  // growth rate, cost, and (eventually) max will be recalculated on load
+  // growth rate, cost, and max will be recalculated on load
   serialized.append(" { ");
   serialized.append(" amount=" + std::to_string(m_amount));
   serialized.append(", fractional=" + std::to_string(m_fractional));
-  serialized.append(", max=" + std::to_string(m_max));
   serialized.append(" }");
 }
 
