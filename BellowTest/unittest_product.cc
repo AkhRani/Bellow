@@ -1,5 +1,15 @@
+#include <stdexcept>
+
 #include "product.h"
 #include "gtest/gtest.h"
+
+extern "C" {
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
+
+using namespace std;
 
 TEST(ProductTest, Creation) {
   Product prod;
@@ -19,6 +29,30 @@ TEST(ProductTest, Creation) {
   EXPECT_EQ(10., prod3.GetCost());
   EXPECT_EQ(5, prod3.GetAmount());
   EXPECT_EQ(20, prod3.GetMax());
+}
+
+TEST(ProductTest, Load) {
+  const char *script = "return { amount = 10, fractional = 0.24 }";
+  lua_State *L = luaL_newstate();
+  Product prod;
+
+  EXPECT_EQ(false, luaL_dostring(L, script));
+  EXPECT_EQ(true, lua_istable(L, -1));
+  prod.Load(L);
+  EXPECT_EQ(10, prod.GetAmount());
+
+  // Check error detection
+  bool caught(false);
+  const char *missing_amount = "return { fractional = 0.24 }";
+  EXPECT_EQ(false, luaL_dostring(L, missing_amount));
+  EXPECT_EQ(true, lua_istable(L, -1));
+  try {
+    prod.Load(L);
+  }
+  catch (const runtime_error& e) {
+    caught = true;
+  }
+  EXPECT_EQ(true, caught);
 }
 
 TEST(ProductTest, Manipulation) {

@@ -1,24 +1,31 @@
 #include <math.h>
 #include <string>
 
-using std::string;
-
 #include "product.h"
+#include "util.h"
 
 extern "C" {
 #include "lua.h"
 }
 
+using std::string;
+
 /** Load state from Lua
  * Structure: { amount = 10, fractional = 0. }
  */
 void Product::Load(lua_State *L) {
+  loadcheck(lua_istable(L, -1));
   int success;
   lua_getfield(L, -1, "amount");
   m_amount = lua_tointegerx(L, -1, &success);
+  loadcheck(success != 0);
   lua_pop(L, 1);
+
   lua_getfield(L, -1, "fractional");
   m_fractional = lua_tonumberx(L, -1, &success);
+  loadcheck(success != 0);
+  lua_pop(L, 1);
+
   lua_pop(L, 1);
 }
 

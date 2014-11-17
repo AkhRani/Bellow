@@ -17,13 +17,22 @@ TEST(PlanetTest, Creation) {
 }
 
 TEST(PlanetTest, Load) {
+  const char *earth = "return { name = \"earth\", base_population = 100, population = { amount = 10, fractional = 0. } }";
   lua_State *L = luaL_newstate();
-  EXPECT_EQ(false, luaL_dostring(L, "return { name = \"earth\", base_population = 100, population = { amount = 10, fractional = 0. } }"));
+
+  EXPECT_EQ(false, luaL_dostring(L, earth));
   EXPECT_EQ(true, lua_istable(L, -1));
   Planet *p = Planet::Load(L);
   EXPECT_NE(nullptr, p);
   EXPECT_EQ(100, p->GetMaxPopulation());
   EXPECT_EQ(10, p->GetPopulation());
+
+  EXPECT_EQ(false, luaL_dostring(L, earth));
+  EXPECT_EQ(true, lua_istable(L, -1));
+  Planet *pnew = new Planet(L);
+  EXPECT_NE(nullptr, pnew);
+  EXPECT_EQ(100, pnew->GetMaxPopulation());
+  EXPECT_EQ(10, pnew->GetPopulation());
 
   // TODO:  Test Error Handling
 }

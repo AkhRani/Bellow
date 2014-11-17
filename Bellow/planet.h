@@ -18,10 +18,13 @@ class Planet {
     //! Basic constructor.  TODO: planetary class (minimal, hostile, etc)
     Planet(uint32_t maxPop);
 
+    //! Deserializing constructor
+    Planet(lua_State *L);
+
     //! Serializer
     void Save(std::string &rep);
 
-    //! Deserializer, Factory style
+    //! Deserializer, Factory style.  Returns planet or throws.
     static Planet *Load(lua_State *L);
 
     //! Set or change the owner of a planet

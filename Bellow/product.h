@@ -17,12 +17,20 @@ class Product {
         m_amount(0),
         m_max(0) {}
 
+    // TODO:  Maybe get rid of this
     explicit Product(uint32_t max)
       : m_growthRate(0.),
         m_cost(0.),
         m_fractional(0.),
         m_amount(0),
         m_max(max) {}
+
+    explicit Product(const Product &other)
+      : m_growthRate(other.m_growthRate),
+      m_cost(other.m_cost),
+      m_fractional(other.m_fractional),
+      m_amount(other.m_amount),
+      m_max(other.m_max) {}
 
     Product(double growthRate, double cost, uint32_t amount, uint32_t max)
       : m_growthRate(growthRate),

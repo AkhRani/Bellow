@@ -1,8 +1,12 @@
-#include "string"
-#include "vector"
+#include <string>
+#include <vector>
 
 #include "planet.h"
 #include "position.h"
+
+extern "C" {
+  struct lua_State;
+}
 
 /** Collection of star systems
 *
@@ -13,6 +17,7 @@ public:
   //! Simple aggregation of star system info
   class StarSystem {
   public:
+    explicit StarSystem(lua_State *L);
     StarSystem(const std::string &name, const Position &pos, Planet *pPlanet) :
       m_Name(name), m_Position(pos), m_pPlanet(pPlanet)
     {}
