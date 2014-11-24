@@ -101,9 +101,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="coverage.cc" />
+    <ClCompile Include="testutils.cc" />
     <ClCompile Include="unittest_galaxy.cc" />
     <ClCompile Include="unittest_planet.cc" />
     <ClCompile Include="unittest_product.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="testutils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

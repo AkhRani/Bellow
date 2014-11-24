@@ -2,6 +2,7 @@
 
 #include "product.h"
 #include "gtest/gtest.h"
+#include "testutils.h"
 
 extern "C" {
 #include "lua.h"
@@ -32,27 +33,46 @@ TEST(ProductTest, Creation) {
 }
 
 TEST(ProductTest, Load) {
-  const char *script = "return { amount = 10, fractional = 0.24 }";
   lua_State *L = luaL_newstate();
   Product prod;
 
-  EXPECT_EQ(false, luaL_dostring(L, script));
-  EXPECT_EQ(true, lua_istable(L, -1));
+  // Nominal
+  RunLua(L, "return { amount = 10, fractional = 0.24 }");
   prod.Load(L);
   EXPECT_EQ(10, prod.GetAmount());
+  EXPECT_LE(prod.GetMax(), prod.GetAmount());
+  EXPECT_EQ(.24, prod.GetFractional());
 
-  // Check error detection
-  bool caught(false);
-  const char *missing_amount = "return { fractional = 0.24 }";
-  EXPECT_EQ(false, luaL_dostring(L, missing_amount));
-  EXPECT_EQ(true, lua_istable(L, -1));
-  try {
-    prod.Load(L);
-  }
-  catch (const runtime_error& e) {
-    caught = true;
-  }
-  EXPECT_EQ(true, caught);
+  // Off-nominal
+  RunLua(L, "return { amount = 10.3, fractional = 0.24 }");
+  prod.Load(L);
+  EXPECT_EQ(10, prod.GetAmount());
+  EXPECT_LE(prod.GetMax(), prod.GetAmount());
+  EXPECT_EQ(.24, prod.GetFractional());
+
+  // Errors
+  RunLua(L, "return { fractional = 0.24 }");
+  EXPECT_THROW(prod.Load(L), runtime_error);
+
+  RunLua(L, "return { amount = 11 }");
+  EXPECT_THROW(prod.Load(L), runtime_error);
+
+  RunLua(L, "return { amount = 5, fractional = 1.5 }");
+  EXPECT_THROW(prod.Load(L), runtime_error);
+}
+
+TEST(ProductTest, Save) {
+  lua_State *L = luaL_newstate();
+  Product prod(100);
+  prod.SetAmount(50);
+  string serialized("return ");
+  prod.Save(serialized);
+
+  Product prod2;
+  RunLua(L, serialized.c_str());
+  prod2.Load(L);
+  EXPECT_EQ(50, prod2.GetMax());
+  EXPECT_EQ(50, prod2.GetAmount());
 }
 
 TEST(ProductTest, Manipulation) {

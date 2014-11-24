@@ -27,5 +27,13 @@
     <ClCompile Include="unittest_galaxy.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="testutils.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="testutils.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

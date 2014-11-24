@@ -20,10 +20,13 @@ void Product::Load(lua_State *L) {
   m_amount = lua_tointegerx(L, -1, &success);
   loadcheck(success != 0);
   lua_pop(L, 1);
+  // Max should be set by client code, but do this to maintain invariant
+  // in the mean time.
+  m_max = m_amount;
 
   lua_getfield(L, -1, "fractional");
   m_fractional = lua_tonumberx(L, -1, &success);
-  loadcheck(success != 0);
+  loadcheck(success != 0 && m_fractional <= 1.0);
   lua_pop(L, 1);
 
   lua_pop(L, 1);

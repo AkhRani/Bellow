@@ -1,12 +1,13 @@
+#include "planet.h"
+#include "player.h"
+#include "gtest/gtest.h"
+#include "testutils.h"
+
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
 }
-
-#include "planet.h"
-#include "player.h"
-#include "gtest/gtest.h"
 
 // This test is named "Creation", and belongs to the "PlanetTest" test case.
 TEST(PlanetTest, Creation) {
@@ -20,15 +21,13 @@ TEST(PlanetTest, Load) {
   const char *earth = "return { name = \"earth\", base_population = 100, population = { amount = 10, fractional = 0. } }";
   lua_State *L = luaL_newstate();
 
-  EXPECT_EQ(false, luaL_dostring(L, earth));
-  EXPECT_EQ(true, lua_istable(L, -1));
+  RunLua(L, earth);
   Planet *p = Planet::Load(L);
   EXPECT_NE(nullptr, p);
   EXPECT_EQ(100, p->GetMaxPopulation());
   EXPECT_EQ(10, p->GetPopulation());
 
-  EXPECT_EQ(false, luaL_dostring(L, earth));
-  EXPECT_EQ(true, lua_istable(L, -1));
+  RunLua(L, earth);
   Planet *pnew = new Planet(L);
   EXPECT_NE(nullptr, pnew);
   EXPECT_EQ(100, pnew->GetMaxPopulation());
@@ -43,8 +42,7 @@ TEST(PlanetTest, Save) {
   p.Save(serialized);
 
   lua_State *L = luaL_newstate();
-  EXPECT_EQ(false, luaL_dostring(L, serialized.c_str()));
-  EXPECT_EQ(true, lua_istable(L, -1));
+  RunLua(L, serialized.c_str());
   Planet *restored = Planet::Load(L);
   EXPECT_NE(nullptr, restored);
   EXPECT_EQ(100, restored->GetMaxPopulation());

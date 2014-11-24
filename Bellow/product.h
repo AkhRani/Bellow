@@ -6,7 +6,8 @@ extern "C" {
 }
 
 /** Base class for things that are built / grow on planets.
- *
+ * \invariant  GetAmount() <= GetMax()
+ * \invariant  m_fractional < 1.0
  */
 class Product {
   public:
@@ -45,12 +46,13 @@ class Product {
     //! Serializer
     void Save(std::string &serialized);
 
-    void SetAmount(uint32_t amount);    // Sets fractional amount to zero.
-    void SetMax(uint32_t max);          // POST(GetAmount() <= GetMax())
+    void SetAmount(uint32_t amount);    //! Note: Sets fractional amount to zero.
+    void SetMax(uint32_t max);
     void SetCost(double cost) { m_cost = cost; }
     void SetGrowthRate(double rate) { m_growthRate = rate; }
 
     uint32_t GetAmount() { return m_amount; };
+    double GetFractional() { return m_fractional; }  //! For unit testing
     uint32_t GetMax() { return m_max; };
     double GetCost() { return m_cost; };
     double GetGrowthRate() { return m_growthRate; }
