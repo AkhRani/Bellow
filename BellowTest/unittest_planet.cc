@@ -9,6 +9,8 @@ extern "C" {
 #include "lualib.h"
 }
 
+using namespace std;
+
 // This test is named "Creation", and belongs to the "PlanetTest" test case.
 TEST(PlanetTest, Creation) {
   Planet p(100);
@@ -21,6 +23,7 @@ TEST(PlanetTest, Load) {
   const char *earth = "return { name = \"earth\", base_population = 100, population = { amount = 10, fractional = 0. } }";
   lua_State *L = luaL_newstate();
 
+  // Nominal, unowned
   RunLua(L, earth);
   Planet *p = Planet::Load(L);
   EXPECT_NE(nullptr, p);
@@ -38,7 +41,7 @@ TEST(PlanetTest, Load) {
 
 TEST(PlanetTest, Save) {
   Planet p(100);
-  std::string serialized = "return ";
+  string serialized = "return ";
   p.Save(serialized);
 
   lua_State *L = luaL_newstate();
@@ -50,7 +53,7 @@ TEST(PlanetTest, Save) {
 
 TEST(PlanetTest, Growth) {
   int i;
-  Player owner;
+  shared_ptr<Player> owner(new Player());
   Planet planet(100);
 
   for (i = 0; i < 100; i++) {
@@ -58,7 +61,7 @@ TEST(PlanetTest, Growth) {
   }
   EXPECT_EQ(0, planet.GetPopulation()) << "No growth before colonization";
 
-  planet.Colonize(&owner, 1);
+  planet.Colonize(owner, 1);
   EXPECT_EQ(1, planet.GetPopulation());
   EXPECT_EQ(100, planet.GetMaxPopulation());
 
@@ -70,7 +73,7 @@ TEST(PlanetTest, Growth) {
   planet.Update();
   EXPECT_EQ(2, planet.GetPopulation()) << "Population should have increased";
 
-  planet.Colonize(&owner, 100);
+  planet.Colonize(owner, 100);
   EXPECT_EQ(100, planet.GetPopulation());
   for (i = 0; i < 100; i++) {
     planet.Update();

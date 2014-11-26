@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <string>
+#include <memory>
 #include "product.h"
 
 class Player;
@@ -28,7 +29,7 @@ class Planet {
     static Planet *Load(lua_State *L);
 
     //! Set or change the owner of a planet
-    void Colonize(Player *owner, uint32_t pop);
+    void Colonize(std::weak_ptr<Player> owner, uint32_t pop);
 
     //! Current population.  Always <= GetMaxPopulation.
     uint32_t GetPopulation() { return m_population.GetAmount(); };
@@ -45,7 +46,7 @@ class Planet {
 
   private:
     uint32_t m_basePop;   //!< Planet population cap without facilities
-    Player *m_pOwner;     //!< Current owner, may be null
+    std::weak_ptr<Player> m_owner;     //!< Current owner, may be null
     Product m_population; //!< Population
     Product m_factories;  //!< Factories
 };

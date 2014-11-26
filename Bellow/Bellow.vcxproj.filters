@@ -59,6 +59,9 @@
     <ClCompile Include="galaxy.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="util.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

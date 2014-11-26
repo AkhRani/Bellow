@@ -14,7 +14,7 @@ using namespace std;
 
 Planet::Planet(uint32_t maxPop) :
   m_basePop(maxPop),
-  m_pOwner(nullptr),
+  m_owner(),
   m_population(0., 0., 0, maxPop),
   m_factories(0., 0., 0, maxPop)
 {
@@ -24,13 +24,9 @@ Planet::Planet(uint32_t maxPop) :
 * structure: { name = "earth", base_population = 100, population = { amount = 10, fractional = .5 } }
 */
 Planet::Planet(lua_State *L) {
-  int success;
-  loadcheck(lua_istable(L, -1));
+  LoadCheck(lua_istable(L, -1));
 
-  lua_getfield(L, -1, "base_population");
-  m_basePop = lua_tointegerx(L, -1, &success);
-  loadcheck(success != 0);
-  lua_pop(L, 1);
+  m_basePop = LoadCheckInteger(L, "base_population");
 
   lua_getfield(L, -1, "population");
   m_population.Load(L);
@@ -38,8 +34,9 @@ Planet::Planet(lua_State *L) {
   // lua_getfield(L, -1, "factories");
   // m_factories.Load(L);
 
-  // TODO:  Recalculate max, cost, and growth rate
   m_population.SetMax(m_basePop);
+
+  // TODO:  Recalculate max, cost, and growth rate based on owner
   lua_pop(L, 1);
 }
 
@@ -48,19 +45,7 @@ Planet::Planet(lua_State *L) {
  * structure: { name = "earth", base_population = 100, population = { amount = 10, fractional = .5 } }
  */
 Planet *Planet::Load(lua_State *L) {
-  lua_getfield(L, -1, "base_population");
-  int success;
-  int base_pop = lua_tointegerx(L, -1, &success);
-  Planet *retval = new Planet(base_pop);
-  lua_pop(L, 1);
-
-  lua_getfield(L, -1, "population");
-  retval->m_population.Load(L);
-  lua_pop(L, 1);
-
-  // TODO:  Recalculate max, cost, and growth rate
-  retval->m_population.SetMax(base_pop);
-  return retval;
+  return new Planet(L);
 }
 
 void Planet::Save(string &serialized) {
@@ -74,8 +59,9 @@ void Planet::Save(string &serialized) {
   serialized.append(" }");
 }
 
-void Planet::Colonize(Player *owner, uint32_t pop) {
-  m_pOwner = owner;
+void Planet::Colonize(weak_ptr<Player> new_owner, uint32_t pop) {
+  m_owner = new_owner;
+  shared_ptr<Player> owner(m_owner);
   m_population.SetAmount(pop);
   m_population.SetGrowthRate(owner->GetPopGrowthRate());
   // Existing factories (if any) remain
@@ -84,15 +70,17 @@ void Planet::Colonize(Player *owner, uint32_t pop) {
 }
 
 void Planet::Update() {
-  if (!m_pOwner) {
+  if (m_owner.expired()) {
+    // Either not colonized, or bug.  Don't think it's possible to tell which.
     return;
   }
+  shared_ptr<Player> owner(m_owner);
   uint32_t pop = m_population.GetAmount();
   uint32_t activeFactories =
-    std::min(m_factories.GetAmount(), pop * m_pOwner->GetFactoriesPerPop());
+    std::min(m_factories.GetAmount(), pop * owner->GetFactoriesPerPop());
 
-  double capital = pop * m_pOwner->GetProductionPerPop();
-  capital += activeFactories * m_pOwner->GetProductionPerFactory();
+  double capital = pop * owner->GetProductionPerPop();
+  capital += activeFactories * owner->GetProductionPerFactory();
 
   m_population.Grow(0.);
   m_factories.Grow(capital);
