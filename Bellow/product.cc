@@ -11,7 +11,7 @@ extern "C" {
 using std::string;
 
 /** Load state from Lua
- * Structure: { amount = 10, fractional = 0. }
+ * Structure: { amount = 10, invested = 0 }
  */
 void Product::Load(lua_State *L) {
   LoadCheck(lua_istable(L, -1));
@@ -19,8 +19,8 @@ void Product::Load(lua_State *L) {
   // Max should be set by client code, but do this to maintain invariant
   // in the mean time.  TODO:  Maybe pass in max?
   m_max = m_amount;
-  m_fractional = LoadCheckDouble(L, "fractional");
-  LoadCheck(m_fractional <= 1.0);
+  // Invested amount should be < cost, but this will be handled when cost is set.
+  m_invested = LoadCheckInteger(L, "invested");
 
   lua_pop(L, 1);
 }
@@ -29,36 +29,33 @@ void Product::Save(string &serialized) {
   // growth rate, cost, and max will be recalculated on load
   serialized.append(" { ");
   serialized.append(" amount=" + std::to_string(m_amount));
-  serialized.append(", fractional=" + std::to_string(m_fractional));
+  serialized.append(", invested=" + std::to_string(m_invested));
   serialized.append(" }");
 }
 
-void Product::Grow(double capital) {
+void Product::Grow(uint32_t cost, uint32_t capital) {
   if (m_amount < m_max) {
-    double Growth = m_growthRate * (m_amount + m_fractional) + m_fractional;
-    if (GetCost() > 0.) {
-      Growth += capital / GetCost();
-    }
-
-    double intGrowth = floor(Growth);
-    m_fractional = Growth - intGrowth;
-    // TODO:  Prevent overflow
-    m_amount += intGrowth;
+    capital += m_invested;
+    uint32_t growth = capital / cost;
+    // Remainder
+    m_invested = capital - growth * cost;
+    m_amount += growth;
     LimitAmount();
   }
 }
 
 void Product::LimitAmount() {
   if (m_amount > m_max) {
+    // TODO:  Send excess capital to owner
     m_amount = m_max;
-    m_fractional = 0.;
+    m_invested = 0;
   }
 }
 
 void Product::SetAmount(uint32_t amount)
 {
   m_amount = amount;
-  m_fractional = 0.;
+  m_invested = 0;
   LimitAmount();
 }
 

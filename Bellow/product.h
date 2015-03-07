@@ -1,3 +1,6 @@
+#ifndef PRODUCT_H
+#define PRODUCT_H
+
 #include <stdint.h>
 #include <string>
 
@@ -6,37 +9,27 @@ extern "C" {
 }
 
 /** Base class for things that are built / grow on planets.
- * \invariant  GetAmount() <= GetMax()
- * \invariant  m_fractional < 1.0
  */
 class Product {
   public:
     Product()
-      : m_growthRate(0.),
-        m_cost(0.),
-        m_fractional(0.),
+      : m_invested(0),
         m_amount(0),
         m_max(0) {}
 
     // TODO:  Maybe get rid of this
     explicit Product(uint32_t max)
-      : m_growthRate(0.),
-        m_cost(0.),
-        m_fractional(0.),
+      : m_invested(0),
         m_amount(0),
         m_max(max) {}
 
     explicit Product(const Product &other)
-      : m_growthRate(other.m_growthRate),
-      m_cost(other.m_cost),
-      m_fractional(other.m_fractional),
+      : m_invested(other.m_invested),
       m_amount(other.m_amount),
       m_max(other.m_max) {}
 
-    Product(double growthRate, double cost, uint32_t amount, uint32_t max)
-      : m_growthRate(growthRate),
-        m_cost(cost),
-        m_fractional(0.),
+    Product(uint32_t amount, uint32_t max)
+      : m_invested(0),
         m_amount(amount),
         m_max(max) {}
 
@@ -46,26 +39,22 @@ class Product {
     //! Serializer
     void Save(std::string &serialized);
 
-    void SetAmount(uint32_t amount);    //! Note: Sets fractional amount to zero.
+    void SetAmount(uint32_t amount);    //!< Note: Sets invested amount to zero.
     void SetMax(uint32_t max);
-    void SetCost(double cost) { m_cost = cost; }
-    void SetGrowthRate(double rate) { m_growthRate = rate; }
 
     uint32_t GetAmount() { return m_amount; };
-    double GetFractional() { return m_fractional; }  //! For unit testing
+    uint32_t GetInvested() { return m_invested; }  //!< For unit testing
     uint32_t GetMax() { return m_max; };
-    double GetCost() { return m_cost; };
-    double GetGrowthRate() { return m_growthRate; }
-    uint32_t ProjectGrowth(double capital);
-    void Grow(double capital);
+    uint32_t ProjectGrowth(uint32_t cost, uint32_t capital);
+    virtual void Grow(uint32_t cost, uint32_t capital);
 
   protected:
     void LimitAmount();
 
   private:
-    double m_growthRate;
-    double m_cost;
-    double m_fractional;
-    uint32_t m_amount;
-    uint32_t m_max;
+    uint32_t m_invested;    //!< Amount of capital invested toward the next item
+    uint32_t m_amount;    //!< Number of items
+    uint32_t m_max;       //!< Cached maximum number of items
 };
+
+#endif

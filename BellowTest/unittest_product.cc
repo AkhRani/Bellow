@@ -10,24 +10,19 @@ extern "C" {
 #include "lualib.h"
 }
 
-using namespace std;
+using std::string;
+using std::runtime_error;
 
 TEST(ProductTest, Creation) {
   Product prod;
-  EXPECT_EQ(0., prod.GetGrowthRate());
-  EXPECT_EQ(0., prod.GetCost());
   EXPECT_EQ(0, prod.GetAmount());
   EXPECT_EQ(0, prod.GetMax());
 
   Product prod2(15);
-  EXPECT_EQ(0., prod2.GetGrowthRate());
-  EXPECT_EQ(0., prod2.GetCost());
   EXPECT_EQ(0, prod2.GetAmount());
   EXPECT_EQ(15, prod2.GetMax());
 
-  Product prod3(1., 10., 5, 20);
-  EXPECT_EQ(1., prod3.GetGrowthRate());
-  EXPECT_EQ(10., prod3.GetCost());
+  Product prod3(5, 20);
   EXPECT_EQ(5, prod3.GetAmount());
   EXPECT_EQ(20, prod3.GetMax());
 }
@@ -37,28 +32,26 @@ TEST(ProductTest, Load) {
   Product prod;
 
   // Nominal
-  RunLua(L, "return { amount = 10, fractional = 0.24 }");
+  RunLua(L, "return { amount = 10, invested = 4 }");
   prod.Load(L);
   EXPECT_EQ(10, prod.GetAmount());
   EXPECT_LE(prod.GetMax(), prod.GetAmount());
-  EXPECT_EQ(.24, prod.GetFractional());
+  EXPECT_EQ(4, prod.GetInvested());
 
   // Off-nominal
-  RunLua(L, "return { amount = 10.3, fractional = 0.24 }");
+  RunLua(L, "return { amount = 10.3, invested = 04.24 }");
   prod.Load(L);
   EXPECT_EQ(10, prod.GetAmount());
   EXPECT_LE(prod.GetMax(), prod.GetAmount());
-  EXPECT_EQ(.24, prod.GetFractional());
+  EXPECT_EQ(4, prod.GetInvested());
 
   // Errors
-  RunLua(L, "return { fractional = 0.24 }");
+  RunLua(L, "return { invested = 4 }");
   EXPECT_THROW(prod.Load(L), runtime_error);
 
   RunLua(L, "return { amount = 11 }");
   EXPECT_THROW(prod.Load(L), runtime_error);
 
-  RunLua(L, "return { amount = 5, fractional = 1.5 }");
-  EXPECT_THROW(prod.Load(L), runtime_error);
 }
 
 TEST(ProductTest, Save) {
@@ -77,11 +70,6 @@ TEST(ProductTest, Save) {
 
 TEST(ProductTest, Manipulation) {
   Product prod;
-  prod.SetGrowthRate(2.2);
-  EXPECT_EQ(2.2, prod.GetGrowthRate());
-
-  prod.SetCost(1.5);
-  EXPECT_EQ(1.5, prod.GetCost());
 
   // Respect maximum
   prod.SetAmount(10);
@@ -98,29 +86,33 @@ TEST(ProductTest, Manipulation) {
 }
 
 TEST(ProductTest, Growth) {
-  Product prod(0., 10., 5, 20);
-  prod.Grow(0.);
+  Product prod(5, 20);
+  prod.Grow(10, 0);
   EXPECT_EQ(5, prod.GetAmount());
 
-  prod.Grow(10.);
+  prod.Grow(10, 10);
   EXPECT_EQ(6, prod.GetAmount());
 
-  prod.Grow(15.);
+  prod.Grow(10, 15);
   EXPECT_EQ(7, prod.GetAmount());
 
-  prod.Grow(15.);
+  prod.Grow(10, 15);
   EXPECT_EQ(9, prod.GetAmount());
 
-  prod.Grow(110.);
+  prod.Grow(10, 110);
   EXPECT_EQ(20, prod.GetAmount());
 
-  prod.Grow(10.);
+  prod.Grow(10, 10);
   EXPECT_EQ(20, prod.GetAmount());
 
+  /*
+  TODO:  Move to population test.
+  
   Product prod2(.2, 10., 5, 20);
   prod2.Grow(0.);
   EXPECT_EQ(6, prod2.GetAmount());
 
   prod2.Grow(10.);
   EXPECT_EQ(8, prod2.GetAmount());
+  */
 }

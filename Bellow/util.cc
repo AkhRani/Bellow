@@ -1,4 +1,4 @@
-#include "Util.h"
+#include "util.h"
 
 extern "C" {
 #include "lua.h"

@@ -30,6 +30,12 @@
     <ClCompile Include="testutils.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="unittest_star_system.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Bellow\star_system.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="testutils.h">

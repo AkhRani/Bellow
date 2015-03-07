@@ -100,11 +100,13 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Bellow\star_system.cc" />
     <ClCompile Include="coverage.cc" />
     <ClCompile Include="testutils.cc" />
     <ClCompile Include="unittest_galaxy.cc" />
     <ClCompile Include="unittest_planet.cc" />
     <ClCompile Include="unittest_product.cc" />
+    <ClCompile Include="unittest_star_system.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="testutils.h" />

@@ -1,13 +1,18 @@
 #include "player.h"
 
 #define POP_GROWTH_RATE .05
+#define POP_COST 20
 #define PRODUCTION_PER_POP 1.
 
 #define FACTORIES_PER_POP 2
 #define PRODUCTION_PER_FACTORY 10.
-#define FACTORY_COST 10.
+#define FACTORY_COST 10
 
-Player::Player() {}
+Player::Player(const std::string &name) : m_Name(name) {}
+
+uint32_t Player::GetPopCost() {
+  return POP_COST;
+}
 
 double Player::GetPopGrowthRate() {
   return POP_GROWTH_RATE;
@@ -21,7 +26,7 @@ uint32_t Player::GetFactoriesPerPop() {
   return FACTORIES_PER_POP;
 }
 
-double Player::GetFactoryCost() {
+uint32_t Player::GetFactoryCost() {
   return FACTORY_COST;
 }
 

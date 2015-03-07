@@ -1,3 +1,4 @@
+#include "game.h"
 #include "planet.h"
 #include "player.h"
 #include "gtest/gtest.h"
@@ -20,40 +21,51 @@ TEST(PlanetTest, Creation) {
 }
 
 TEST(PlanetTest, Load) {
-  const char *earth = "return { name = \"earth\", base_population = 100, population = { amount = 10, fractional = 0. } }";
+  MockGame game;
   lua_State *L = luaL_newstate();
 
   // Nominal, unowned
-  RunLua(L, earth);
-  Planet *p = Planet::Load(L);
+  luaL_dostring(L, "empty = { amount = 0, invested = 0 }");
+  RunLua(L, "return { name = \"earth\", base_population = 100, population = empty, factories = empty }");
+
+  Planet *p = Planet::Load(game, L);
   EXPECT_NE(nullptr, p);
   EXPECT_EQ(100, p->GetMaxPopulation());
-  EXPECT_EQ(10, p->GetPopulation());
+  EXPECT_EQ(0, p->GetPopulation());
+  EXPECT_EQ(0, p->GetFactories());
 
-  RunLua(L, earth);
-  Planet *pnew = new Planet(L);
+  // Nominal, owned
+  luaL_dostring(L, "pop = { amount = 10, invested = 0 }");
+  luaL_dostring(L, "fact = { amount = 20, invested = 0 }");
+  RunLua(L, "return { name = \"earth\", owner = \"human\", base_population = 100, population = pop, factories = fact }");
+
+  Planet *pnew = new Planet(game, L);
   EXPECT_NE(nullptr, pnew);
   EXPECT_EQ(100, pnew->GetMaxPopulation());
   EXPECT_EQ(10, pnew->GetPopulation());
+  EXPECT_EQ(200, pnew->GetMaxFactories());
+  EXPECT_EQ(20, pnew->GetFactories());
+  EXPECT_EQ("human", std::shared_ptr<Player>(pnew->GetOwner())->GetName());
 
   // TODO:  Test Error Handling
 }
 
 TEST(PlanetTest, Save) {
+  MockGame game;
   Planet p(100);
   string serialized = "return ";
   p.Save(serialized);
 
   lua_State *L = luaL_newstate();
   RunLua(L, serialized.c_str());
-  Planet *restored = Planet::Load(L);
+  Planet *restored = Planet::Load(game, L);
   EXPECT_NE(nullptr, restored);
   EXPECT_EQ(100, restored->GetMaxPopulation());
 }
 
 TEST(PlanetTest, Growth) {
   int i;
-  shared_ptr<Player> owner(new Player());
+  shared_ptr<Player> owner(new Player("human"));
   Planet planet(100);
 
   for (i = 0; i < 100; i++) {
@@ -65,8 +77,8 @@ TEST(PlanetTest, Growth) {
   EXPECT_EQ(1, planet.GetPopulation());
   EXPECT_EQ(100, planet.GetMaxPopulation());
 
-  // with 5% growth, 1.5 ** 14 == 0.9799
-  for (i = 0; i < 14; i++) {
+  // Nominal 10% growth, not compounded
+  for (i = 0; i < 9; i++) {
     planet.Update();
     EXPECT_EQ(1, planet.GetPopulation());
   }

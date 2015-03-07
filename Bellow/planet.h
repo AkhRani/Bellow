@@ -1,9 +1,15 @@
+#ifndef PLANET_H
+#define PLANET_H
+
 #include <stdint.h>
 #include <string>
 #include <memory>
 #include "product.h"
+#include "population.h"
 
 class Player;
+class Game;
+
 extern "C" {
   struct lua_State;
 }
@@ -20,19 +26,24 @@ class Planet {
     Planet(uint32_t maxPop);
 
     //! Deserializing constructor
-    Planet(lua_State *L);
+    Planet(const Game &game, lua_State *L);
 
     //! Serializer
     void Save(std::string &rep);
 
     //! Deserializer, Factory style.  Returns planet or throws.
-    static Planet *Load(lua_State *L);
+    static Planet *Load(const Game &game, lua_State *L);
 
     //! Set or change the owner of a planet
     void Colonize(std::weak_ptr<Player> owner, uint32_t pop);
 
+    //! Owner accessor
+    std::weak_ptr<Player> GetOwner() { return m_owner; };
+
     //! Current population.  Always <= GetMaxPopulation.
     uint32_t GetPopulation() { return m_population.GetAmount(); };
+
+    //! Current max population, modified by planetary improvements
     uint32_t GetMaxPopulation() { return m_population.GetMax(); };
 
     uint32_t GetFactories() { return m_factories.GetAmount(); };
@@ -42,11 +53,16 @@ class Planet {
     void Update();
 
   protected:
+    //! Update product cost, max.  Called for colonization, load, improvements, etc.
+    void SetProductProperties();
+
     // double GetProduction();
 
   private:
     uint32_t m_basePop;   //!< Planet population cap without facilities
     std::weak_ptr<Player> m_owner;     //!< Current owner, may be null
-    Product m_population; //!< Population
+    Population m_population; //!< Population
     Product m_factories;  //!< Factories
 };
+
+#endif
