@@ -1,3 +1,6 @@
+#ifndef STAR_SYSTEM_H
+#define STAR_SYSTEM_H
+
 /**
  * @brief Star system. 
  * aggregates position, star color, and planet (if any)
@@ -25,3 +28,5 @@ private:
 
   std::shared_ptr<Planet> m_Planet;
 };
+
+#endif

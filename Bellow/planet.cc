@@ -91,13 +91,14 @@ void Planet::Update() {
     // Either not colonized, or bug.  Don't think it's possible to tell which.
     return;
   }
+  // Grab a temporary pointer to the owner
   shared_ptr<Player> owner(m_owner);
   uint32_t pop = m_population.GetAmount();
   uint32_t activeFactories =
     std::min(m_factories.GetAmount(), pop * owner->GetFactoriesPerPop());
 
-  double capital = pop * owner->GetProductionPerPop();
-  capital += activeFactories * owner->GetProductionPerFactory();
+  uint32_t capital = pop * owner->GetProductionPerPop() / 100;
+  capital += activeFactories * owner->GetProductionPerFactory() / 100;
 
   m_population.SetGrowthRate(NOMINAL_POP_GROWTH);
   m_population.Grow(owner->GetPopCost(), 0);

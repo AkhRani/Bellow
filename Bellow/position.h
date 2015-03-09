@@ -1,3 +1,6 @@
+#ifndef POSITION_H
+#define POSITION_H
+
 /**
  * Stores the position of a planet or fleet in the galaxy.
  *
@@ -22,3 +25,5 @@ struct Position {
   private:
     Position();
 };
+
+#endif

@@ -56,8 +56,6 @@ class Planet {
     //! Update product cost, max.  Called for colonization, load, improvements, etc.
     void SetProductProperties();
 
-    // double GetProduction();
-
   private:
     uint32_t m_basePop;   //!< Planet population cap without facilities
     std::weak_ptr<Player> m_owner;     //!< Current owner, may be null

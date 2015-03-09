@@ -1,3 +1,6 @@
+#ifndef GALAXY_H
+#define GALAXY_H
+
 #include <string>
 #include <vector>
 
@@ -49,3 +52,5 @@ public:
 private:
   StarSystemColl m_Systems;
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef UTIL_H
+#define UTIL_H
+
 extern "C" {
   struct lua_State;
 }
@@ -11,3 +14,5 @@ static inline void LoadCheck(bool cond) {
 
 int LoadCheckInteger(lua_State *L, const char *name);
 double LoadCheckDouble(lua_State *L, const char *name);
+
+#endif
