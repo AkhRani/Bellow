@@ -6,6 +6,7 @@
 
 #include "planet.h"
 #include "position.h"
+#include "star_system.h"
 
 extern "C" {
   struct lua_State;
@@ -17,33 +18,22 @@ extern "C" {
 */
 class Galaxy {
 public:
-  //! Simple aggregation of star system info
-  class StarSystem {
-  public:
-    explicit StarSystem(lua_State *L);
-    StarSystem(const std::string &name, const Position &pos, Planet *pPlanet) :
-      m_Name(name), m_Position(pos), m_pPlanet(pPlanet)
-    {}
-    
-    const std::string& GetName() const { return m_Name; }
-    const Position& GetPosition() const { return m_Position;}
-    Planet* GetPlanet() { return m_pPlanet; }
-
-  private:
-    StarSystem();
-
-    // TODO:  Add star color
-    std::string m_Name;
-    Position m_Position;
-    Planet* m_pPlanet;
-  };
-
   typedef std::vector<StarSystem> StarSystemColl;
   typedef StarSystemColl::iterator StarSystemIter;
 
+  class SystemVisitor {
+  public:
+    SystemVisitor();
+    ~SystemVisitor();
+    virtual int operator ()(StarSystem &system) { return 1; }
+  };
+
   Galaxy(); //!< Default constructor
+  Galaxy(Game& game, lua_State *L); //!< deserializer constructor
+
   void AddStarSystem(const std::string &name, const Position &pos, Planet *pPlanet);
   void AddStarSystem(const std::string &name, Planet *pPlanet);
+  int VisitPlanets(SystemVisitor &visitor);
 
   StarSystemIter BeginSystems() { return m_Systems.begin(); }
   StarSystemIter EndSystems() { return m_Systems.end(); }

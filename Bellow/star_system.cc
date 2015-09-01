@@ -8,12 +8,15 @@ extern "C" {
 }
 
 StarSystem::StarSystem(const Game& game, lua_State *L) :
-    m_X(LoadCheckDouble(L, "x")), 
+    m_Name(LoadString(L, "name")),
+    m_X(LoadCheckDouble(L, "x")),
     m_Y(LoadCheckDouble(L, "y")) {
   lua_getfield(L, -1, "planet");
   if (lua_istable(L, -1)) {
     m_Planet.reset(new Planet(game, L));
   }
-  lua_pop(L, 1);
+  else {
+    lua_pop(L, 1);
+  }
   lua_pop(L, 1);
 }
