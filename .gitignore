@@ -9,6 +9,7 @@ latex
 *.suo
 *.user
 *.sln.docstates
+.*.swp
 
 # Build results
 

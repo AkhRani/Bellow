@@ -1,15 +1,18 @@
 Map = function (galaxy, width, height)
-  height = height or 10
-  width = width or 10
+  height = height or 30
+  width = width or 30
 
   local rows = { }
   for i = 1, height do
     rows[i] = { }
   end
 
-  for i,sys in ipairs(galaxy) do
-    local x = math.floor(sys.x * width)
-    local y = math.floor(sys.y * height)
+  for i,sys in ipairs(galaxy.planets) do
+    local x = math.floor((sys.x * width + width - 1)/ galaxy.size)
+    local y = math.floor((sys.y * height + height - 1)/ galaxy.size)
+    if x > 30 or y > 30 then
+      print (sys.name, sys.x, sys.y, x, y)
+    end
     rows[y][x] = 1
   end
 
