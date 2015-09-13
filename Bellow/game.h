@@ -41,6 +41,11 @@ public:
   virtual void NextTurn();
 
 protected:
+  class PlayerColl : public std::vector < Player > {
+  public:
+    PlayerColl(lua_State *L);
+  };
+
   virtual void UpdateSystemInfo();
 
   //! Update player's view of the planet
@@ -49,7 +54,7 @@ protected:
 private:
   Game();
 
-  std::vector<Player> m_Players;
+  PlayerColl m_Players;
   Galaxy m_Galaxy;
 
   // TODO:  Fleets, tech tree, etc.

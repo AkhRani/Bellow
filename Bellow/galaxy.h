@@ -28,8 +28,7 @@ public:
     virtual int operator ()(StarSystem &system) { return 1; }
   };
 
-  Galaxy(); //!< Default constructor
-  Galaxy(IGame& game, lua_State *L); //!< deserializer constructor
+  Galaxy(IGame& game, lua_State *L, const char *field = nullptr); //!< deserializer constructor
 
   void AddStarSystem(const std::string &name, const Position &pos, Planet *pPlanet);
   void AddStarSystem(const std::string &name, Planet *pPlanet);
@@ -41,6 +40,9 @@ public:
   int SystemCount() { return m_Systems.size(); }               //!< Number of systems in the galaxy
 
 private:
+  //! Default constructor
+  Galaxy();
+
   //! Dimension of (square) galaxy, in parsecs
   double m_Size;
   StarSystemColl m_Systems;

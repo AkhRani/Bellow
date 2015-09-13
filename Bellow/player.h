@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <string>
 
+extern "C" {
+  struct lua_State;
+}
+
 class SystemInfo;
 
 /** Per-player information.
@@ -12,8 +16,11 @@ class SystemInfo;
 */
 class Player {
 public:
-  //! Basic Constructor
+  //! Constructor for testing purposes.  Should get rid of this
   Player(const std::string &name);
+
+  //! Deserializer constructor
+  Player(lua_State *L);
 
   //! Player name
   const std::string &GetName() const { return m_Name; } ;

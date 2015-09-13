@@ -8,12 +8,6 @@ extern "C" {
 #include "lualib.h"
 }
 
-TEST(GalaxyTest, Creation) {
-  Galaxy g;
-  EXPECT_EQ(0, g.SystemCount());
-  EXPECT_EQ(g.BeginSystems(), g.EndSystems());
-}
-
 TEST(GalaxyTest, Load) {
   MockGame game;
   lua_State *L = luaL_newstate();

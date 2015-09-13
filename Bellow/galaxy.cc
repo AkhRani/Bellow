@@ -10,7 +10,11 @@ extern "C" {
 Galaxy::Galaxy() {
 }
 
-Galaxy::Galaxy(IGame& game, lua_State *L) {
+Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) {
+  if (field) {
+    lua_getfield(L, -1, field);
+  }
+
   // Top of Lua stack should be a table of { size, systems }
   if (lua_istable(L, -1)) {
     m_Size = LoadCheckDouble(L, "size");
@@ -38,6 +42,10 @@ Galaxy::Galaxy(IGame& game, lua_State *L) {
         }
       }
     }
+    lua_pop(L, 1);
+  }
+
+  if (field) {
     lua_pop(L, 1);
   }
 }

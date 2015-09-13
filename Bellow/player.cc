@@ -1,4 +1,11 @@
 #include "player.h"
+#include "util.h"
+
+extern "C" {
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
 
 #define POP_GROWTH_RATE 100
 #define POP_COST 20
@@ -9,6 +16,12 @@
 #define FACTORY_COST 10
 
 Player::Player(const std::string &name) : m_Name(name) {}
+
+Player::Player(lua_State *L) :
+  m_Name(LoadString(L, "name"))
+{
+  
+}
 
 uint32_t Player::GetPopCost() {
   return POP_COST;
