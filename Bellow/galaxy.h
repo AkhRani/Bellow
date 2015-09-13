@@ -29,7 +29,7 @@ public:
   };
 
   Galaxy(); //!< Default constructor
-  Galaxy(Game& game, lua_State *L); //!< deserializer constructor
+  Galaxy(IGame& game, lua_State *L); //!< deserializer constructor
 
   void AddStarSystem(const std::string &name, const Position &pos, Planet *pPlanet);
   void AddStarSystem(const std::string &name, Planet *pPlanet);
@@ -37,9 +37,12 @@ public:
 
   StarSystemIter BeginSystems() { return m_Systems.begin(); }
   StarSystemIter EndSystems() { return m_Systems.end(); }
+  double Size() { return m_Size; }
   int SystemCount() { return m_Systems.size(); }               //!< Number of systems in the galaxy
 
 private:
+  //! Dimension of (square) galaxy, in parsecs
+  double m_Size;
   StarSystemColl m_Systems;
 };
 

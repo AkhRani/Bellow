@@ -51,6 +51,9 @@
     <ClInclude Include="population.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="system_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

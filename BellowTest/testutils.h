@@ -9,7 +9,7 @@ extern "C" {
 
 void RunLua(lua_State *L, const char *script);
 
-class MockGame : public Game {
+class MockGame : public IGame {
 public:
   MockGame();
   virtual std::weak_ptr<Player> GetPlayer(const std::string &name) const;

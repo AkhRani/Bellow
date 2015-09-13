@@ -8,7 +8,7 @@
 #include "population.h"
 
 class Player;
-class Game;
+class IGame;
 
 extern "C" {
   struct lua_State;
@@ -26,13 +26,13 @@ class Planet {
     Planet(uint32_t maxPop);
 
     //! Deserializing constructor
-    Planet(const Game &game, lua_State *L);
+    Planet(const IGame &game, lua_State *L);
 
     //! Serializer
     void Save(std::string &rep);
 
     //! Deserializer, Factory style.  Returns planet or throws.
-    static Planet *Load(const Game &game, lua_State *L);
+    static Planet *Load(const IGame &game, lua_State *L);
 
     //! Set or change the owner of a planet
     void Colonize(std::weak_ptr<Player> owner, uint32_t pop);

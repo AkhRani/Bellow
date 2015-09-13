@@ -19,16 +19,16 @@ TEST(GalaxyTest, Load) {
   lua_State *L = luaL_newstate();
 
   // Nominal, empty system
-  RunLua(L, "systems = { { name = \"Sol\", x = .5, y = .5} }; return systems");
+  RunLua(L, "systems = { { name = \"Sol\", x = .5, y = .5} }; return { size = 5, systems = systems }");
   Galaxy noplanet(game, L);
   EXPECT_EQ(1, noplanet.SystemCount());
 
   // Nominal, unowned planet
   RunLua(L, "none = { amount = 0, invested = 0 };"
-    "unowned = { name = \"Sol\", x = .5, y = .5, "
+    "unowned = { name = \"Sol\", x = 1.5, y = 1.5, "
       "planet = { name = \"earth\", base_population = 100, population = none, factories = none } };"
-    "empty = { name = \"Alpha Centurai\", x = .9, y = .5 };"
-    "return { empty, unowned };");
+    "empty = { name = \"Alpha Centurai\", x = 2.9, y = 3.5 };"
+    "return { size = 5, systems = { empty, unowned } };");
   Galaxy g2(game, L);
   EXPECT_EQ(2, g2.SystemCount());
 }

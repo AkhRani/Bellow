@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "game.h"
+
 #define lua_c
 
 extern "C" {
@@ -486,6 +488,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 #if 1
   lua_State *L = luaL_newstate();
+  Game *pGame(nullptr);
 
  // lua_gc(L, LUA_GCSTOP, 0);  /* stop collector during initialization */
   luaL_openlibs(L);  /* open libraries */
@@ -500,6 +503,17 @@ int _tmain(int argc, _TCHAR* argv[])
   if (luaL_loadfile(L, "ConsoleUtils.lua") || lua_pcall(L, 0, 0, 0)) {
     printf("Error loading utils\n");
   }
+  // Create game for testing
+  lua_getglobal(L, "NewGame");
+  if (lua_isfunction(L, -1) && !lua_pcall(L, 0, 1, -1)) {
+    pGame = new Game(L);
+  }
+  else {
+    printf("Failed to call NewGame");
+  }
+
+  
+
   printf("> ");
   while (fgets(buff, 100, stdin)) {
     if (buff[0] == 'q') {

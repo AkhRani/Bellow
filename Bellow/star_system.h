@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-class Game;
+class IGame;
 class Planet;
 
 extern "C" {
@@ -17,7 +17,7 @@ extern "C" {
 
 class StarSystem {
 public:
-  StarSystem(const Game& game, lua_State *L);
+  StarSystem(const IGame& game, lua_State *L);
 
   std::weak_ptr<Planet> GetPlanet();
 

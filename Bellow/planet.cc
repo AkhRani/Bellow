@@ -27,7 +27,7 @@ Planet::Planet(uint32_t maxPop) :
 /** Create a planet from the table on top of the Lua stack.
 * structure: { name = "earth", base_population = 100, population = { amount = 10, invested = 5 } }
 */
-Planet::Planet(const Game &game, lua_State *L) {
+Planet::Planet(const IGame &game, lua_State *L) {
   LoadCheck(lua_istable(L, -1));
 
   m_basePop = LoadCheckInteger(L, "base_population");
@@ -56,7 +56,7 @@ Planet::Planet(const Game &game, lua_State *L) {
 /** Create a planet from the table on top of the Lua stack.
  * structure: { name = "earth", base_population = 100, population = { amount = 10, invested = 5 } }
  */
-Planet *Planet::Load(const Game &game, lua_State *L) {
+Planet *Planet::Load(const IGame &game, lua_State *L) {
   return new Planet(game, L);
 }
 

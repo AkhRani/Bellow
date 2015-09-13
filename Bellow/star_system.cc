@@ -7,7 +7,7 @@ extern "C" {
 #include "lua.h"
 }
 
-StarSystem::StarSystem(const Game& game, lua_State *L) :
+StarSystem::StarSystem(const IGame& game, lua_State *L) :
     m_Name(LoadString(L, "name")),
     m_X(LoadCheckDouble(L, "x")),
     m_Y(LoadCheckDouble(L, "y")) {
