@@ -38,10 +38,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GameGenerator.lua">
+    <None Include="..\Scripts\ConsoleUtils.lua">
       <Filter>Scripts</Filter>
     </None>
-    <None Include="ConsoleUtils.lua">
+    <None Include="..\Scripts\GameGenerator.lua">
       <Filter>Scripts</Filter>
     </None>
   </ItemGroup>

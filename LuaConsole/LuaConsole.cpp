@@ -497,10 +497,11 @@ int _tmain(int argc, _TCHAR* argv[])
  //   return 0;  /* error running LUA_INIT */
 
   char buff[100];
-  if (luaL_loadfile(L, "GameGenerator.lua") || lua_pcall(L, 0, 0, 0)) {
+  if (luaL_loadfile(L, "Scripts/GameGenerator.lua") || lua_pcall(L, 0, 0, 0)) {
     printf("Error loading generator\n");
   }
-  if (luaL_loadfile(L, "ConsoleUtils.lua") || lua_pcall(L, 0, 0, 0)) {
+
+  if (luaL_loadfile(L, "Scripts/ConsoleUtils.lua") || lua_pcall(L, 0, 0, 0)) {
     printf("Error loading utils\n");
   }
   // Create game for testing
@@ -509,7 +510,7 @@ int _tmain(int argc, _TCHAR* argv[])
     pGame = new Game(L);
   }
   else {
-    printf("Failed to call NewGame");
+    printf("Failed to call NewGame\n");
   }
 
   

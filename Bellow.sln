@@ -15,6 +15,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaConsole", "LuaConsole\Lu
 		{48F708E4-F9A7-406A-9229-CE35E09A1282} = {48F708E4-F9A7-406A-9229-CE35E09A1282}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{75C2C91D-016B-48F4-A067-95AB2955EC7D}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\ConsoleUtils.lua = Scripts\ConsoleUtils.lua
+		Scripts\GameGenerator.lua = Scripts\GameGenerator.lua
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
