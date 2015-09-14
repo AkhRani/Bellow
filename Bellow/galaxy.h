@@ -36,8 +36,8 @@ public:
 
   StarSystemIter BeginSystems() { return m_Systems.begin(); }
   StarSystemIter EndSystems() { return m_Systems.end(); }
-  double Size() { return m_Size; }
-  int SystemCount() { return m_Systems.size(); }               //!< Number of systems in the galaxy
+  double Size() const { return m_Size; }
+  int SystemCount() const { return m_Systems.size(); }               //!< Number of systems in the galaxy
 
 private:
   //! Default constructor

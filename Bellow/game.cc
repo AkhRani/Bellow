@@ -7,6 +7,8 @@ extern "C" {
 #include "lualib.h"
 }
 
+const char* Game::GAME_LUDNAME = "Bellow_Game";
+
 Game::PlayerColl::PlayerColl(lua_State *L) {
   lua_getfield(L, -1, "players");
   // TODO:  Maybe refactor lua table iteration into util
@@ -22,6 +24,7 @@ Game::PlayerColl::PlayerColl(lua_State *L) {
         lua_pop(L, 1);
         break;
       }
+      idx++;
     }
   }
   // TODO:  Throw if no players found
@@ -36,7 +39,30 @@ Game::Game(lua_State *L) :
 }
 
 Game::~Game() {
+}
 
+int Game::lua_GetGalaxySize(lua_State *L)
+{
+  lua_getglobal(L, GAME_LUDNAME);
+  if (lua_islightuserdata(L, -1)) {
+    Game *pGame = (Game *)lua_touserdata(L, -1);
+    lua_pop(L, 1);
+    lua_pushnumber(L, pGame->GetGalaxySize());
+  }
+  else {
+    lua_pop(L, 1);
+    lua_pushnil(L);
+  }
+  return 1;
+}
+
+bool Game::RegisterApi(lua_State *L)
+{
+  lua_register(L, "GetGalaxySize", lua_GetGalaxySize);
+
+  lua_pushlightuserdata(L, this);
+  lua_setglobal(L, GAME_LUDNAME);
+  return true;
 }
 
 std::weak_ptr<Player> Game::GetPlayer(const std::string &playerName) const
@@ -46,7 +72,7 @@ std::weak_ptr<Player> Game::GetPlayer(const std::string &playerName) const
 }
 
 double Game::GetGalaxySize() const {
-  return 123.;
+  return m_Galaxy.Size();
 }
 
 int Game::GetSystemCount() const

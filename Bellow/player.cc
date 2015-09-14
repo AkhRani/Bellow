@@ -20,7 +20,7 @@ Player::Player(const std::string &name) : m_Name(name) {}
 Player::Player(lua_State *L) :
   m_Name(LoadString(L, "name"))
 {
-  
+  lua_pop(L, 1);
 }
 
 uint32_t Player::GetPopCost() {

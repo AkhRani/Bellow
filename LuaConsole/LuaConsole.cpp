@@ -513,7 +513,7 @@ int _tmain(int argc, _TCHAR* argv[])
     printf("Failed to call NewGame\n");
   }
 
-  
+  pGame->RegisterApi(L);
 
   printf("> ");
   while (fgets(buff, 100, stdin)) {

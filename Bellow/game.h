@@ -34,11 +34,12 @@ public:
   Game(lua_State *L);
   virtual ~Game();
 
+  bool RegisterApi(lua_State *L);
   virtual std::weak_ptr<Player> GetPlayer(const std::string &playerName) const override;
 
-  virtual double GetGalaxySize() const;
-  virtual int GetSystemCount() const;
-  virtual void NextTurn();
+  double GetGalaxySize() const;
+  int GetSystemCount() const;
+  void NextTurn();
 
 protected:
   class PlayerColl : public std::vector < Player > {
@@ -46,10 +47,17 @@ protected:
     PlayerColl(lua_State *L);
   };
 
-  virtual void UpdateSystemInfo();
+  void UpdateSystemInfo();
 
   //! Update player's view of the planet
-  virtual void Explore(Player& player, System& system);
+  void Explore(Player& player, System& system);
+
+  // Lua API
+  static const char* GAME_LUDNAME;
+
+  static int lua_GetGalaxySize(lua_State *L);
+  static int lua_GetSystemCount(lua_State *L);
+  static int lua_GetSystemInfo(lua_State *L);
 
 private:
   Game();
