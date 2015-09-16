@@ -1,4 +1,5 @@
 #include "galaxy.h"
+#include "system_info.h"
 #include "util.h"
 
 extern "C" {
@@ -56,4 +57,16 @@ int Galaxy::VisitPlanets(SystemVisitor &visitor) {
     retval += visitor(*it);
   }
   return retval;
+}
+
+bool Galaxy::GetSystemInfo(int id, SystemInfo& info) {
+  // TODO:  Player-based
+  if (0 <= id && id < m_Systems.size()) {
+    StarSystem &system(m_Systems[id]);
+    info.x = system.m_X;
+    info.y = system.m_Y;
+    info.name = system.m_Name;
+    return true;
+  }
+  return false;
 }

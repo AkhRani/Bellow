@@ -1,4 +1,7 @@
+
 #include "game.h"
+// #include "star_system.h"
+#include "system_info.h"
 #include "util.h"
 
 extern "C" {
@@ -41,17 +44,55 @@ Game::Game(lua_State *L) :
 Game::~Game() {
 }
 
-int Game::lua_GetGalaxySize(lua_State *L)
+//! Boilerplate for lua functions
+Game* Game::GetGalaxy(lua_State *L)
 {
+  Game* retval = nullptr;
   lua_getglobal(L, GAME_LUDNAME);
   if (lua_islightuserdata(L, -1)) {
-    Game *pGame = (Game *)lua_touserdata(L, -1);
+    retval = (Game *)lua_touserdata(L, -1);
     lua_pop(L, 1);
-    lua_pushnumber(L, pGame->GetGalaxySize());
   }
   else {
     lua_pop(L, 1);
     lua_pushnil(L);
+  }
+  return retval;
+}
+
+int Game::lua_GetGalaxySize(lua_State *L)
+{
+  Game *pGame = GetGalaxy(L);
+  if (pGame) lua_pushnumber(L, pGame->GetGalaxySize());
+  return 1;
+}
+
+int Game::lua_GetSystemCount(lua_State *L)
+{
+  Game *pGame = GetGalaxy(L);
+  if (pGame) lua_pushnumber(L, pGame->GetSystemCount());
+  return 1;
+}
+
+int Game::lua_GetSystemInfo(lua_State *L)
+{
+  Game *pGame = GetGalaxy(L);
+  if (pGame && lua_isnumber(L, -1)) {
+    int id = lua_tointeger(L, -1);
+    SystemInfo info;
+    // TODO:  Per-player info
+    if (pGame->m_Galaxy.GetSystemInfo(id - 1, info)) {
+      lua_createtable(L, 0, 3);
+
+      lua_pushnumber(L, info.x);
+      lua_setfield(L, -2, "x");
+
+      lua_pushnumber(L, info.y);
+      lua_setfield(L, -2, "y");
+
+      lua_pushstring(L, info.name.c_str());
+      lua_setfield(L, -2, "name");
+    }
   }
   return 1;
 }
@@ -59,7 +100,11 @@ int Game::lua_GetGalaxySize(lua_State *L)
 bool Game::RegisterApi(lua_State *L)
 {
   lua_register(L, "GetGalaxySize", lua_GetGalaxySize);
+  lua_register(L, "GetSystemCount", lua_GetSystemCount);
+  lua_register(L, "GetSystemInfo", lua_GetSystemInfo);
 
+  // NOTE:  Could use pushcclosure instead of a global lightuserdata
+  // Not sure which is better
   lua_pushlightuserdata(L, this);
   lua_setglobal(L, GAME_LUDNAME);
   return true;
@@ -77,7 +122,7 @@ double Game::GetGalaxySize() const {
 
 int Game::GetSystemCount() const
 {
-  return 48;
+  return m_Galaxy.SystemCount();
 }
 
 void Game::NextTurn()
@@ -91,7 +136,7 @@ void Game::UpdateSystemInfo()
 }
 
 //! Update player's view of the planet
-void Game::Explore(Player& player, System& system)
+void Game::Explore(Player& player, StarSystem& system)
 {
 
 }

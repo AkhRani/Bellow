@@ -12,7 +12,7 @@ extern "C" {
   struct lua_State;
 }
 
-class System;
+class StarSystem;
 class Galaxy;
 
 /**
@@ -50,10 +50,11 @@ protected:
   void UpdateSystemInfo();
 
   //! Update player's view of the planet
-  void Explore(Player& player, System& system);
+  void Explore(Player& player, StarSystem& system);
 
   // Lua API
   static const char* GAME_LUDNAME;
+  static Game *GetGalaxy(lua_State *L);
 
   static int lua_GetGalaxySize(lua_State *L);
   static int lua_GetSystemCount(lua_State *L);

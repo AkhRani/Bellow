@@ -12,6 +12,8 @@ extern "C" {
   struct lua_State;
 }
 
+class SystemInfo;
+
 /** Collection of star systems
 *
 * The galaxy object owns the star systems.
@@ -38,6 +40,7 @@ public:
   StarSystemIter EndSystems() { return m_Systems.end(); }
   double Size() const { return m_Size; }
   int SystemCount() const { return m_Systems.size(); }               //!< Number of systems in the galaxy
+  bool GetSystemInfo(int id, SystemInfo& info);
 
 private:
   //! Default constructor
