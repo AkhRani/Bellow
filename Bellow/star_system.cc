@@ -7,10 +7,14 @@ extern "C" {
 #include "lua.h"
 }
 
-StarSystem::StarSystem(const IGame& game, lua_State *L) :
-    m_Name(LoadString(L, "name")),
-    m_X(LoadCheckDouble(L, "x")),
-    m_Y(LoadCheckDouble(L, "y")) {
+using namespace std;
+
+StarSystem::StarSystem(const IGame& game, lua_State *L, int id) :
+    m_Name(LoadString(L, "name"))
+    ,m_X(LoadCheckDouble(L, "x"))
+    ,m_Y(LoadCheckDouble(L, "y"))
+    ,m_ID(id) // Not sure whether to do this, or add id parameter to visitor class
+{
   lua_getfield(L, -1, "planet");
   if (lua_istable(L, -1)) {
     m_Planet.reset(new Planet(game, L));
@@ -19,4 +23,8 @@ StarSystem::StarSystem(const IGame& game, lua_State *L) :
     lua_pop(L, 1);
   }
   lua_pop(L, 1);
+}
+
+weak_ptr<Planet> StarSystem::GetPlanet() {
+  return m_Planet;
 }

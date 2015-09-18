@@ -1,4 +1,4 @@
-
+#include "assert.h"
 #include "game.h"
 // #include "star_system.h"
 #include "system_info.h"
@@ -10,7 +10,9 @@ extern "C" {
 #include "lualib.h"
 }
 
+using namespace std;
 const char* Game::GAME_LUDNAME = "Bellow_Game";
+
 
 Game::PlayerColl::PlayerColl(lua_State *L) {
   lua_getfield(L, -1, "players");
@@ -21,7 +23,7 @@ Game::PlayerColl::PlayerColl(lua_State *L) {
       int top = lua_gettop(L);
       lua_rawgeti(L, -1, idx);
       if (lua_istable(L, -1)) {
-        push_back(Player(L));
+        push_back(shared_ptr<Player>(new Player(L)));
       }
       else {
         lua_pop(L, 1);
@@ -34,15 +36,65 @@ Game::PlayerColl::PlayerColl(lua_State *L) {
   lua_pop(L, 1);
 }
 
-// Top of Lua stack should be a gane table
+
+// Top of Lua stack should be a game table
 Game::Game(lua_State *L) :
   m_Players(L),
   m_Galaxy(*this, L, "galaxy")
 {
+  UpdateSystemInfo();
 }
+
+
+class UpdateSystemInfoVisitor : public Galaxy::SystemVisitor {
+public:
+  UpdateSystemInfoVisitor(Game *pGame, shared_ptr<Player> player) : m_pGame(pGame), m_Player(player) {}
+  ~UpdateSystemInfoVisitor() {}
+
+  virtual int operator ()(StarSystem &system) {
+    bool owned(false);
+    if (auto planet = system.GetPlanet().lock()) {
+      if (auto owner = planet->GetOwner().lock()) {
+        if (owner == m_Player) {
+          // Owner gets full information
+          SystemInfo info{ system.m_X, system.m_Y, system.m_Name, 10, 10 };
+          owner->SetSystemInfo(system.m_ID, info);
+          owned = true;
+        }
+      }
+    }
+    if (!owned) {
+      SystemInfo info{ system.m_X, system.m_Y, "?", 0, 0 };
+      m_Player->SetSystemInfo(system.m_ID, info);
+    }
+    return 1;
+  }
+
+private:
+  Game *m_pGame;
+  shared_ptr<Player> m_Player;
+};
+
+
+//! Make sure player system info is up-to-date.
+//
+// For now, this is only called after the game is loaded,
+// to make things easier for the game creation code.
+//
+void Game::UpdateSystemInfo() {
+  // Owned planets
+  for (auto it = m_Players.begin(); it != m_Players.end(); ++it) {
+    UpdateSystemInfoVisitor v(this, *it);
+    m_Galaxy.VisitSystems(v);
+  }
+  // TODO: Long-range / planetary sensors
+  // TODO: Short-range / ship sensors
+}
+
 
 Game::~Game() {
 }
+
 
 //! Boilerplate for lua functions
 Game* Game::GetGalaxy(lua_State *L)
@@ -60,12 +112,14 @@ Game* Game::GetGalaxy(lua_State *L)
   return retval;
 }
 
+
 int Game::lua_GetGalaxySize(lua_State *L)
 {
   Game *pGame = GetGalaxy(L);
   if (pGame) lua_pushnumber(L, pGame->GetGalaxySize());
   return 1;
 }
+
 
 int Game::lua_GetSystemCount(lua_State *L)
 {
@@ -74,28 +128,30 @@ int Game::lua_GetSystemCount(lua_State *L)
   return 1;
 }
 
+
 int Game::lua_GetSystemInfo(lua_State *L)
 {
   Game *pGame = GetGalaxy(L);
   if (pGame && lua_isnumber(L, -1)) {
     int id = lua_tointeger(L, -1);
+    // TODO:  Active player
     SystemInfo info;
-    // TODO:  Per-player info
-    if (pGame->m_Galaxy.GetSystemInfo(id - 1, info)) {
-      lua_createtable(L, 0, 3);
+    // TODO:  try/catch for invalid ID
+    pGame->m_Players[0]->GetSystemInfo(id, info);
+    lua_createtable(L, 0, 3);
 
-      lua_pushnumber(L, info.x);
-      lua_setfield(L, -2, "x");
+    lua_pushnumber(L, info.x);
+    lua_setfield(L, -2, "x");
 
-      lua_pushnumber(L, info.y);
-      lua_setfield(L, -2, "y");
+    lua_pushnumber(L, info.y);
+    lua_setfield(L, -2, "y");
 
-      lua_pushstring(L, info.name.c_str());
-      lua_setfield(L, -2, "name");
-    }
+    lua_pushstring(L, info.name.c_str());
+    lua_setfield(L, -2, "name");
   }
   return 1;
 }
+
 
 bool Game::RegisterApi(lua_State *L)
 {
@@ -110,30 +166,35 @@ bool Game::RegisterApi(lua_State *L)
   return true;
 }
 
-std::weak_ptr<Player> Game::GetPlayer(const std::string &playerName) const
+
+weak_ptr<Player> Game::GetPlayer(const string &playerName) const
 {
-  static std::shared_ptr<Player> dummy(new Player("human"));
-  return dummy;
+  for (size_t i = 0; i < m_Players.size(); i++) {
+    if (m_Players[i]->GetName() == playerName) {
+      return weak_ptr<Player>(m_Players[i]);
+    }
+  }
+  assert("Unknown player name");
+  return weak_ptr<Player>();
 }
+
 
 double Game::GetGalaxySize() const {
   return m_Galaxy.Size();
 }
+
 
 int Game::GetSystemCount() const
 {
   return m_Galaxy.SystemCount();
 }
 
+
 void Game::NextTurn()
 {
 
 }
 
-void Game::UpdateSystemInfo()
-{
-
-}
 
 //! Update player's view of the planet
 void Game::Explore(Player& player, StarSystem& system)

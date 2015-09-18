@@ -17,13 +17,14 @@ extern "C" {
 
 class StarSystem {
 public:
-  StarSystem(const IGame& game, lua_State *L);
+  StarSystem(const IGame& game, lua_State *L, int id);
 
   std::weak_ptr<Planet> GetPlanet();
 
   // TODO: Color
   std::string m_Name;
   double m_X, m_Y;
+  int m_ID;
 
 private:
   StarSystem();

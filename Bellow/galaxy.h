@@ -12,7 +12,7 @@ extern "C" {
   struct lua_State;
 }
 
-class SystemInfo;
+struct SystemInfo;
 
 /** Collection of star systems
 *
@@ -25,8 +25,8 @@ public:
 
   class SystemVisitor {
   public:
-    SystemVisitor();
-    ~SystemVisitor();
+    SystemVisitor() {};
+    virtual ~SystemVisitor() {};
     virtual int operator ()(StarSystem &system) { return 1; }
   };
 
@@ -34,13 +34,13 @@ public:
 
   void AddStarSystem(const std::string &name, const Position &pos, Planet *pPlanet);
   void AddStarSystem(const std::string &name, Planet *pPlanet);
-  int VisitPlanets(SystemVisitor &visitor);
+  int VisitSystems(SystemVisitor &visitor);
 
   StarSystemIter BeginSystems() { return m_Systems.begin(); }
   StarSystemIter EndSystems() { return m_Systems.end(); }
   double Size() const { return m_Size; }
   int SystemCount() const { return m_Systems.size(); }               //!< Number of systems in the galaxy
-  bool GetSystemInfo(int id, SystemInfo& info);
+  bool GetSystemInfo(unsigned int id, SystemInfo& info);
 
 private:
   //! Default constructor

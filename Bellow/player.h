@@ -3,12 +3,13 @@
 
 #include <stdint.h>
 #include <string>
+#include <vector>
+
+#include "system_info.h"
 
 extern "C" {
   struct lua_State;
 }
-
-class SystemInfo;
 
 /** Per-player information.
 * This class will encapsulate or aggregate racials, tech advances,
@@ -40,14 +41,16 @@ public:
   uint32_t GetProductionPerFactory();
 
   //! Get the player's view of the given system
-  void GetSystemInfo(int systemId, SystemInfo& info) const;
+  void GetSystemInfo(unsigned int systemId, SystemInfo& info) const;
 
   //! Update the player's view of the given system
-  void SetSystemInfo(int systemId, const SystemInfo& info);
+  void SetSystemInfo(unsigned int systemId, const SystemInfo& info);
 
 private:
   Player();
   std::string m_Name;
+
+  std::vector<SystemInfo> m_SystemInfo;
 };
 
 #endif

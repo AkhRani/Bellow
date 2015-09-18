@@ -42,7 +42,7 @@ public:
   void NextTurn();
 
 protected:
-  class PlayerColl : public std::vector < Player > {
+  class PlayerColl : public std::vector < std::shared_ptr<Player > > {
   public:
     PlayerColl(lua_State *L);
   };

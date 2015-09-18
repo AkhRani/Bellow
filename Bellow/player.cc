@@ -46,3 +46,25 @@ uint32_t Player::GetFactoryCost() {
 uint32_t Player::GetProductionPerFactory() {
   return PRODUCTION_PER_FACTORY;
 }
+
+
+//! Get the player's view of the given system
+//
+// Note that system IDs are one-based
+void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
+  if (0 < id && id <= m_SystemInfo.size()) {
+    info = m_SystemInfo[id-1];
+  }
+}
+
+//! Update the player's view of the given system
+//
+// Note that system IDs are one-based
+void Player::SetSystemInfo(unsigned int id, const SystemInfo& info) {
+  if (id >= 1) {
+    if (id > m_SystemInfo.size()) {
+      m_SystemInfo.resize(id);
+    }
+    m_SystemInfo[id - 1] = info;
+  }
+}

@@ -27,7 +27,7 @@ Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) {
         int top = lua_gettop(L);
         lua_rawgeti(L, -1, idx);
         if (lua_istable(L, -1)) {
-          StarSystem sys(game, L);
+          StarSystem sys(game, L, idx);
           if (sys.m_X >= 0. && sys.m_X <= m_Size &&
             sys.m_Y >= 0. && sys.m_Y <= m_Size) {
             m_Systems.push_back(sys);
@@ -51,7 +51,7 @@ Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) {
   }
 }
 
-int Galaxy::VisitPlanets(SystemVisitor &visitor) {
+int Galaxy::VisitSystems(SystemVisitor &visitor) {
   int retval(0);
   for (auto it = m_Systems.begin(); it != m_Systems.end(); ++it) {
     retval += visitor(*it);
@@ -59,9 +59,9 @@ int Galaxy::VisitPlanets(SystemVisitor &visitor) {
   return retval;
 }
 
-bool Galaxy::GetSystemInfo(int id, SystemInfo& info) {
+bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info) {
   // TODO:  Player-based
-  if (0 <= id && id < m_Systems.size()) {
+  if (id < m_Systems.size()) {
     StarSystem &system(m_Systems[id]);
     info.x = system.m_X;
     info.y = system.m_Y;

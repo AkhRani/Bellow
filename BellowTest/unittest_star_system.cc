@@ -18,10 +18,10 @@ TEST(StarSystemTest, Load) {
 
   // Nominal, no planet
   RunLua(L, "return { name = \"Sol\", x = .5, y = .5}");
-  StarSystem noplanet(game, L);
+  StarSystem noplanet(game, L, 1);
 
   // Nominal, unowned planet
   RunLua(L, "none = { amount = 0, invested = 0 } return { name = \"Sol\", x = .5, y = .5, "
     "planet = { name = \"earth\", base_population = 100, population = none, factories = none } }");
-  StarSystem withplanet(game, L);
+  StarSystem withplanet(game, L, 1);
 }
