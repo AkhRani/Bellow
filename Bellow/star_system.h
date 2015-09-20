@@ -3,7 +3,7 @@
 
 /**
  * @brief Star system. 
- * aggregates position, star color, and planet (if any)
+ * aggregates position, star color, and planet (including "Empty")
  */
 #include <memory>
 #include <string>

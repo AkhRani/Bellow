@@ -7,6 +7,9 @@ extern "C" {
 #include "lualib.h"
 }
 
+using namespace std;
+using namespace std::placeholders;
+
 #define POP_GROWTH_RATE 100
 #define POP_COST 20
 #define PRODUCTION_PER_POP 50
@@ -17,9 +20,35 @@ extern "C" {
 
 Player::Player(const std::string &name) : m_Name(name) {}
 
+void LoadTableOfTables(lua_State *L, const char* pField, std::function<void(lua_State*)> callback) {
+  lua_getfield(L, -1, pField);
+  if (lua_istable(L, -1)) {
+    int idx = 1;
+    while (1) {
+      int top = lua_gettop(L);
+      lua_rawgeti(L, -1, idx);
+      if (lua_istable(L, -1)) {
+        callback(L);
+      }
+      else {
+        lua_pop(L, 1);
+        break;
+      }
+      idx++;
+    }
+  }
+  lua_pop(L, 1);
+}
+
+
+void Player::LoadFleet(lua_State *L) {
+  m_Fleets.push_back(Fleet(*this, L));
+}
+
 Player::Player(lua_State *L) :
   m_Name(LoadString(L, "name"))
 {
+  LoadTableOfTables(L, "fleets", std::bind(&Player::LoadFleet, this, _1));
   lua_pop(L, 1);
 }
 
@@ -61,6 +90,7 @@ void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
 //
 // Note that system IDs are one-based
 void Player::SetSystemInfo(unsigned int id, const SystemInfo& info) {
+  // TODO:  If new info has same or more fields, set up new fields and "staleness"
   if (id >= 1) {
     if (id > m_SystemInfo.size()) {
       m_SystemInfo.resize(id);

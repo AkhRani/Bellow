@@ -25,6 +25,7 @@ StarSystem::StarSystem(const IGame& game, lua_State *L, int id) :
   lua_pop(L, 1);
 }
 
+// Note:  Does this need to be a pointer?
 weak_ptr<Planet> StarSystem::GetPlanet() {
   return m_Planet;
 }

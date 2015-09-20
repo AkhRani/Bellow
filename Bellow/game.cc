@@ -40,10 +40,11 @@ Game::PlayerColl::PlayerColl(lua_State *L) {
 // Top of Lua stack should be a game table
 Game::Game(lua_State *L) :
   m_Turn(1)
-  ,m_Players(L)
-  ,m_Galaxy(*this, L, "galaxy")
+  , m_Players(L)
+  , m_Galaxy(*this, L, "galaxy")
 {
   UpdateSystemInfo();
+  // TODO:  UpdateVisibleFleets for each player
 }
 
 
@@ -174,7 +175,6 @@ bool Game::RegisterApi(lua_State *L)
   lua_setglobal(L, GAME_LUDNAME);
   return true;
 }
-
 
 weak_ptr<Player> Game::GetPlayer(const string &playerName) const
 {

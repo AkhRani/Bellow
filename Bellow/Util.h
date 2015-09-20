@@ -6,6 +6,7 @@ extern "C" {
 }
 
 #include <stdexcept>
+#include <functional>
 
 // TODO:  subclass runtime error to store failure context
 static inline void LoadCheck(bool cond) {

@@ -36,6 +36,9 @@
     <ClCompile Include="..\Bellow\star_system.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="unittest_player.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="testutils.h">

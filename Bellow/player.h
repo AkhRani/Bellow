@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "system_info.h"
+#include "fleet.h"
 
 extern "C" {
   struct lua_State;
@@ -25,6 +26,9 @@ public:
 
   //! Player name
   const std::string &GetName() const { return m_Name; } ;
+
+  //! Fleet information
+  unsigned int GetFleetCount() const { return m_Fleets.size(); };
 
   //! Ecological investment to "build" one population
   uint32_t GetPopCost();
@@ -46,10 +50,17 @@ public:
   //! Update the player's view of the given system
   void SetSystemInfo(unsigned int systemId, const SystemInfo& info);
 
+protected:
+  void LoadFleet(lua_State *L);
+
 private:
   Player();
   std::string m_Name;
 
+  //! Fleets owned by the player
+  std::vector<Fleet> m_Fleets;
+
+  //! Most recent surveys of all star systems
   std::vector<SystemInfo> m_SystemInfo;
 };
 

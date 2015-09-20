@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClInclude Include="galaxy.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="fleet.h" />
     <ClInclude Include="planet.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="population.h" />
@@ -93,6 +94,7 @@
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="fleet.cc" />
     <ClCompile Include="galaxy.cc" />
     <ClCompile Include="game.cc" />
     <ClCompile Include="planet.cc" />
