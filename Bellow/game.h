@@ -54,15 +54,17 @@ protected:
 
   // Lua API
   static const char* GAME_LUDNAME;
-  static Game *GetGalaxy(lua_State *L);
+  static Game *GetGame(lua_State *L);
 
   static int lua_GetGalaxySize(lua_State *L);
   static int lua_GetSystemCount(lua_State *L);
   static int lua_GetSystemInfo(lua_State *L);
+  static int lua_EndTurn(lua_State *L);
 
 private:
   Game();
 
+  unsigned int m_Turn;
   PlayerColl m_Players;
   Galaxy m_Galaxy;
 

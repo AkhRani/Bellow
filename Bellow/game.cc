@@ -39,8 +39,9 @@ Game::PlayerColl::PlayerColl(lua_State *L) {
 
 // Top of Lua stack should be a game table
 Game::Game(lua_State *L) :
-  m_Players(L),
-  m_Galaxy(*this, L, "galaxy")
+  m_Turn(1)
+  ,m_Players(L)
+  ,m_Galaxy(*this, L, "galaxy")
 {
   UpdateSystemInfo();
 }
@@ -97,7 +98,7 @@ Game::~Game() {
 
 
 //! Boilerplate for lua functions
-Game* Game::GetGalaxy(lua_State *L)
+Game* Game::GetGame(lua_State *L)
 {
   Game* retval = nullptr;
   lua_getglobal(L, GAME_LUDNAME);
@@ -115,7 +116,7 @@ Game* Game::GetGalaxy(lua_State *L)
 
 int Game::lua_GetGalaxySize(lua_State *L)
 {
-  Game *pGame = GetGalaxy(L);
+  Game *pGame = GetGame(L);
   if (pGame) lua_pushnumber(L, pGame->GetGalaxySize());
   return 1;
 }
@@ -123,7 +124,7 @@ int Game::lua_GetGalaxySize(lua_State *L)
 
 int Game::lua_GetSystemCount(lua_State *L)
 {
-  Game *pGame = GetGalaxy(L);
+  Game *pGame = GetGame(L);
   if (pGame) lua_pushnumber(L, pGame->GetSystemCount());
   return 1;
 }
@@ -131,7 +132,7 @@ int Game::lua_GetSystemCount(lua_State *L)
 
 int Game::lua_GetSystemInfo(lua_State *L)
 {
-  Game *pGame = GetGalaxy(L);
+  Game *pGame = GetGame(L);
   if (pGame && lua_isnumber(L, -1)) {
     int id = lua_tointeger(L, -1);
     // TODO:  Active player
@@ -152,12 +153,20 @@ int Game::lua_GetSystemInfo(lua_State *L)
   return 1;
 }
 
+int Game::lua_EndTurn(lua_State *L) {
+  Game *pGame = GetGame(L);
+  if (pGame) {
+    pGame->NextTurn();
+  }
+  return 0;
+}
 
 bool Game::RegisterApi(lua_State *L)
 {
   lua_register(L, "GetGalaxySize", lua_GetGalaxySize);
   lua_register(L, "GetSystemCount", lua_GetSystemCount);
   lua_register(L, "GetSystemInfo", lua_GetSystemInfo);
+  lua_register(L, "EndTurn", lua_EndTurn);
 
   // NOTE:  Could use pushcclosure instead of a global lightuserdata
   // Not sure which is better
@@ -192,7 +201,12 @@ int Game::GetSystemCount() const
 
 void Game::NextTurn()
 {
-
+  m_Turn++;
+  if (m_Turn <= m_Galaxy.SystemCount()) {
+    SystemInfo info;
+    m_Galaxy.GetSystemInfo(m_Turn, info);
+    m_Players[0]->SetSystemInfo(m_Turn, info);
+  }
 }
 
 
