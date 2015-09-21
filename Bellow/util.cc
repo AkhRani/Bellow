@@ -28,3 +28,23 @@ double LoadCheckDouble(lua_State *L, const char *name) {
   LoadCheck(success != 0);
   return retval;
 }
+
+void LoadTableOfTables(lua_State *L, const char* pField, std::function<void(lua_State*, int)> callback) {
+  lua_getfield(L, -1, pField);
+  if (lua_istable(L, -1)) {
+    int idx = 1;
+    while (1) {
+      int top = lua_gettop(L);
+      lua_rawgeti(L, -1, idx);
+      if (lua_istable(L, -1)) {
+        callback(L, idx);
+      }
+      else {
+        lua_pop(L, 1);
+        break;
+      }
+      idx++;
+    }
+  }
+  lua_pop(L, 1);
+}

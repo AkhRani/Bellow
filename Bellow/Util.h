@@ -16,5 +16,6 @@ static inline void LoadCheck(bool cond) {
 const char* LoadString(lua_State *L, const char *name);
 int LoadCheckInteger(lua_State *L, const char *name);
 double LoadCheckDouble(lua_State *L, const char *name);
+void LoadTableOfTables(lua_State *L, const char* pField, std::function<void(lua_State*, int)> callback);
 
 #endif

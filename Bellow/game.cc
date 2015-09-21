@@ -10,30 +10,21 @@ extern "C" {
 #include "lualib.h"
 }
 
-using namespace std;
+using std::string;
+using std::vector;
+using std::shared_ptr;
+using std::weak_ptr;
+using namespace std::placeholders;
+
 const char* Game::GAME_LUDNAME = "Bellow_Game";
 
+void Game::PlayerColl::LoadPlayer(lua_State *L, int idx) {
+  push_back(shared_ptr<Player>(new Player(L)));
+}
 
 Game::PlayerColl::PlayerColl(lua_State *L) {
-  lua_getfield(L, -1, "players");
-  // TODO:  Maybe refactor lua table iteration into util
-  if (lua_istable(L, -1)) {
-    int idx = 1;
-    while (1) {
-      int top = lua_gettop(L);
-      lua_rawgeti(L, -1, idx);
-      if (lua_istable(L, -1)) {
-        push_back(shared_ptr<Player>(new Player(L)));
-      }
-      else {
-        lua_pop(L, 1);
-        break;
-      }
-      idx++;
-    }
-  }
+  LoadTableOfTables(L, "players", bind(&Game::PlayerColl::LoadPlayer, this, _1, _2));
   // TODO:  Throw if no players found
-  lua_pop(L, 1);
 }
 
 

@@ -8,10 +8,24 @@ extern "C" {
 #include "lualib.h"
 }
 
-Galaxy::Galaxy() {
+using std::bind;
+using std::vector;
+using namespace std::placeholders;
+
+void Galaxy::LoadSystem(lua_State *L, int idx) {
+  StarSystem sys(m_Game, L, idx);
+  if (sys.m_X >= 0. && sys.m_X <= m_Size &&
+    sys.m_Y >= 0. && sys.m_Y <= m_Size) {
+    m_Systems.push_back(sys);
+  }
+  else {
+    // TODO:  Load warning / error
+  }
 }
 
-Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) {
+
+Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) :
+    m_Game(game) {
   if (field) {
     lua_getfield(L, -1, field);
   }
@@ -19,37 +33,15 @@ Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) {
   // Top of Lua stack should be a table of { size, systems }
   if (lua_istable(L, -1)) {
     m_Size = LoadCheckDouble(L, "size");
-
-    lua_getfield(L, -1, "systems");
-    if (lua_istable(L, -1)) {
-      int idx = 1;
-      while (1) {
-        int top = lua_gettop(L);
-        lua_rawgeti(L, -1, idx);
-        if (lua_istable(L, -1)) {
-          StarSystem sys(game, L, idx);
-          if (sys.m_X >= 0. && sys.m_X <= m_Size &&
-            sys.m_Y >= 0. && sys.m_Y <= m_Size) {
-            m_Systems.push_back(sys);
-          }
-          else {
-            // TODO:  Load warning / error
-          }
-          idx++;
-        }
-        else {
-          lua_pop(L, 1);
-          break;
-        }
-      }
-    }
-    lua_pop(L, 1);
+    LoadTableOfTables(L, "systems", bind(&Galaxy::LoadSystem, this, _1, _2));
   }
+  lua_pop(L, 1);
 
   if (field) {
     lua_pop(L, 1);
   }
 }
+
 
 int Galaxy::VisitSystems(SystemVisitor &visitor) {
   int retval(0);

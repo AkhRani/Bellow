@@ -42,9 +42,15 @@ public:
   unsigned int SystemCount() const { return m_Systems.size(); }               //!< Number of systems in the galaxy
   bool GetSystemInfo(unsigned int id, SystemInfo& info);
 
+protected:
+  void LoadSystem(lua_State *L, int idx);
+
 private:
   //! Default constructor
   Galaxy();
+
+  //! Currently only used during loading
+  IGame& m_Game;
 
   //! Dimension of (square) galaxy, in parsecs
   double m_Size;

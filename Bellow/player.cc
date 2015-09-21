@@ -20,35 +20,14 @@ using namespace std::placeholders;
 
 Player::Player(const std::string &name) : m_Name(name) {}
 
-void LoadTableOfTables(lua_State *L, const char* pField, std::function<void(lua_State*)> callback) {
-  lua_getfield(L, -1, pField);
-  if (lua_istable(L, -1)) {
-    int idx = 1;
-    while (1) {
-      int top = lua_gettop(L);
-      lua_rawgeti(L, -1, idx);
-      if (lua_istable(L, -1)) {
-        callback(L);
-      }
-      else {
-        lua_pop(L, 1);
-        break;
-      }
-      idx++;
-    }
-  }
-  lua_pop(L, 1);
-}
-
-
-void Player::LoadFleet(lua_State *L) {
+void Player::LoadFleet(lua_State *L, int idx) {
   m_Fleets.push_back(Fleet(*this, L));
 }
 
 Player::Player(lua_State *L) :
   m_Name(LoadString(L, "name"))
 {
-  LoadTableOfTables(L, "fleets", std::bind(&Player::LoadFleet, this, _1));
+  LoadTableOfTables(L, "fleets", bind(&Player::LoadFleet, this, _1, _2));
   lua_pop(L, 1);
 }
 

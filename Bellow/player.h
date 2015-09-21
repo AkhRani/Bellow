@@ -51,7 +51,7 @@ public:
   void SetSystemInfo(unsigned int systemId, const SystemInfo& info);
 
 protected:
-  void LoadFleet(lua_State *L);
+  void LoadFleet(lua_State *L, int idx);
 
 private:
   Player();

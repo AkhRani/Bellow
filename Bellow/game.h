@@ -45,6 +45,7 @@ protected:
   class PlayerColl : public std::vector < std::shared_ptr<Player > > {
   public:
     PlayerColl(lua_State *L);
+    void LoadPlayer(lua_State *L, int idx);
   };
 
   void UpdateSystemInfo();
