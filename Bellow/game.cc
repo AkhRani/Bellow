@@ -76,8 +76,8 @@ private:
 //
 void Game::UpdateSystemInfo() {
   // Owned planets
-  for (auto it = m_Players.begin(); it != m_Players.end(); ++it) {
-    UpdateSystemInfoVisitor v(this, *it);
+  for (auto player : m_Players) {
+    UpdateSystemInfoVisitor v(this, player);
     m_Galaxy.VisitSystems(v);
   }
   // TODO: Long-range / planetary sensors
@@ -169,12 +169,12 @@ bool Game::RegisterApi(lua_State *L)
 
 weak_ptr<Player> Game::GetPlayer(const string &playerName) const
 {
-  for (size_t i = 0; i < m_Players.size(); i++) {
-    if (m_Players[i]->GetName() == playerName) {
-      return weak_ptr<Player>(m_Players[i]);
+  for (auto player : m_Players) {
+    if (player->GetName() == playerName) {
+      return weak_ptr<Player>(player);
     }
   }
-  assert("Unknown player name");
+  assert(false);
   return weak_ptr<Player>();
 }
 

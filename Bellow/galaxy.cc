@@ -45,8 +45,8 @@ Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) :
 
 int Galaxy::VisitSystems(SystemVisitor &visitor) {
   int retval(0);
-  for (auto it = m_Systems.begin(); it != m_Systems.end(); ++it) {
-    retval += visitor(*it);
+  for (auto system : m_Systems) {
+    retval += visitor(system);
   }
   return retval;
 }
