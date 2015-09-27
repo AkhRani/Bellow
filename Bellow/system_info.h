@@ -26,7 +26,7 @@ struct SystemInfo {
   int factories, population;
 
   // TODO:  Missle Bases, shield, etc.
-
+  void Save(lua_State *L, std::string &rep);
   static SystemInfo Load(lua_State *L);
 };
 

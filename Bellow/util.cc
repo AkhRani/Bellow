@@ -20,6 +20,20 @@ int LoadCheckInteger(lua_State *L, const char *name) {
   return retval;
 }
 
+int LoadOptInteger(lua_State *L, const char *name, int default) {
+  int success(1), retval;
+  lua_getfield(L, -1, name);
+  if (lua_isnil(L, -1)) {
+    retval = default;
+  }
+  else {
+    retval = lua_tointegerx(L, -1, &success);
+  }
+  lua_pop(L, 1);
+  LoadCheck(success != 0);
+  return retval;
+}
+
 double LoadCheckDouble(lua_State *L, const char *name) {
   int success;
   lua_getfield(L, -1, name);
