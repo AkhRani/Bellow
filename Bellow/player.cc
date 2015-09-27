@@ -20,16 +20,22 @@ using namespace std::placeholders;
 
 Player::Player(const std::string &name) : m_Name(name) {}
 
-void Player::LoadFleet(lua_State *L, int idx) {
-  m_Fleets.push_back(Fleet(*this, L));
-}
-
 Player::Player(lua_State *L) :
   m_Name(LoadString(L, "name"))
 {
   LoadTableOfTables(L, "fleets", bind(&Player::LoadFleet, this, _1, _2));
+  LoadTableOfTables(L, "systems", bind(&Player::LoadSystemInfo, this, _1, _2));
   lua_pop(L, 1);
 }
+
+void Player::LoadFleet(lua_State *L, int idx) {
+  m_Fleets.push_back(Fleet(*this, L));
+}
+
+void Player::LoadSystemInfo(lua_State *L, int idx) {
+  m_SystemInfo.push_back(SystemInfo::Load(L));
+}
+
 
 uint32_t Player::GetPopCost() {
   return POP_COST;
@@ -73,7 +79,14 @@ void Player::SetSystemInfo(unsigned int id, const SystemInfo& info) {
   if (id >= 1) {
     if (id > m_SystemInfo.size()) {
       m_SystemInfo.resize(id);
+      m_SystemInfo[id - 1] = info;
     }
-    m_SystemInfo[id - 1] = info;
+    else {
+      auto existingInfo = m_SystemInfo[id - 1];
+      // Could move this logic into SystemInfo class
+      bool fresher = true;
+
+      m_SystemInfo[id - 1] = info;
+    }
   }
 }

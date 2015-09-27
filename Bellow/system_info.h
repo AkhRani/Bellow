@@ -1,6 +1,10 @@
 #ifndef SYSTEM_INFO_H
 #define SYSTEM_INFO_H
 
+extern "C" {
+  struct lua_State;
+}
+
 /**
 * @brief Star system information
 * 
@@ -22,6 +26,8 @@ struct SystemInfo {
   int factories, population;
 
   // TODO:  Missle Bases, shield, etc.
+
+  static SystemInfo Load(lua_State *L);
 };
 
 #endif

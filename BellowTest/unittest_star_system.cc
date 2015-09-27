@@ -53,7 +53,4 @@ TEST(StarSystemTest, LoadAndSave) {
   auto loadedPlanet(lwp.lock());
   EXPECT_NE(nullptr, loadedPlanet);
   EXPECT_EQ(100, loadedPlanet->GetMaxPopulation());
-
-
-
 }

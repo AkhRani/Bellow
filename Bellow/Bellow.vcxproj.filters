@@ -89,6 +89,9 @@
     <ClCompile Include="fleet.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="system_info.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

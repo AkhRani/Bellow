@@ -22,6 +22,7 @@ void Game::PlayerColl::LoadPlayer(lua_State *L, int idx) {
   push_back(shared_ptr<Player>(new Player(L)));
 }
 
+
 Game::PlayerColl::PlayerColl(lua_State *L) {
   LoadTableOfTables(L, "players", bind(&Game::PlayerColl::LoadPlayer, this, _1, _2));
   // TODO:  Throw if no players found
@@ -145,16 +146,17 @@ int Game::lua_GetSystemInfo(lua_State *L)
   return 1;
 }
 
+
 int Game::lua_EndTurn(lua_State *L) {
   Game *pGame = GetGame(L);
   if (pGame) {
-    pGame->NextTurn();
+    pGame->EndPlayerTurn();
   }
   return 0;
 }
 
-bool Game::RegisterApi(lua_State *L)
-{
+
+bool Game::RegisterApi(lua_State *L) {
   lua_register(L, "GetGalaxySize", lua_GetGalaxySize);
   lua_register(L, "GetSystemCount", lua_GetSystemCount);
   lua_register(L, "GetSystemInfo", lua_GetSystemInfo);
@@ -167,8 +169,7 @@ bool Game::RegisterApi(lua_State *L)
   return true;
 }
 
-weak_ptr<Player> Game::GetPlayer(const string &playerName) const
-{
+weak_ptr<Player> Game::GetPlayer(const string &playerName) const {
   for (auto player : m_Players) {
     if (player->GetName() == playerName) {
       return weak_ptr<Player>(player);
@@ -184,14 +185,21 @@ double Game::GetGalaxySize() const {
 }
 
 
-int Game::GetSystemCount() const
-{
+int Game::GetSystemCount() const {
   return m_Galaxy.SystemCount();
 }
 
+// End the turn for the current player
+void Game::EndPlayerTurn() {
+  m_CurrentPlayer++;
+  if (m_CurrentPlayer >= m_Players.size()) {
+    NextTurn();
+    m_CurrentPlayer = 0;
+  }
+}
 
-void Game::NextTurn()
-{
+// All players have completed the current turn.  Update.
+void Game::NextTurn() {
   m_Turn++;
   if (m_Turn <= m_Galaxy.SystemCount()) {
     SystemInfo info;
@@ -202,7 +210,6 @@ void Game::NextTurn()
 
 
 //! Update player's view of the planet
-void Game::Explore(Player& player, StarSystem& system)
-{
+void Game::Explore(Player& player, StarSystem& system) {
 
 }

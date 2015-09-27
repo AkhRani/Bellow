@@ -52,6 +52,7 @@ public:
 
 protected:
   void LoadFleet(lua_State *L, int idx);
+  void LoadSystemInfo(lua_State *L, int idx);
 
 private:
   Player();

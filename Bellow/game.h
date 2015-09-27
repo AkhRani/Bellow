@@ -39,7 +39,7 @@ public:
 
   double GetGalaxySize() const;
   int GetSystemCount() const;
-  void NextTurn();
+  void EndPlayerTurn();
 
 protected:
   class PlayerColl : public std::vector < std::shared_ptr<Player > > {
@@ -48,6 +48,7 @@ protected:
     void LoadPlayer(lua_State *L, int idx);
   };
 
+  void NextTurn();
   void UpdateSystemInfo();
 
   //! Update player's view of the planet
@@ -66,6 +67,7 @@ private:
   Game();
 
   unsigned int m_Turn;
+  unsigned int m_CurrentPlayer;
   PlayerColl m_Players;
   Galaxy m_Galaxy;
 
