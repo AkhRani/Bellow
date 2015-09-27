@@ -7,7 +7,8 @@ extern "C" {
 #include "lua.h"
 }
 
-using namespace std;
+using std::string;
+using std::weak_ptr;
 
 StarSystem::StarSystem(const IGame& game, lua_State *L, int id) :
     m_Name(LoadString(L, "name"))
@@ -25,6 +26,18 @@ StarSystem::StarSystem(const IGame& game, lua_State *L, int id) :
   lua_pop(L, 1);
 }
 
+void StarSystem::Save(string& serialized) {
+  serialized.append("\n{ name = \"");
+  serialized.append(m_Name);
+  serialized.append("\", x = " + std::to_string(m_X));
+  serialized.append(", y = " + std::to_string(m_Y));
+  if (m_Planet) {
+    serialized.append(", planet =");
+    m_Planet->Save(serialized);
+  }
+  serialized.append(" }");
+}
+  
 // Note:  Does this need to be a pointer?
 weak_ptr<Planet> StarSystem::GetPlanet() {
   return m_Planet;

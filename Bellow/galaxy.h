@@ -31,6 +31,7 @@ public:
   };
 
   Galaxy(IGame& game, lua_State *L, const char *field = nullptr); //!< deserializer constructor
+  void Save(std::string& rep);  // TODO: consistent name for serialized output
 
   void AddStarSystem(const std::string &name, const Position &pos, Planet *pPlanet);
   void AddStarSystem(const std::string &name, Planet *pPlanet);

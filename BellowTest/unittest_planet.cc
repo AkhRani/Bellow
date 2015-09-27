@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "game.h"
 #include "planet.h"
 #include "player.h"
@@ -28,8 +30,9 @@ TEST(PlanetTest, Load) {
   luaL_dostring(L, "empty = { amount = 0, invested = 0 }");
   RunLua(L, "return { name = \"earth\", base_population = 100, population = empty, factories = empty }");
 
-  Planet *p = Planet::Load(game, L);
+  unique_ptr<Planet> p (Planet::Load(game, L));
   EXPECT_NE(nullptr, p);
+  EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(100, p->GetMaxPopulation());
   EXPECT_EQ(0, p->GetPopulation());
   EXPECT_EQ(0, p->GetFactories());
@@ -39,8 +42,9 @@ TEST(PlanetTest, Load) {
   luaL_dostring(L, "fact = { amount = 20, invested = 0 }");
   RunLua(L, "return { name = \"earth\", owner = \"human\", base_population = 100, population = pop, factories = fact }");
 
-  Planet *pnew = new Planet(game, L);
+  unique_ptr<Planet> pnew(new Planet(game, L));
   EXPECT_NE(nullptr, pnew);
+  EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(100, pnew->GetMaxPopulation());
   EXPECT_EQ(10, pnew->GetPopulation());
   EXPECT_EQ(200, pnew->GetMaxFactories());

@@ -9,6 +9,7 @@ extern "C" {
 }
 
 using std::bind;
+using std::string;
 using std::vector;
 using namespace std::placeholders;
 
@@ -43,6 +44,18 @@ Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) :
 }
 
 
+void Galaxy::Save(string& rep) {
+  rep.append("\n{ size = ");
+  rep.append(std::to_string(m_Size));
+  rep.append(", systems = {");
+  for (auto v : m_Systems) {
+    v.Save(rep);
+    rep.append(", ");
+  }
+  rep.append("\n} }");
+}
+
+
 int Galaxy::VisitSystems(SystemVisitor &visitor) {
   int retval(0);
   for (auto system : m_Systems) {
@@ -50,6 +63,7 @@ int Galaxy::VisitSystems(SystemVisitor &visitor) {
   }
   return retval;
 }
+
 
 bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info) {
   // TODO:  Player-based

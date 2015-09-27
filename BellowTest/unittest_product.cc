@@ -34,6 +34,7 @@ TEST(ProductTest, Load) {
   // Nominal
   RunLua(L, "return { amount = 10, invested = 4 }");
   prod.Load(L);
+  EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(10, prod.GetAmount());
   EXPECT_LE(prod.GetMax(), prod.GetAmount());
   EXPECT_EQ(4, prod.GetInvested());
@@ -41,6 +42,7 @@ TEST(ProductTest, Load) {
   // Off-nominal
   RunLua(L, "return { amount = 10.3, invested = 04.24 }");
   prod.Load(L);
+  EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(10, prod.GetAmount());
   EXPECT_LE(prod.GetMax(), prod.GetAmount());
   EXPECT_EQ(4, prod.GetInvested());
