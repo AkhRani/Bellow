@@ -7,7 +7,9 @@ extern "C" {
 #include "lualib.h"
 }
 
-using namespace std;
+
+using std::string;
+using std::bind;
 using namespace std::placeholders;
 
 #define POP_GROWTH_RATE 100
@@ -18,7 +20,7 @@ using namespace std::placeholders;
 #define PRODUCTION_PER_FACTORY 100
 #define FACTORY_COST 10
 
-Player::Player(const std::string &name) : m_Name(name) {}
+Player::Player(const string &name) : m_Name(name) {}
 
 Player::Player(lua_State *L) :
   m_Name(LoadString(L, "name"))
@@ -36,6 +38,19 @@ void Player::LoadSystemInfo(lua_State *L, int idx) {
   m_SystemInfo.push_back(SystemInfo::Load(L));
 }
 
+void Player::Save(string &rep) {
+  rep.append("\n  { name=\"");
+  rep.append(m_Name);
+  rep.append("\",\n   fleets={");
+  for (auto v : m_Fleets) {
+    v.Save(rep);
+  }
+  rep.append("},\n   systems={");
+  for (auto v : m_SystemInfo) {
+    v.Save(rep);
+  }
+  rep.append("}\n  }");
+}
 
 uint32_t Player::GetPopCost() {
   return POP_COST;

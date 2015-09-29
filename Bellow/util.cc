@@ -43,6 +43,21 @@ double LoadCheckDouble(lua_State *L, const char *name) {
   return retval;
 }
 
+double LoadOptDouble(lua_State *L, const char *name, double default) {
+  int success(1);
+  double retval;
+  lua_getfield(L, -1, name);
+  if (lua_isnil(L, -1)) {
+    retval = default;
+  }
+  else {
+    retval = lua_tonumberx(L, -1, &success);
+  }
+  lua_pop(L, 1);
+  LoadCheck(success != 0);
+  return retval;
+}
+
 void LoadTableOfTables(lua_State *L, const char* pField, std::function<void(lua_State*, int)> callback) {
   lua_getfield(L, -1, pField);
   if (lua_istable(L, -1)) {

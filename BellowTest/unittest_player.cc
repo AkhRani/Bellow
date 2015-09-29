@@ -39,4 +39,21 @@ TEST(PlayerTest, LoadSave) {
   EXPECT_EQ(.5, info.x);
   EXPECT_EQ(.6, info.y);
   EXPECT_EQ("Sol", info.name);
+
+  string serial = "return ";
+  p2.Save(serial);
+  RunLua(L, serial.c_str());
+  {
+    Player p3(L);
+
+    EXPECT_EQ(0, lua_gettop(L));
+    EXPECT_EQ(p3.GetName(), "Kirk");
+    EXPECT_EQ(p3.GetFleetCount(), 1);
+
+    SystemInfo info;
+    p3.GetSystemInfo(1, info);
+    EXPECT_EQ(.5, info.x);
+    EXPECT_EQ(.6, info.y);
+    EXPECT_EQ("Sol", info.name);
+  }
 }

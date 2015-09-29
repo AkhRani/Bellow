@@ -11,6 +11,7 @@ extern "C" {
 }
 
 using std::string;
+using std::to_string;
 using std::shared_ptr;
 using std::weak_ptr;
 
@@ -63,7 +64,7 @@ Planet *Planet::Load(const IGame &game, lua_State *L) {
 void Planet::Save(string &serialized) {
   serialized.append("\n{ name = \"");
   serialized.append("dummy\"");
-  serialized.append(", base_population = " + std::to_string(m_basePop));
+  serialized.append(", base_population = " + to_string(m_basePop));
   serialized.append(", population =");
   m_population.Save(serialized);
   serialized.append(", factories =");

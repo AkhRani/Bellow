@@ -22,7 +22,7 @@ SystemInfo SystemInfo::Load(lua_State *L) {
   return retval;
 }
 
-void SystemInfo::Save(lua_State *L, string &rep) {
+void SystemInfo::Save(string &rep) {
   rep.append("{ name=\"");
   rep.append(name);
   rep.append("\", x=");

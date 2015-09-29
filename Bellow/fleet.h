@@ -1,6 +1,8 @@
 #ifndef FLEET_H
 #define FLEET_H
 
+#include <string>
+
 extern "C" {
   struct lua_State;
 }
@@ -16,6 +18,7 @@ class Fleet {
 public:
   Fleet(const Player& owner, lua_State *L);
   Fleet(const Player& owner, double x, double y);
+  void Save(std::string &rep);
   void SetDestination(StarSystem& system);
   bool InOrbit() { return m_X == m_DestX && m_Y == m_DestY;  }
 

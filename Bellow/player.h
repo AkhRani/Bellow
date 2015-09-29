@@ -24,6 +24,9 @@ public:
   //! Deserializer constructor
   Player(lua_State *L);
 
+  //! Serializer
+  void Save(std::string &rep);
+
   //! Player name
   const std::string &GetName() const { return m_Name; } ;
 
