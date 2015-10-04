@@ -37,8 +37,10 @@ public:
   bool RegisterApi(lua_State *L);
   virtual std::weak_ptr<Player> GetPlayer(const std::string &playerName) const override;
 
+  int GetPlayerCount() const { return m_Players.size(); }
   double GetGalaxySize() const;
   int GetSystemCount() const;
+  bool SetFleetDestination(unsigned int fleet, unsigned int system);
   void EndPlayerTurn();
 
 protected:
@@ -58,9 +60,11 @@ protected:
   static const char* GAME_LUDNAME;
   static Game *GetGame(lua_State *L);
 
+  static int lua_GetPlayerCount(lua_State *L);
   static int lua_GetGalaxySize(lua_State *L);
   static int lua_GetSystemCount(lua_State *L);
   static int lua_GetSystemInfo(lua_State *L);
+  static int lua_SetFleetDestination(lua_State *L);
   static int lua_EndTurn(lua_State *L);
 
 private:

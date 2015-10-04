@@ -103,6 +103,7 @@
     <ClCompile Include="..\Bellow\star_system.cc" />
     <ClCompile Include="coverage.cc" />
     <ClCompile Include="testutils.cc" />
+    <ClCompile Include="unittest_fleet.cc" />
     <ClCompile Include="unittest_galaxy.cc" />
     <ClCompile Include="unittest_planet.cc" />
     <ClCompile Include="unittest_player.cc" />

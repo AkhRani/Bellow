@@ -20,6 +20,7 @@ public:
   StarSystem(const IGame& game, lua_State *L, int id);
   void Save(std::string& rep);
 
+  void NextTurn();
   std::weak_ptr<Planet> GetPlanet();
 
   // TODO: Color

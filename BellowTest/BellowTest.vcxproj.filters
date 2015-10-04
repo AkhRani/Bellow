@@ -39,6 +39,9 @@
     <ClCompile Include="unittest_player.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="unittest_fleet.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="testutils.h">

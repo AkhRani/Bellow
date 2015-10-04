@@ -32,6 +32,10 @@ public:
 
   //! Fleet information
   unsigned int GetFleetCount() const { return m_Fleets.size(); };
+  //! Launch Fleet, if possible
+  bool SetFleetDestination(unsigned int fleet, unsigned int system);
+  //! Update all fleet positions
+  void MoveFleets();
 
   //! Ecological investment to "build" one population
   uint32_t GetPopCost();

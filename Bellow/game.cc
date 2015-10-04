@@ -90,6 +90,13 @@ Game::~Game() {
 }
 
 
+//! Launch the given fleet to the given destination (zero-based)
+bool Game::SetFleetDestination(unsigned int fleet, unsigned int system) {
+  auto player = m_Players[m_CurrentPlayer];
+  return player->SetFleetDestination(fleet, system);
+}
+
+
 //! Boilerplate for lua functions
 Game* Game::GetGame(lua_State *L)
 {
@@ -104,6 +111,14 @@ Game* Game::GetGame(lua_State *L)
     lua_pushnil(L);
   }
   return retval;
+}
+
+
+int Game::lua_GetPlayerCount(lua_State *L)
+{
+  Game *pGame = GetGame(L);
+  if (pGame) lua_pushnumber(L, pGame->GetPlayerCount());
+  return 1;
 }
 
 
@@ -157,6 +172,7 @@ int Game::lua_EndTurn(lua_State *L) {
 
 
 bool Game::RegisterApi(lua_State *L) {
+  lua_register(L, "GetPlayerCount", lua_GetPlayerCount);
   lua_register(L, "GetGalaxySize", lua_GetGalaxySize);
   lua_register(L, "GetSystemCount", lua_GetSystemCount);
   lua_register(L, "GetSystemInfo", lua_GetSystemInfo);
@@ -186,7 +202,7 @@ double Game::GetGalaxySize() const {
 
 
 int Game::GetSystemCount() const {
-  return m_Galaxy.SystemCount();
+  return m_Galaxy.GetSystemCount();
 }
 
 // End the turn for the current player
@@ -198,14 +214,30 @@ void Game::EndPlayerTurn() {
   }
 }
 
+
+class NextTurnSystemVisitor : public Galaxy::SystemVisitor {
+public:
+  virtual int operator ()(StarSystem &system) override {
+    system.NextTurn();
+    return 1;
+  }
+};
+
+
 // All players have completed the current turn.  Update.
 void Game::NextTurn() {
-  m_Turn++;
-  if (m_Turn <= m_Galaxy.SystemCount()) {
-    SystemInfo info;
-    m_Galaxy.GetSystemInfo(m_Turn, info);
-    m_Players[0]->SetSystemInfo(m_Turn, info);
+  // Launch transports
+
+  // Construction
+  NextTurnSystemVisitor visitor;
+  m_Galaxy.VisitSystems(visitor);
+
+  // Move Fleets / transports
+  for (auto player : m_Players) {
+    player->MoveFleets();
   }
+
+  // TODO: Resolve Battles
 }
 
 

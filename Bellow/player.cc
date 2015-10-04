@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "player.h"
 #include "util.h"
 
@@ -50,6 +52,31 @@ void Player::Save(string &rep) {
     v.Save(rep);
   }
   rep.append("}\n  }");
+}
+
+
+bool Player::SetFleetDestination(unsigned int fleet, unsigned int system) {
+  bool retval(false);
+  // Precondition, failure indicates bug.
+  assert(system < m_SystemInfo.size() && fleet < GetFleetCount());
+  if (system < m_SystemInfo.size() && fleet < GetFleetCount()) {
+    // TODO:  Check Range
+    auto& f = m_Fleets[fleet];
+    SystemInfo& info(m_SystemInfo[system]);
+    f.SetDestination(info.x, info.y);
+    retval = true;
+  }
+  else {
+    // TODO: Possible AI script error, log?
+  }
+  return retval;
+}
+
+
+void Player::MoveFleets() {
+  for (auto fleet : m_Fleets) {
+    fleet.Move();
+  }
 }
 
 uint32_t Player::GetPopCost() {

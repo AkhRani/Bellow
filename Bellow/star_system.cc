@@ -42,3 +42,9 @@ void StarSystem::Save(string& serialized) {
 weak_ptr<Planet> StarSystem::GetPlanet() {
   return m_Planet;
 }
+
+void StarSystem::NextTurn() {
+  if (m_Planet) {
+    m_Planet->Update();
+  }
+}

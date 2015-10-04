@@ -8,7 +8,6 @@ extern "C" {
 }
 
 class Player;
-class StarSystem;
 
 //! Collection of ships with a common destination
 //
@@ -19,14 +18,19 @@ public:
   Fleet(const Player& owner, lua_State *L);
   Fleet(const Player& owner, double x, double y);
   void Save(std::string &rep);
-  void SetDestination(StarSystem& system);
-  bool InOrbit() { return m_X == m_DestX && m_Y == m_DestY;  }
+
+  // TODO:  "Position" class?
+  void GetPosition(double &x, double &y);
+  void SetDestination(double x, double y);
+  void Move();
+  bool InOrbit() { return m_Orbiting; }
 
 private:
+  const Player& m_Owner;
   double m_X, m_Y;
   double m_DestX, m_DestY;
   double m_Speed;
-  const Player& m_Owner;
+  bool m_Orbiting;
 };
 
 #endif
