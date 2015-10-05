@@ -47,7 +47,11 @@ TEST(FleetTest, Move) {
 
   MoveScenario scenarios[] = {
     { 0., 0., 2., 0., 2 },
+    { 0., 0., -2., 0., 2 },
+    { 0., 0., 0., 2., 2 },
+    { 0., 0., 0., -2., 2 },
     { 0., 0., 2., 2., 3 },
+    { 0., 0., 3., 4., 5 },
   };
 
   lua_State *L = luaL_newstate();
@@ -79,7 +83,7 @@ TEST(FleetTest, Move) {
         EXPECT_LT(x, destX);
       }
       else {
-        EXPECT_EQ(destX, x);
+        EXPECT_NEAR(destX, x, .000001);
       }
 
       if (destY < initY) {
@@ -91,7 +95,7 @@ TEST(FleetTest, Move) {
         EXPECT_LT(y, destY);
       }
       else {
-        EXPECT_EQ(destY, y);
+        EXPECT_NEAR(destY, y, .000001);
       }
 
       EXPECT_EQ(false, fleet.InOrbit());
