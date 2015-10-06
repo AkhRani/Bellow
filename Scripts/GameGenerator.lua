@@ -173,6 +173,7 @@ function NewGame(planetCount, size, minDistance)
         x = x, y = y,
         planet = Homeworld(player)
       })
+      player.fleets = { {x=x, y=y} }
     else
       print ("Ran out of space.")
       return nil

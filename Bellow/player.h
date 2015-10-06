@@ -30,8 +30,11 @@ public:
   //! Player name
   const std::string &GetName() const { return m_Name; } ;
 
-  //! Fleet information
+  //! Number of fleets owned by the player
   unsigned int GetFleetCount() const { return m_Fleets.size(); };
+  //! Fleet information
+  Fleet& GetFleet(int fleet) { return m_Fleets.at(fleet); }
+
   //! Launch Fleet, if possible
   bool SetFleetDestination(unsigned int fleet, unsigned int system);
   //! Update all fleet positions

@@ -40,6 +40,10 @@ public:
   int GetPlayerCount() const { return m_Players.size(); }
   double GetGalaxySize() const;
   int GetSystemCount() const;
+
+  // Current Player
+  int GetFleetCount();
+  Fleet& GetFleet(int fleet);
   bool SetFleetDestination(unsigned int fleet, unsigned int system);
   void EndPlayerTurn();
 
@@ -50,6 +54,7 @@ protected:
     void LoadPlayer(lua_State *L, int idx);
   };
 
+  Player& CurrentPlayer() { return *m_Players[m_CurrentPlayer]; }
   void NextTurn();
   void UpdateSystemInfo();
 
@@ -64,6 +69,8 @@ protected:
   static int lua_GetGalaxySize(lua_State *L);
   static int lua_GetSystemCount(lua_State *L);
   static int lua_GetSystemInfo(lua_State *L);
+  static int lua_GetFleetCount(lua_State *L);
+  static int lua_GetFleetInfo(lua_State *L);
   static int lua_SetFleetDestination(lua_State *L);
   static int lua_EndTurn(lua_State *L);
 

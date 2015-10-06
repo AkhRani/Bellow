@@ -74,7 +74,7 @@ bool Player::SetFleetDestination(unsigned int fleet, unsigned int system) {
 
 
 void Player::MoveFleets() {
-  for (auto fleet : m_Fleets) {
+  for (auto& fleet : m_Fleets) {
     fleet.Move();
   }
 }
