@@ -17,8 +17,9 @@ extern "C" {
 
 class StarSystem {
 public:
-  StarSystem(const IGame& game, lua_State *L, int id);
+  StarSystem(IGame& game, lua_State *L, int id);
   void Save(std::string& rep);
+  void FinishLoad();
 
   void NextTurn();
   std::weak_ptr<Planet> GetPlanet();

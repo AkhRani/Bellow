@@ -15,5 +15,5 @@ void RunLua(lua_State *L, const char *script) {
 }
 
 MockGame::MockGame() : m_Player(new Player("human")) {};
-std::weak_ptr<Player> MockGame::GetPlayer(const std::string &name) const { return m_Player; }
+std::weak_ptr<Player> MockGame::GetPlayer(int playerId) const { return m_Player; }
 

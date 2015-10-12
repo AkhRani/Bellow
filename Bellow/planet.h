@@ -23,31 +23,31 @@ extern "C" {
 class Planet {
   public:
     //! Basic constructor.  TODO: planetary class (minimal, hostile, etc)
-    Planet(uint32_t maxPop);
+    Planet(IGame& game, uint32_t maxPop);
 
     //! Deserializing constructor
-    Planet(const IGame &game, lua_State *L);
+    Planet(IGame& game, lua_State *L);
 
     //! Serializer
     void Save(std::string &rep);
 
-    //! Deserializer, Factory style.  Returns planet or throws.
-    static Planet *Load(const IGame &game, lua_State *L);
+    //! Resolve serialized reference to owner, etc.
+    void FinishLoad() { SetProductProperties(); }
 
     //! Set or change the owner of a planet
-    void Colonize(std::weak_ptr<Player> owner, uint32_t pop);
+    void Colonize(int playerId, uint32_t pop);
 
-    //! Owner accessor
-    std::weak_ptr<Player> GetOwner() { return m_owner; };
+    //! Owner accessor, may return null
+    std::weak_ptr<Player> GetOwner();
 
     //! Current population.  Always <= GetMaxPopulation.
-    uint32_t GetPopulation() { return m_population.GetAmount(); };
+    uint32_t GetPopulation() { return m_Population.GetAmount(); };
 
     //! Current max population, modified by planetary improvements
-    uint32_t GetMaxPopulation() { return m_population.GetMax(); };
+    uint32_t GetMaxPopulation() { return m_Population.GetMax(); };
 
-    uint32_t GetFactories() { return m_factories.GetAmount(); };
-    uint32_t GetMaxFactories() { return m_factories.GetMax(); };
+    uint32_t GetFactories() { return m_Factories.GetAmount(); };
+    uint32_t GetMaxFactories() { return m_Factories.GetMax(); };
 
     //! Called once between turns
     void Update();
@@ -57,10 +57,11 @@ class Planet {
     void SetProductProperties();
 
   private:
-    uint32_t m_basePop;   //!< Planet population cap without facilities
-    std::weak_ptr<Player> m_owner;     //!< Current owner, may be null
-    Population m_population; //!< Population
-    Product m_factories;  //!< Factories
+    IGame& m_Game;
+    uint32_t m_BasePop;   //!< Planet population cap without facilities
+    int m_OwnerId;        //!< Current owner, 0->unowned
+    Population m_Population; //!< Population
+    Product m_Factories;  //!< Factories
 };
 
 #endif

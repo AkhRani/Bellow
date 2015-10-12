@@ -10,7 +10,7 @@ extern "C" {
 using std::string;
 using std::weak_ptr;
 
-StarSystem::StarSystem(const IGame& game, lua_State *L, int id) :
+StarSystem::StarSystem(IGame& game, lua_State *L, int id) :
     m_Name(LoadString(L, "name"))
     ,m_X(LoadCheckDouble(L, "x"))
     ,m_Y(LoadCheckDouble(L, "y"))
@@ -37,11 +37,20 @@ void StarSystem::Save(string& serialized) {
   }
   serialized.append(" }");
 }
-  
+
+
+void StarSystem::FinishLoad() {
+  if (m_Planet) {
+    m_Planet->FinishLoad();
+  }
+}
+
+
 // Note:  Does this need to be a pointer?
 weak_ptr<Planet> StarSystem::GetPlanet() {
   return m_Planet;
 }
+
 
 void StarSystem::NextTurn() {
   if (m_Planet) {

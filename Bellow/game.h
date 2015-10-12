@@ -23,7 +23,9 @@ class IGame {
 public:
   virtual ~IGame() {};
 
-  virtual std::weak_ptr<Player> GetPlayer(const std::string &playerName) const = 0;
+  // TODO:  shared_ptr/weak_ptr may be overkill.  Change to simple pointer if
+  // destruction order can guarantee players outlive clients.
+  virtual std::weak_ptr<Player> GetPlayer(int playerId) const = 0;
 };
 
 /**
@@ -33,9 +35,11 @@ class Game : public IGame {
 public:
   Game(lua_State *L);
   virtual ~Game();
+  //! Resolve serialized references
+  void FinishLoad();
 
   bool RegisterApi(lua_State *L);
-  virtual std::weak_ptr<Player> GetPlayer(const std::string &playerName) const override;
+  virtual std::weak_ptr<Player> GetPlayer(int playerId) const override;
 
   int GetPlayerCount() const { return m_Players.size(); }
   double GetGalaxySize() const;

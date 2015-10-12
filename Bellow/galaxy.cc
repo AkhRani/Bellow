@@ -56,9 +56,15 @@ void Galaxy::Save(string& rep) {
 }
 
 
+void Galaxy::FinishLoad() {
+  for (auto& system : m_Systems) {
+    system.FinishLoad();
+  }
+}
+
 int Galaxy::VisitSystems(SystemVisitor &visitor) {
   int retval(0);
-  for (auto system : m_Systems) {
+  for (auto& system : m_Systems) {
     retval += visitor(system);
   }
   return retval;

@@ -16,7 +16,8 @@ using namespace std;
 
 // This test is named "Creation", and belongs to the "PlanetTest" test case.
 TEST(PlanetTest, Creation) {
-  Planet p(100);
+  MockGame game;
+  Planet p(game, 100);
   EXPECT_EQ(0, p.GetPopulation());
   EXPECT_EQ(0, p.GetFactories());
   EXPECT_EQ(100, p.GetMaxPopulation());
@@ -30,20 +31,20 @@ TEST(PlanetTest, Load) {
   luaL_dostring(L, "empty = { amount = 0, invested = 0 }");
   RunLua(L, "return { name = \"earth\", base_population = 100, population = empty, factories = empty }");
 
-  unique_ptr<Planet> p (Planet::Load(game, L));
-  EXPECT_NE(nullptr, p);
+  Planet p(game, L);
   EXPECT_EQ(0, lua_gettop(L));
-  EXPECT_EQ(100, p->GetMaxPopulation());
-  EXPECT_EQ(0, p->GetPopulation());
-  EXPECT_EQ(0, p->GetFactories());
+  EXPECT_EQ(100, p.GetMaxPopulation());
+  EXPECT_EQ(0, p.GetPopulation());
+  EXPECT_EQ(0, p.GetFactories());
 
   // Nominal, owned
   luaL_dostring(L, "pop = { amount = 10, invested = 0 }");
   luaL_dostring(L, "fact = { amount = 20, invested = 0 }");
-  RunLua(L, "return { name = \"earth\", owner = \"human\", base_population = 100, population = pop, factories = fact }");
+  RunLua(L, "return { name = \"earth\", owner = 1, base_population = 100, population = pop, factories = fact }");
 
   unique_ptr<Planet> pnew(new Planet(game, L));
   EXPECT_NE(nullptr, pnew);
+  pnew->FinishLoad();
   EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(100, pnew->GetMaxPopulation());
   EXPECT_EQ(10, pnew->GetPopulation());
@@ -56,28 +57,28 @@ TEST(PlanetTest, Load) {
 
 TEST(PlanetTest, Save) {
   MockGame game;
-  Planet p(100);
+  Planet p(game, 100);
   string serialized = "return ";
   p.Save(serialized);
 
   lua_State *L = luaL_newstate();
   RunLua(L, serialized.c_str());
-  Planet *restored = Planet::Load(game, L);
-  EXPECT_NE(nullptr, restored);
-  EXPECT_EQ(100, restored->GetMaxPopulation());
+  Planet restored(game, L);
+  EXPECT_EQ(0, lua_gettop(L));
+  EXPECT_EQ(100, restored.GetMaxPopulation());
 }
 
 TEST(PlanetTest, Growth) {
   int i;
-  shared_ptr<Player> owner(new Player("human"));
-  Planet planet(100);
+  MockGame game;
+  Planet planet(game, 100);
 
   for (i = 0; i < 100; i++) {
     planet.Update();
   }
   EXPECT_EQ(0, planet.GetPopulation()) << "No growth before colonization";
 
-  planet.Colonize(owner, 1);
+  planet.Colonize(1, 1);
   EXPECT_EQ(1, planet.GetPopulation());
   EXPECT_EQ(100, planet.GetMaxPopulation());
 
@@ -89,7 +90,7 @@ TEST(PlanetTest, Growth) {
   planet.Update();
   EXPECT_EQ(2, planet.GetPopulation()) << "Population should have increased";
 
-  planet.Colonize(owner, 100);
+  planet.Colonize(1, 100);
   EXPECT_EQ(100, planet.GetPopulation());
   for (i = 0; i < 100; i++) {
     planet.Update();

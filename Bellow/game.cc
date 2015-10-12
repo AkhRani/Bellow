@@ -16,6 +16,7 @@ using std::shared_ptr;
 using std::weak_ptr;
 using namespace std::placeholders;
 
+//! Lua user-data name for game object
 const char* Game::GAME_LUDNAME = "Bellow_Game";
 
 void Game::PlayerColl::LoadPlayer(lua_State *L, int idx) {
@@ -36,10 +37,14 @@ Game::Game(lua_State *L) :
   , m_Players(L)
   , m_Galaxy(*this, L, "galaxy")
 {
+  FinishLoad();
   UpdateSystemInfo();
   // TODO:  UpdateVisibleFleets for each player
 }
 
+void Game::FinishLoad() {
+  m_Galaxy.FinishLoad();
+}
 
 class UpdateSystemInfoVisitor : public Galaxy::SystemVisitor {
 public:
@@ -239,13 +244,12 @@ bool Game::RegisterApi(lua_State *L) {
   return true;
 }
 
-weak_ptr<Player> Game::GetPlayer(const string &playerName) const {
-  for (auto player : m_Players) {
-    if (player->GetName() == playerName) {
-      return weak_ptr<Player>(player);
-    }
+weak_ptr<Player> Game::GetPlayer(int playerId) const {
+  if (playerId > 0 && size_t(playerId) <= m_Players.size()) {
+    return weak_ptr<Player>(m_Players[playerId-1]);
   }
   assert(false);
+  // TODO:  generate warning / error for scripts
   return weak_ptr<Player>();
 }
 

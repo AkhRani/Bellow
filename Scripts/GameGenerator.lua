@@ -140,10 +140,10 @@ function RandomMinDistance(galaxy, minDistance)
   end
 end
 
-function Homeworld(owner)
+function Homeworld(ownerId)
   return {
     name = "Alpha",
-    owner = owner.name,
+    owner = ownerId,
     base_population = 100,
     population = { amount = 50, invested = 0 },
     factories = { amount = 10, invested = 0 },
@@ -171,7 +171,7 @@ function NewGame(planetCount, size, minDistance)
         name = randomNames[i],
         color = "Yellow",
         x = x, y = y,
-        planet = Homeworld(player)
+        planet = Homeworld(i)
       })
       player.fleets = { {x=x, y=y} }
     else
