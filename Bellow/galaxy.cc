@@ -62,6 +62,7 @@ void Galaxy::FinishLoad() {
   }
 }
 
+
 int Galaxy::VisitSystems(SystemVisitor &visitor) {
   int retval(0);
   for (auto& system : m_Systems) {
@@ -81,4 +82,11 @@ bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info) {
     return true;
   }
   return false;
+}
+
+StarSystem* Galaxy::GetStarSystem(int systemId) {
+  if (systemId > 0 && size_t(systemId) <= m_Systems.size()) {
+    return &m_Systems[systemId - 1];
+  }
+  return nullptr;
 }

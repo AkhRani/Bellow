@@ -18,7 +18,7 @@ struct SystemInfo;
 *
 * The galaxy object owns the star systems.
 */
-class Galaxy {
+class Galaxy : public IStarSystemOwner {
 public:
   typedef std::vector<StarSystem> StarSystemColl;
   typedef StarSystemColl::iterator StarSystemIter;
@@ -38,11 +38,14 @@ public:
   void AddStarSystem(const std::string &name, Planet *pPlanet);
   int VisitSystems(SystemVisitor &visitor);
 
-  StarSystemIter BeginSystems() { return m_Systems.begin(); }
-  StarSystemIter EndSystems() { return m_Systems.end(); }
+  //! Size of the (square) galaxy, in parsecs
   double Size() const { return m_Size; }
-  unsigned int GetSystemCount() const { return m_Systems.size(); }               //!< Number of systems in the galaxy
+
+  //! Number of systems in the galaxy
+  unsigned int GetSystemCount() const { return m_Systems.size(); }
   bool GetSystemInfo(unsigned int id, SystemInfo& info);
+  //! Deserialize reference
+  StarSystem* GetStarSystem(int id) override;
 
 protected:
   void LoadSystem(lua_State *L, int idx);
@@ -54,7 +57,7 @@ private:
   //! Currently only used during loading
   IGame& m_Game;
 
-  //! Dimension of (square) galaxy, in parsecs
+  //! Size of the (square) galaxy, in parsecs
   double m_Size;
   StarSystemColl m_Systems;
 };

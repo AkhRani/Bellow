@@ -30,6 +30,15 @@ public:
 
 /**
  * @brief Standard game implementation
+ *
+ * Game construction order:
+ * 1. Galaxy, with star systems and planets, owner IDs
+ * 2. Players, with fleets, star system IDs for destinations
+ *
+ * Game destruction order:
+ * 1. Player fleets (removes pointers to star systems)
+ * 2. Galaxy (removes pointers to Players)
+ * 3. Players
  */
 class Game : public IGame {
 public:
