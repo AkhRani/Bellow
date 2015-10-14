@@ -47,5 +47,8 @@
     <ClInclude Include="testutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mock_galaxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

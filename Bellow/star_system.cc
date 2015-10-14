@@ -26,6 +26,16 @@ StarSystem::StarSystem(IGame& game, lua_State *L, int id) :
   lua_pop(L, 1);
 }
 
+
+StarSystem::StarSystem(IGame& game, int id, double x, double y) :
+  m_Name("dummy") 
+  , m_X(x)
+  , m_Y(y)
+  , m_ID(id)
+{
+}
+
+
 void StarSystem::Save(string& serialized) {
   serialized.append("\n{ name = \"");
   serialized.append(m_Name);

@@ -17,7 +17,12 @@ extern "C" {
 */
 class StarSystem {
 public:
+  //! Standard deserializer constructor
   StarSystem(IGame& game, lua_State *L, int id);
+
+  //! Create empty star system for testing purposes
+  StarSystem(IGame& game, int id, double x, double y);
+
   void Save(std::string& rep);
   void FinishLoad();
 
