@@ -41,6 +41,8 @@ TEST(FleetTest, LoadSave) {
 
 
 TEST(FleetTest, Move) {
+  const double EPSILON(.000001);
+
   struct MoveScenario {
     double initX, initY;
     double destX, destY;
@@ -80,6 +82,12 @@ TEST(FleetTest, Move) {
     EXPECT_EQ(true, fleet.InOrbit());
     fleet.SetDestination(destX, destY);
     for (int i = 0; i < scenario.turns - 1; i++) {
+      string serialized("return ");
+      fleet.Save(serialized);
+      RunLua(L, serialized.c_str());
+      Fleet reloaded(p1, L);
+
+      reloaded.Move();
       fleet.Move();
       fleet.GetPosition(x, y);
 
@@ -93,7 +101,7 @@ TEST(FleetTest, Move) {
         EXPECT_LT(x, destX);
       }
       else {
-        EXPECT_NEAR(destX, x, .000001);
+        EXPECT_NEAR(destX, x, EPSILON);
       }
 
       if (destY < initY) {
@@ -105,8 +113,13 @@ TEST(FleetTest, Move) {
         EXPECT_LT(y, destY);
       }
       else {
-        EXPECT_NEAR(destY, y, .000001);
+        EXPECT_NEAR(destY, y, EPSILON);
       }
+
+      double rx, ry;
+      reloaded.GetPosition(rx, ry);
+      EXPECT_NEAR(x, rx, EPSILON);
+      EXPECT_NEAR(y, ry, EPSILON);
 
       EXPECT_EQ(false, fleet.InOrbit());
     }

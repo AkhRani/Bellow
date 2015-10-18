@@ -23,14 +23,25 @@ public:
   void GetPosition(double &x, double &y);
   void SetDestination(double x, double y);
   void Move();
-  bool InOrbit() { return m_Orbiting; }
+
+  enum FleetState {
+    ST_ORBITING,      //!< In orbit, no destination
+    ST_LAUNCHING,     //!< Destination given, has not moved yet
+    ST_TRAVELING,     //!< Moving towards destination
+    ST_APPROACHING,   //!< Transient state, may trigger combat
+    ST_ARRIVING       //!< Transient state, may trigger exploration
+  };
+
+  // State accessors
+  bool InOrbit() { return ST_ORBITING == m_State; }
+  bool Launching() { return ST_LAUNCHING == m_State; }
 
 private:
   const Player& m_Owner;
   double m_X, m_Y;
   double m_DestX, m_DestY;
   double m_Speed;
-  bool m_Orbiting;
+  FleetState m_State;
 };
 
 #endif
