@@ -12,9 +12,9 @@ void RunLua(lua_State *L, const char *script);
 class MockGame : public IGame {
 public:
   MockGame();
-  virtual std::weak_ptr<Player> GetPlayer(int playerId) const override;
+  virtual Player* GetPlayer(int playerId) const override;
 
 private:
-  std::shared_ptr<Player> m_Player;
+  std::unique_ptr<Player> m_Player;
 };
 

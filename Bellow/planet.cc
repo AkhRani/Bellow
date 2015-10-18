@@ -12,8 +12,6 @@ extern "C" {
 
 using std::string;
 using std::to_string;
-using std::shared_ptr;
-using std::weak_ptr;
 
 #define NOMINAL_POP_GROWTH 10   //!< 10% per turn
 
@@ -59,11 +57,11 @@ void Planet::Save(string &serialized) {
   serialized.append(" }");
 }
 
-weak_ptr<Player> Planet::GetOwner() {
+Player* Planet::GetOwner() {
   if (m_OwnerId) {
     return m_Game.GetPlayer(m_OwnerId);
   }
-  return weak_ptr<Player>();
+  return nullptr;
 }
 
 void Planet::Colonize(int new_owner, uint32_t pop) {
@@ -73,22 +71,22 @@ void Planet::Colonize(int new_owner, uint32_t pop) {
 }
 
 void Planet::SetProductProperties() {
-  shared_ptr<Player> owner(GetOwner());
-  // Existing factories (if any) remain
-  m_Factories.SetMax(m_Population.GetMax() * owner->GetFactoriesPerPop());
+  Player* owner(GetOwner());
+  if (owner) {
+    // Existing factories (if any) remain
+    m_Factories.SetMax(m_Population.GetMax() * owner->GetFactoriesPerPop());
+  }
 }
 
 /**
  * See http://realmsbeyond.net/forums/archive/index.php?thread-1905.html for lots of good info
  */
 void Planet::Update() {
-  weak_ptr<Player> weak_owner(GetOwner());
-  if (weak_owner.expired()) {
+  Player* owner(GetOwner());
+  if (!owner) {
     // Either not colonized, or bug.  Don't think it's possible to tell which.
     return;
   }
-  // Grab a temporary pointer to the owner
-  shared_ptr<Player> owner(weak_owner);
   uint32_t pop = m_Population.GetAmount();
   uint32_t activeFactories =
     std::min(m_Factories.GetAmount(), pop * owner->GetFactoriesPerPop());

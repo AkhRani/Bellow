@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "game.h"
 #include "planet.h"
 #include "player.h"
@@ -50,7 +48,8 @@ TEST(PlanetTest, Load) {
   EXPECT_EQ(10, pnew->GetPopulation());
   EXPECT_EQ(200, pnew->GetMaxFactories());
   EXPECT_EQ(20, pnew->GetFactories());
-  EXPECT_EQ("human", std::shared_ptr<Player>(pnew->GetOwner())->GetName());
+  ASSERT_NE(nullptr, pnew->GetOwner());
+  EXPECT_EQ("human", pnew->GetOwner()->GetName());
 
   // TODO:  Test Error Handling
 }

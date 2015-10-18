@@ -23,9 +23,8 @@ class IGame {
 public:
   virtual ~IGame() {};
 
-  // TODO:  shared_ptr/weak_ptr may be overkill.  Change to simple pointer if
-  // destruction order can guarantee players outlive clients.
-  virtual std::weak_ptr<Player> GetPlayer(int playerId) const = 0;
+  // TODO:  Make sure destruction order can guarantee players outlive clients.
+  virtual Player* GetPlayer(int playerId) const = 0;
 };
 
 /**
@@ -48,7 +47,7 @@ public:
   void FinishLoad();
 
   bool RegisterApi(lua_State *L);
-  virtual std::weak_ptr<Player> GetPlayer(int playerId) const override;
+  virtual Player* GetPlayer(int playerId) const override;
 
   int GetPlayerCount() const { return m_Players.size(); }
   double GetGalaxySize() const;
@@ -61,12 +60,7 @@ public:
   void EndPlayerTurn();
 
 protected:
-  class PlayerColl : public std::vector < std::shared_ptr<Player > > {
-  public:
-    PlayerColl(lua_State *L);
-    void LoadPlayer(lua_State *L, int idx);
-  };
-
+  void LoadPlayer(lua_State *L, int idx);
   Player& CurrentPlayer() { return *m_Players[m_CurrentPlayer]; }
   void NextTurn();
   void UpdateSystemInfo();
@@ -92,7 +86,7 @@ private:
 
   unsigned int m_Turn;
   unsigned int m_CurrentPlayer;
-  PlayerColl m_Players;
+  std::vector<std::unique_ptr<Player>> m_Players;
   Galaxy m_Galaxy;
 
   // TODO:  Fleets, tech tree, etc.

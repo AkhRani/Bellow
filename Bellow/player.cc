@@ -24,9 +24,10 @@ using namespace std::placeholders;
 
 Player::Player(const string &name) : m_Name(name) {}
 
-Player::Player(lua_State *L) :
+Player::Player(IStarSystemOwner& galaxy, lua_State *L) :
   m_Name(LoadString(L, "name"))
 {
+  // TODO:  Pass Galaxy to fleets to resolve destinations
   LoadTableOfTables(L, "fleets", bind(&Player::LoadFleet, this, _1, _2));
   LoadTableOfTables(L, "systems", bind(&Player::LoadSystemInfo, this, _1, _2));
   lua_pop(L, 1);
@@ -44,11 +45,11 @@ void Player::Save(string &rep) {
   rep.append("\n  { name=\"");
   rep.append(m_Name);
   rep.append("\",\n   fleets={");
-  for (auto v : m_Fleets) {
+  for (auto& v : m_Fleets) {
     v.Save(rep);
   }
   rep.append("},\n   systems={");
-  for (auto v : m_SystemInfo) {
+  for (auto& v : m_SystemInfo) {
     v.Save(rep);
   }
   rep.append("}\n  }");

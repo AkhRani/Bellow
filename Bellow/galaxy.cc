@@ -37,10 +37,6 @@ Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) :
     LoadTableOfTables(L, "systems", bind(&Galaxy::LoadSystem, this, _1, _2));
   }
   lua_pop(L, 1);
-
-  if (field) {
-    lua_pop(L, 1);
-  }
 }
 
 
@@ -48,7 +44,7 @@ void Galaxy::Save(string& rep) {
   rep.append("\n{ size = ");
   rep.append(std::to_string(m_Size));
   rep.append(", systems = {");
-  for (auto v : m_Systems) {
+  for (auto& v : m_Systems) {
     v.Save(rep);
     rep.append(", ");
   }

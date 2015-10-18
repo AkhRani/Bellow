@@ -5,6 +5,7 @@
 
 #include "gtest/gtest.h"
 #include "testutils.h"
+#include "mock_galaxy.h"
 
 extern "C" {
 #include "lua.h"
@@ -16,12 +17,13 @@ using namespace std;
 
 TEST(PlayerTest, LoadSave) {
   MockGame game;
+  MockGalaxy galaxy;
   lua_State *L = luaL_newstate();
 
   luaL_dostring(L, "empty = { amount = 0, invested = 0 }");
   RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
 
-  Player p1(L);
+  Player p1(galaxy, L);
   EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(p1.GetName(), "Kirk");
   EXPECT_EQ(p1.GetFleetCount(), 0);
@@ -29,7 +31,7 @@ TEST(PlayerTest, LoadSave) {
   RunLua(L, 
     "sysinfo = { { name = \"Sol\", x=.5, y=.6, fact=10, pop=10 } } "
     "return { name = \"Kirk\", race = \"Human\", fleets = { { x = 0, y = 0 } }, systems = sysinfo }");
-  Player p2(L);
+  Player p2(galaxy, L);
   EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(p2.GetName(), "Kirk");
   EXPECT_EQ(p2.GetFleetCount(), 1);
@@ -44,7 +46,7 @@ TEST(PlayerTest, LoadSave) {
   p2.Save(serial);
   RunLua(L, serial.c_str());
   {
-    Player p3(L);
+    Player p3(galaxy, L);
 
     EXPECT_EQ(0, lua_gettop(L));
     EXPECT_EQ(p3.GetName(), "Kirk");

@@ -8,7 +8,8 @@
 class MockGalaxy : public IStarSystemOwner {
 public:
   void AddStarSystem(IGame& game, double x, double y) {
-    m_Systems.push_back(std::unique_ptr<StarSystem>(new StarSystem(game, x, y));
+    int id = m_Systems.size() + 1;
+    m_Systems.push_back(std::unique_ptr<StarSystem>(new StarSystem(game, id, x, y)));
   }
 
   StarSystem* GetStarSystem(int id) {

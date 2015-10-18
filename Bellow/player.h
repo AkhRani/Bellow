@@ -8,6 +8,8 @@
 #include "system_info.h"
 #include "fleet.h"
 
+class IStarSystemOwner;
+
 extern "C" {
   struct lua_State;
 }
@@ -22,7 +24,7 @@ public:
   Player(const std::string &name);
 
   //! Deserializer constructor
-  Player(lua_State *L);
+  Player(IStarSystemOwner& galaxy, lua_State *L);
 
   //! Serializer
   void Save(std::string &rep);

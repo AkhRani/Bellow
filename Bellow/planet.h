@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include <string>
-#include <memory>
 #include "product.h"
 #include "population.h"
 
@@ -38,7 +37,7 @@ class Planet {
     void Colonize(int playerId, uint32_t pop);
 
     //! Owner accessor, may return null
-    std::weak_ptr<Player> GetOwner();
+    Player* GetOwner();
 
     //! Current population.  Always <= GetMaxPopulation.
     uint32_t GetPopulation() { return m_Population.GetAmount(); };
