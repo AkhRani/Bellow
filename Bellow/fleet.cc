@@ -35,12 +35,12 @@ Fleet::Fleet(const Player& owner, lua_State *L) :
   if (serializedState >= ST_ORBITING && serializedState <= ST_ARRIVING) {
     m_State = static_cast<FleetState>(serializedState);
   }
+  // TODO: else issue warning, "Defaulting to Orbiting"
   // Sanity check
   if ((m_X != m_DestX || m_Y != m_DestY) &&
     m_State != ST_TRAVELING &&
     m_State != ST_LAUNCHING) {
-    // TODO:  Proper exception types
-    throw("Load Error:  Bad fleet state");
+    throw(std::runtime_error("load error:  Bad fleet state"));
   }
   lua_pop(L, 1);
 }

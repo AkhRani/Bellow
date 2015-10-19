@@ -46,7 +46,7 @@ public:
   UpdateSystemInfoVisitor(Game* pGame, Player* pPlayer) : m_pGame(pGame), m_pPlayer(pPlayer) {}
   ~UpdateSystemInfoVisitor() {}
 
-  virtual int operator ()(StarSystem &system) {
+  virtual void operator ()(StarSystem &system) override {
     bool owned(false);
     if (auto planet = system.GetPlanet().lock()) {
       if (auto owner = planet->GetOwner()) {
@@ -62,7 +62,6 @@ public:
       SystemInfo info{ system.m_X, system.m_Y, "?", 0, 0 };
       m_pPlayer->SetSystemInfo(system.m_ID, info);
     }
-    return 1;
   }
 
 private:
@@ -269,9 +268,8 @@ void Game::EndPlayerTurn() {
 
 class NextTurnSystemVisitor : public Galaxy::SystemVisitor {
 public:
-  virtual int operator ()(StarSystem &system) override {
+  virtual void operator ()(StarSystem &system) override {
     system.NextTurn();
-    return 1;
   }
 };
 

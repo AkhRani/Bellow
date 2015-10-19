@@ -19,10 +19,12 @@ TEST(FleetTest, LoadSave) {
   MockGalaxy galaxy;
   lua_State *L = luaL_newstate();
 
+  // Create player to own fleets
   luaL_dostring(L, "empty = { amount = 0, invested = 0 }");
   RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
   Player p1(galaxy, L);
 
+  // Test Save
   SystemInfo info;
   Fleet fleet(p1, 3., 4.);
   EXPECT_EQ(true, fleet.InOrbit());
@@ -37,6 +39,11 @@ TEST(FleetTest, LoadSave) {
   f2.GetPosition(x, y);
   EXPECT_EQ(3., x);
   EXPECT_EQ(4., y);
+
+  // Test off-nominal loads
+  // Shouldn't be orbiting and have a remote destination
+  RunLua(L, "return { x=0, y=0, st=0, dstx = 1 }");
+  EXPECT_THROW(Fleet bad1(p1, L), std::runtime_error);
 }
 
 
@@ -80,12 +87,32 @@ TEST(FleetTest, Move) {
     // TODO:  Create fleet with system ID
     Fleet fleet(p1, initX, initY);
     EXPECT_EQ(true, fleet.InOrbit());
+    EXPECT_EQ(false, fleet.Launching());
+
+    // Go over there!
     fleet.SetDestination(destX, destY);
+    EXPECT_EQ(true, fleet.Launching());
+    EXPECT_EQ(false, fleet.InOrbit());
+
+    // Changed my mind
+    fleet.SetDestination(initX, initY);
+    EXPECT_EQ(true, fleet.InOrbit());
+    EXPECT_EQ(false, fleet.Launching());
+
+    // Changed my mind again
+    fleet.SetDestination(destX, destY);
+    EXPECT_EQ(true, fleet.Launching());
+    EXPECT_EQ(false, fleet.InOrbit());
+
+
     for (int i = 0; i < scenario.turns - 1; i++) {
       string serialized("return ");
       fleet.Save(serialized);
       RunLua(L, serialized.c_str());
       Fleet reloaded(p1, L);
+      if (0 == i) {
+        EXPECT_EQ(true, reloaded.Launching());
+      }
 
       reloaded.Move();
       fleet.Move();

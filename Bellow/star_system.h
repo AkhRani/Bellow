@@ -30,6 +30,7 @@ public:
   std::weak_ptr<Planet> GetPlanet();
 
   // TODO: Color
+  // TODO:  Const?
   std::string m_Name;
   double m_X, m_Y;
   int m_ID;

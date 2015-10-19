@@ -59,15 +59,14 @@ void Galaxy::FinishLoad() {
 }
 
 
-int Galaxy::VisitSystems(SystemVisitor &visitor) {
-  int retval(0);
+void Galaxy::VisitSystems(SystemVisitor &visitor) {
   for (auto& system : m_Systems) {
-    retval += visitor(system);
+    visitor(system);
   }
-  return retval;
 }
 
 
+/*
 bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info) {
   // TODO:  Player-based
   if (id < m_Systems.size()) {
@@ -79,6 +78,7 @@ bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info) {
   }
   return false;
 }
+*/
 
 StarSystem* Galaxy::GetStarSystem(int systemId) {
   if (systemId > 0 && size_t(systemId) <= m_Systems.size()) {

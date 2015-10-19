@@ -27,7 +27,7 @@ public:
   public:
     SystemVisitor() {};
     virtual ~SystemVisitor() {};
-    virtual int operator ()(StarSystem &system) { return 1; }
+    virtual void operator ()(StarSystem &system) = 0;
   };
 
   Galaxy(IGame& game, lua_State *L, const char *field = nullptr); //!< deserializer constructor
@@ -36,14 +36,14 @@ public:
 
   void AddStarSystem(const std::string &name, const Position &pos, Planet *pPlanet);
   void AddStarSystem(const std::string &name, Planet *pPlanet);
-  int VisitSystems(SystemVisitor &visitor);
+  void VisitSystems(SystemVisitor &visitor);
 
   //! Size of the (square) galaxy, in parsecs
   double Size() const { return m_Size; }
 
   //! Number of systems in the galaxy
   unsigned int GetSystemCount() const { return m_Systems.size(); }
-  bool GetSystemInfo(unsigned int id, SystemInfo& info);
+  // bool GetSystemInfo(unsigned int id, SystemInfo& info);
   //! Deserialize reference
   StarSystem* GetStarSystem(int id) override;
 
