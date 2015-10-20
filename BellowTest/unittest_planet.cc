@@ -2,6 +2,7 @@
 #include "planet.h"
 #include "player.h"
 #include "gtest/gtest.h"
+#include "mock_game.h"
 #include "testutils.h"
 
 extern "C" {

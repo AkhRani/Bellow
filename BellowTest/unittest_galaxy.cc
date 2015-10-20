@@ -1,5 +1,6 @@
 #include "galaxy.h"
 #include "testutils.h"
+#include "mock_game.h"
 #include "gtest/gtest.h"
 #include "star_system.h"
 

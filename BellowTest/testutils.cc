@@ -13,7 +13,3 @@ void RunLua(lua_State *L, const char *script) {
   ASSERT_EQ(false, luaL_dostring(L, script));
   ASSERT_EQ(true, lua_istable(L, -1));
 }
-
-MockGame::MockGame() : m_Player(new Player("human")) {};
-Player* MockGame::GetPlayer(int playerId) const { return m_Player.get(); }
-

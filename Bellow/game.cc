@@ -98,7 +98,7 @@ Fleet& Game::GetFleet(int fleet) {
   return m_Players.at(m_CurrentPlayer)->GetFleet(fleet);
 }
 
-//! Launch the given fleet to the given destination (zero-based)
+//! Launch the given fleet to the given destination (one-based)
 bool Game::SetFleetDestination(unsigned int fleet, unsigned int system) {
   return m_Players.at(m_CurrentPlayer)->SetFleetDestination(fleet, system);
 }
@@ -211,7 +211,8 @@ int Game::lua_SetFleetDestination(lua_State *L) {
     int fleet = lua_tointeger(L, -2);
     if (fleet > 0 && fleet <= pGame->GetFleetCount() &&
         system > 0 && system <= pGame->GetSystemCount()) {
-      if (pGame->SetFleetDestination(fleet - 1, system - 1)) {
+      // TODO:  Move range check to Game (avoid reproducing in apis)
+      if (pGame->SetFleetDestination(fleet - 1, system)) {
         success = 1;
       }
     }

@@ -8,6 +8,7 @@ extern "C" {
 }
 
 class Player;
+class IStarSystemOwner;
 
 //! Collection of ships with a common destination
 //
@@ -15,13 +16,13 @@ class Player;
 // Eventually, will consist of shipCount[SHIP_DESIGNS].
 class Fleet {
 public:
-  Fleet(const Player& owner, lua_State *L);
-  Fleet(const Player& owner, double x, double y);
+  Fleet(const Player& owner, IStarSystemOwner& systemOwner, lua_State *L);
+  Fleet(const Player& owner, IStarSystemOwner& systemOwner, int system);
   void Save(std::string &rep);
 
   // TODO:  "Position" class?
   void GetPosition(double &x, double &y);
-  void SetDestination(double x, double y);
+  void SetDestination(int system);
   void Move();
 
   enum FleetState {
@@ -33,15 +34,17 @@ public:
   };
 
   // State accessors
-  bool InOrbit() { return ST_ORBITING == m_State; }
-  bool Launching() { return ST_LAUNCHING == m_State; }
+  bool IsInOrbit() { return ST_ORBITING == m_State; }
+  bool IsLaunching() { return ST_LAUNCHING == m_State; }
 
 private:
   const Player& m_Owner;
-  double m_X, m_Y;
-  double m_DestX, m_DestY;
-  double m_Speed;
+  IStarSystemOwner& m_SystemOwner;
+  // TODO:  double m_Speed;
   FleetState m_State;
+  double m_X, m_Y;
+  int m_Orbit;    //!< Star system we are orbiting (if InOrbit or Launching)
+  int m_Target;   //!< Star system we are going to (if not InOrbit)
 };
 
 #endif

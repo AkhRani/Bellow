@@ -5,6 +5,7 @@
 
 #include "gtest/gtest.h"
 #include "testutils.h"
+#include "mock_game.h"
 #include "mock_galaxy.h"
 
 extern "C" {

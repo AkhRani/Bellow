@@ -21,7 +21,7 @@ extern "C" {
 class Player {
 public:
   //! Constructor for testing purposes.  Should get rid of this
-  Player(const std::string &name);
+  Player(IStarSystemOwner& galaxy, const std::string &name);
 
   //! Deserializer constructor
   Player(IStarSystemOwner& galaxy, lua_State *L);
@@ -68,6 +68,7 @@ protected:
 
 private:
   Player();
+  IStarSystemOwner& m_SystemOwner;
   std::string m_Name;
 
   //! Fleets owned by the player

@@ -22,10 +22,13 @@ using namespace std::placeholders;
 #define PRODUCTION_PER_FACTORY 100
 #define FACTORY_COST 10
 
-Player::Player(const string &name) : m_Name(name) {}
+Player::Player(IStarSystemOwner& galaxy, const string &name) :
+  m_SystemOwner(galaxy)
+  , m_Name(name) {}
 
 Player::Player(IStarSystemOwner& galaxy, lua_State *L) :
-  m_Name(LoadString(L, "name"))
+  m_SystemOwner(galaxy)
+  , m_Name(LoadString(L, "name"))
 {
   // TODO:  Pass Galaxy to fleets to resolve destinations
   LoadTableOfTables(L, "fleets", bind(&Player::LoadFleet, this, _1, _2));
@@ -34,7 +37,7 @@ Player::Player(IStarSystemOwner& galaxy, lua_State *L) :
 }
 
 void Player::LoadFleet(lua_State *L, int idx) {
-  m_Fleets.push_back(Fleet(*this, L));
+  m_Fleets.push_back(Fleet(*this, m_SystemOwner, L));
 }
 
 void Player::LoadSystemInfo(lua_State *L, int idx) {
@@ -56,15 +59,17 @@ void Player::Save(string &rep) {
 }
 
 
+//! Direct the given fleet to the given system
+// @param fleet Fleet ID, 1-based (TODO)
+// @param system System ID, 1-based
 bool Player::SetFleetDestination(unsigned int fleet, unsigned int system) {
   bool retval(false);
   // Precondition, failure indicates bug.
   assert(system < m_SystemInfo.size() && fleet < GetFleetCount());
   if (system < m_SystemInfo.size() && fleet < GetFleetCount()) {
-    // TODO:  Check Range
+    // TODO:  1-based fleet ID, Check Range
     auto& f = m_Fleets[fleet];
-    SystemInfo& info(m_SystemInfo[system]);
-    f.SetDestination(info.x, info.y);
+    f.SetDestination(system);
     retval = true;
   }
   else {
