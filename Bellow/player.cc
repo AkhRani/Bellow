@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include "player.h"
+#include "star_system.h"
 #include "util.h"
 
 extern "C" {
@@ -119,6 +120,19 @@ void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
   }
 }
 
+//! Explore the given system
+//
+// This is called when a fleet arrives at a star system.
+// If the player has not previously explored this system, this should
+// queue a notification for the player.
+void Player::Explore(unsigned int systemId) {
+  assert(systemId >= 1);
+  StarSystem *pSystem = m_SystemOwner.GetStarSystem(systemId);
+  assert(pSystem);
+  SystemInfo info{ pSystem->m_X, pSystem->m_Y, pSystem->m_Name, 0, 0 };
+  SetSystemInfo(systemId, info);
+}
+
 //! Update the player's view of the given system
 //
 // Note that system IDs are one-based
@@ -130,10 +144,7 @@ void Player::SetSystemInfo(unsigned int id, const SystemInfo& info) {
       m_SystemInfo[id - 1] = info;
     }
     else {
-      auto existingInfo = m_SystemInfo[id - 1];
-      // Could move this logic into SystemInfo class
-      bool fresher = true;
-
+      // TODO:  Selectively update info?
       m_SystemInfo[id - 1] = info;
     }
   }

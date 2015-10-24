@@ -2,6 +2,7 @@
 #include <math.h>
 
 #include "fleet.h"
+#include "player.h"
 #include "star_system.h"
 #include "util.h"
 
@@ -14,7 +15,7 @@ extern "C" {
 using std::string;
 using std::to_string;
 
-Fleet::Fleet(const Player& owner, IStarSystemOwner& systemOwner, int systemId) :
+Fleet::Fleet(Player& owner, IStarSystemOwner& systemOwner, int systemId) :
   m_Owner(owner)
   , m_SystemOwner(systemOwner)
   , m_State(ST_ORBITING)
@@ -33,7 +34,7 @@ Fleet::Fleet(const Player& owner, IStarSystemOwner& systemOwner, int systemId) :
 }
 
 
-Fleet::Fleet(const Player& owner, IStarSystemOwner& systemOwner, lua_State *L) :
+Fleet::Fleet(Player& owner, IStarSystemOwner& systemOwner, lua_State *L) :
   m_Owner(owner)
   , m_SystemOwner(systemOwner)
   , m_State(ST_ORBITING)
@@ -103,11 +104,8 @@ void Fleet::Move() {
     if (distance <= speed) {
       m_X = pTarget->m_X;
       m_Y = pTarget->m_Y;
-      // TODO:  Queue event
-      // m_State = ST_APPROACHING;
-      m_State = ST_ORBITING;
-      m_Orbit = m_Target;
-      m_Target = 0;
+      // TODO (merging):  Let the destination system know we're in the vicinity
+      m_State = ST_ARRIVING;
     }
     else {
       double angle = atan2(dy, dx);
@@ -116,6 +114,19 @@ void Fleet::Move() {
       m_State = ST_TRAVELING;
       m_Orbit = 0;
     }
+  }
+}
+
+
+//! Transition from approaching to arriving.
+// Normally called by the Game class after successful combat,
+// or if no combat occurs.
+void Fleet::Arrive() {
+  if (ST_ARRIVING == m_State) {
+    m_Owner.Explore(m_Target);
+    m_State = ST_ORBITING;
+    m_Orbit = m_Target;
+    m_Target = 0;
   }
 }
 

@@ -16,29 +16,36 @@ class IStarSystemOwner;
 // Eventually, will consist of shipCount[SHIP_DESIGNS].
 class Fleet {
 public:
-  Fleet(const Player& owner, IStarSystemOwner& systemOwner, lua_State *L);
-  Fleet(const Player& owner, IStarSystemOwner& systemOwner, int system);
+  Fleet(Player& owner, IStarSystemOwner& systemOwner, lua_State *L);
+  Fleet(Player& owner, IStarSystemOwner& systemOwner, int system);
   void Save(std::string &rep);
 
   // TODO:  "Position" class?
   void GetPosition(double &x, double &y);
   void SetDestination(int system);
+  //! First stage of fleet movement
   void Move();
+  //! Second stage of fleet movement
+  void Approach();
+  //! Third stage of fleet movement
+  void Arrive();
 
   enum FleetState {
     ST_ORBITING,      //!< In orbit, no destination
     ST_LAUNCHING,     //!< Destination given, has not moved yet
     ST_TRAVELING,     //!< Moving towards destination
-    ST_APPROACHING,   //!< Transient state, may trigger combat
+    ST_APPROACHING,   //!< Transient state, may trigger combat  (Not sure if we really need this state.)
     ST_ARRIVING       //!< Transient state, may trigger exploration
   };
 
   // State accessors
   bool IsInOrbit() { return ST_ORBITING == m_State; }
   bool IsLaunching() { return ST_LAUNCHING == m_State; }
+  bool IsApproaching() { return ST_APPROACHING == m_State; }
+  bool IsArriving() { return ST_ARRIVING == m_State; }
 
 private:
-  const Player& m_Owner;
+  Player& m_Owner;
   IStarSystemOwner& m_SystemOwner;
   // TODO:  double m_Speed;
   FleetState m_State;

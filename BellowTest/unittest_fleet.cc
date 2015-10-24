@@ -77,7 +77,6 @@ TEST(FleetTest, Move) {
   }
 
   lua_State *L = luaL_newstate();
-  luaL_dostring(L, "empty = { amount = 0, invested = 0 }");
   RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
   Player p1(game.m_Galaxy, L);
 
@@ -159,7 +158,33 @@ TEST(FleetTest, Move) {
     fleet.GetPosition(x, y);
     EXPECT_EQ(destX, x);
     EXPECT_EQ(destY, y);
+    EXPECT_EQ(false, fleet.IsInOrbit());
+    EXPECT_EQ(true, fleet.IsArriving());
+
+    // Arrival happens in stages
+    fleet.Arrive();
+    EXPECT_EQ(false, fleet.IsArriving());
     EXPECT_EQ(true, fleet.IsInOrbit());
     destId++;
   }
+}
+
+TEST(FleetTest, Exploration) {
+  MockGame game;
+  game.m_Galaxy.AddStarSystem(game, 0., 0.);
+  game.m_Galaxy.AddStarSystem(game, .5, .5);
+
+  lua_State *L = luaL_newstate();
+  RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
+  Player p1(game.m_Galaxy, L);
+
+  SystemInfo info{ .5, .5, "?", 0, 0 };
+  p1.SetSystemInfo(2, info);
+
+  Fleet fleet(p1, game.m_Galaxy, 1);
+  fleet.SetDestination(2);
+  fleet.Move();
+  fleet.Arrive();
+  p1.GetSystemInfo(2, info);
+  EXPECT_EQ("dummy", info.name);
 }
