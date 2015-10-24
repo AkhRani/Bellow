@@ -86,6 +86,12 @@ void Player::MoveFleets() {
   }
 }
 
+void Player::HandleFleetArrival() {
+  for (auto& fleet : m_Fleets) {
+    fleet.Arrive();
+  }
+}
+
 uint32_t Player::GetPopCost() {
   return POP_COST;
 }
@@ -136,6 +142,8 @@ void Player::Explore(unsigned int systemId) {
 //! Update the player's view of the given system
 //
 // Note that system IDs are one-based
+// TODO:  This needs some work.  Need to track the game turn to report how "stale"
+// the information is.  Need to support updating only some fields.
 void Player::SetSystemInfo(unsigned int id, const SystemInfo& info) {
   // TODO:  If new info has same or more fields, set up new fields and "staleness"
   if (id >= 1) {

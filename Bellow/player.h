@@ -41,6 +41,8 @@ public:
   bool SetFleetDestination(unsigned int fleet, unsigned int system);
   //! Update all fleet positions
   void MoveFleets();
+  //! Allow fleets to explore (deprecated)
+  void HandleFleetArrival();
 
   //! Ecological investment to "build" one population
   uint32_t GetPopCost();

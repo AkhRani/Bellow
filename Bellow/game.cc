@@ -288,7 +288,13 @@ void Game::NextTurn() {
     player->MoveFleets();
   }
 
-  // TODO: Resolve Battles
+  // TODO: Resolve Battles and "Arrive" fleets.
+
+  // Explore systems
+  for (auto& player : m_Players) {
+    // Placeholder
+    player->HandleFleetArrival();
+  }
 }
 
 
