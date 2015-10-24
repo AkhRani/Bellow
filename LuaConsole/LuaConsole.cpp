@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "game.h"
+#include "lua_api.h"
 
 #define lua_c
 
@@ -513,7 +514,7 @@ int _tmain(int argc, _TCHAR* argv[])
     printf("Failed to call NewGame\n");
   }
 
-  pGame->RegisterApi(L);
+  RegisterApi(L, pGame);
 
   printf("> ");
   while (fgets(buff, 100, stdin)) {

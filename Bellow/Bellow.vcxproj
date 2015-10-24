@@ -82,6 +82,7 @@
     <ClInclude Include="galaxy.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="fleet.h" />
+    <ClInclude Include="lua_api.h" />
     <ClInclude Include="planet.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="population.h" />
@@ -97,6 +98,7 @@
     <ClCompile Include="fleet.cc" />
     <ClCompile Include="galaxy.cc" />
     <ClCompile Include="game.cc" />
+    <ClCompile Include="lua_api.cc" />
     <ClCompile Include="planet.cc" />
     <ClCompile Include="player.cc" />
     <ClCompile Include="population.cc" />

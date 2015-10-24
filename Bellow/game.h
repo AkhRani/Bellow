@@ -46,14 +46,14 @@ public:
   //! Resolve serialized references
   void FinishLoad();
 
-  bool RegisterApi(lua_State *L);
   virtual Player* GetPlayer(int playerId) const override;
 
   int GetPlayerCount() const { return m_Players.size(); }
   double GetGalaxySize() const;
   int GetSystemCount() const;
 
-  // Current Player
+  // Current Player Functions
+  void GetSystemInfo(int id, SystemInfo& info);
   int GetFleetCount();
   Fleet& GetFleet(int fleet);
   bool SetFleetDestination(unsigned int fleet, unsigned int system);
@@ -64,22 +64,6 @@ protected:
   Player& CurrentPlayer() { return *m_Players[m_CurrentPlayer]; }
   void NextTurn();
   void UpdateSystemInfo();
-
-  //! Update player's view of the planet
-  void Explore(Player& player, StarSystem& system);
-
-  // Lua API
-  static const char* GAME_LUDNAME;
-  static Game *GetGame(lua_State *L);
-
-  static int lua_GetPlayerCount(lua_State *L);
-  static int lua_GetGalaxySize(lua_State *L);
-  static int lua_GetSystemCount(lua_State *L);
-  static int lua_GetSystemInfo(lua_State *L);
-  static int lua_GetFleetCount(lua_State *L);
-  static int lua_GetFleetInfo(lua_State *L);
-  static int lua_SetFleetDestination(lua_State *L);
-  static int lua_EndTurn(lua_State *L);
 
 private:
   Game();
