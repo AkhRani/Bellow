@@ -10,6 +10,7 @@ latex
 *.user
 *.sln.docstates
 .*.swp
+_.swp
 
 # Build results
 

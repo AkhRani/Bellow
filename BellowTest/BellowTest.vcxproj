@@ -102,6 +102,7 @@
   <ItemGroup>
     <ClCompile Include="..\Bellow\star_system.cc" />
     <ClCompile Include="coverage.cc" />
+    <ClCompile Include="mock_game.cc" />
     <ClCompile Include="testutils.cc" />
     <ClCompile Include="unittest_fleet.cc" />
     <ClCompile Include="unittest_galaxy.cc" />
@@ -111,6 +112,8 @@
     <ClCompile Include="unittest_star_system.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mock_galaxy.h" />
+    <ClInclude Include="mock_game.h" />
     <ClInclude Include="testutils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

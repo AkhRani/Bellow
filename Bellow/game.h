@@ -23,19 +23,31 @@ class IGame {
 public:
   virtual ~IGame() {};
 
-  virtual std::weak_ptr<Player> GetPlayer(const std::string &playerName) const = 0;
+  // TODO:  Make sure destruction order can guarantee players outlive clients.
+  virtual Player* GetPlayer(int playerId) const = 0;
 };
 
 /**
  * @brief Standard game implementation
+ *
+ * Game construction order:
+ * 1. Galaxy, with star systems and planets, owner IDs
+ * 2. Players, with fleets, star system IDs for destinations
+ *
+ * Game destruction order:
+ * 1. Player fleets (removes pointers to star systems)
+ * 2. Galaxy (removes pointers to Players)
+ * 3. Players
  */
 class Game : public IGame {
 public:
   Game(lua_State *L);
   virtual ~Game();
+  //! Resolve serialized references
+  void FinishLoad();
 
   bool RegisterApi(lua_State *L);
-  virtual std::weak_ptr<Player> GetPlayer(const std::string &playerName) const override;
+  virtual Player* GetPlayer(int playerId) const override;
 
   int GetPlayerCount() const { return m_Players.size(); }
   double GetGalaxySize() const;
@@ -48,12 +60,7 @@ public:
   void EndPlayerTurn();
 
 protected:
-  class PlayerColl : public std::vector < std::shared_ptr<Player > > {
-  public:
-    PlayerColl(lua_State *L);
-    void LoadPlayer(lua_State *L, int idx);
-  };
-
+  void LoadPlayer(lua_State *L, int idx);
   Player& CurrentPlayer() { return *m_Players[m_CurrentPlayer]; }
   void NextTurn();
   void UpdateSystemInfo();
@@ -79,7 +86,7 @@ private:
 
   unsigned int m_Turn;
   unsigned int m_CurrentPlayer;
-  PlayerColl m_Players;
+  std::vector<std::unique_ptr<Player>> m_Players;
   Galaxy m_Galaxy;
 
   // TODO:  Fleets, tech tree, etc.

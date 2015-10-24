@@ -48,3 +48,16 @@ end
 Map = function (width, height)
   CommonMap(width, height, GetGalaxySize(), GetSystemCount(), GetSystemInfo)
 end
+
+Dump = function (ob)
+  if (type(ob) == 'table') then
+    for i,v in pairs(ob) do
+      io.write(i)
+      io.write("= ")
+      Dump(v)
+    end
+  else
+    print(ob)
+  end
+end
+

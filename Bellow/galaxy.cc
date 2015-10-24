@@ -37,10 +37,6 @@ Galaxy::Galaxy(IGame& game, lua_State *L, const char *field) :
     LoadTableOfTables(L, "systems", bind(&Galaxy::LoadSystem, this, _1, _2));
   }
   lua_pop(L, 1);
-
-  if (field) {
-    lua_pop(L, 1);
-  }
 }
 
 
@@ -48,7 +44,7 @@ void Galaxy::Save(string& rep) {
   rep.append("\n{ size = ");
   rep.append(std::to_string(m_Size));
   rep.append(", systems = {");
-  for (auto v : m_Systems) {
+  for (auto& v : m_Systems) {
     v.Save(rep);
     rep.append(", ");
   }
@@ -56,15 +52,21 @@ void Galaxy::Save(string& rep) {
 }
 
 
-int Galaxy::VisitSystems(SystemVisitor &visitor) {
-  int retval(0);
-  for (auto system : m_Systems) {
-    retval += visitor(system);
+void Galaxy::FinishLoad() {
+  for (auto& system : m_Systems) {
+    system.FinishLoad();
   }
-  return retval;
 }
 
 
+void Galaxy::VisitSystems(SystemVisitor &visitor) {
+  for (auto& system : m_Systems) {
+    visitor(system);
+  }
+}
+
+
+/*
 bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info) {
   // TODO:  Player-based
   if (id < m_Systems.size()) {
@@ -75,4 +77,12 @@ bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info) {
     return true;
   }
   return false;
+}
+*/
+
+StarSystem* Galaxy::GetStarSystem(int systemId) {
+  if (systemId > 0 && size_t(systemId) <= m_Systems.size()) {
+    return &m_Systems[systemId - 1];
+  }
+  return nullptr;
 }

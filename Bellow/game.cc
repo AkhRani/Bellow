@@ -12,20 +12,15 @@ extern "C" {
 
 using std::string;
 using std::vector;
-using std::shared_ptr;
-using std::weak_ptr;
+using std::unique_ptr;
 using namespace std::placeholders;
 
+//! Lua user-data name for game object
 const char* Game::GAME_LUDNAME = "Bellow_Game";
 
-void Game::PlayerColl::LoadPlayer(lua_State *L, int idx) {
-  push_back(shared_ptr<Player>(new Player(L)));
-}
 
-
-Game::PlayerColl::PlayerColl(lua_State *L) {
-  LoadTableOfTables(L, "players", bind(&Game::PlayerColl::LoadPlayer, this, _1, _2));
-  // TODO:  Throw if no players found
+void Game::LoadPlayer(lua_State *L, int idx) {
+  m_Players.push_back(unique_ptr<Player>(new Player(m_Galaxy, L)));
 }
 
 
@@ -33,25 +28,30 @@ Game::PlayerColl::PlayerColl(lua_State *L) {
 Game::Game(lua_State *L) :
   m_Turn(1)
   , m_CurrentPlayer(0)
-  , m_Players(L)
+  , m_Players()
   , m_Galaxy(*this, L, "galaxy")
 {
+  LoadTableOfTables(L, "players", bind(&Game::LoadPlayer, this, _1, _2));
+  FinishLoad();
   UpdateSystemInfo();
   // TODO:  UpdateVisibleFleets for each player
 }
 
+void Game::FinishLoad() {
+  m_Galaxy.FinishLoad();
+}
 
 class UpdateSystemInfoVisitor : public Galaxy::SystemVisitor {
 public:
-  UpdateSystemInfoVisitor(Game *pGame, shared_ptr<Player> player) : m_pGame(pGame), m_Player(player) {}
+  UpdateSystemInfoVisitor(Game* pGame, Player* pPlayer) : m_pGame(pGame), m_pPlayer(pPlayer) {}
   ~UpdateSystemInfoVisitor() {}
 
-  virtual int operator ()(StarSystem &system) {
+  virtual void operator ()(StarSystem &system) override {
     bool owned(false);
     if (auto planet = system.GetPlanet().lock()) {
-      if (auto owner = planet->GetOwner().lock()) {
-        if (owner == m_Player) {
-          // Owner gets full information
+      if (auto owner = planet->GetOwner()) {
+        if (owner == m_pPlayer) {
+          // Owner gets full information.  TODO:  Correct pop / fact
           SystemInfo info{ system.m_X, system.m_Y, system.m_Name, 10, 10 };
           owner->SetSystemInfo(system.m_ID, info);
           owned = true;
@@ -60,14 +60,13 @@ public:
     }
     if (!owned) {
       SystemInfo info{ system.m_X, system.m_Y, "?", 0, 0 };
-      m_Player->SetSystemInfo(system.m_ID, info);
+      m_pPlayer->SetSystemInfo(system.m_ID, info);
     }
-    return 1;
   }
 
 private:
-  Game *m_pGame;
-  shared_ptr<Player> m_Player;
+  Game* m_pGame;
+  Player* m_pPlayer;
 };
 
 
@@ -78,8 +77,8 @@ private:
 //
 void Game::UpdateSystemInfo() {
   // Owned planets
-  for (auto player : m_Players) {
-    UpdateSystemInfoVisitor v(this, player);
+  for (auto &player : m_Players) {
+    UpdateSystemInfoVisitor v(this, player.get());
     m_Galaxy.VisitSystems(v);
   }
   // TODO: Long-range / planetary sensors
@@ -99,10 +98,9 @@ Fleet& Game::GetFleet(int fleet) {
   return m_Players.at(m_CurrentPlayer)->GetFleet(fleet);
 }
 
-//! Launch the given fleet to the given destination (zero-based)
+//! Launch the given fleet to the given destination (one-based)
 bool Game::SetFleetDestination(unsigned int fleet, unsigned int system) {
-  auto player = m_Players[m_CurrentPlayer];
-  return player->SetFleetDestination(fleet, system);
+  return m_Players.at(m_CurrentPlayer)->SetFleetDestination(fleet, system);
 }
 
 
@@ -213,7 +211,8 @@ int Game::lua_SetFleetDestination(lua_State *L) {
     int fleet = lua_tointeger(L, -2);
     if (fleet > 0 && fleet <= pGame->GetFleetCount() &&
         system > 0 && system <= pGame->GetSystemCount()) {
-      if (pGame->SetFleetDestination(fleet - 1, system - 1)) {
+      // TODO:  Move range check to Game (avoid reproducing in apis)
+      if (pGame->SetFleetDestination(fleet - 1, system)) {
         success = 1;
       }
     }
@@ -239,14 +238,13 @@ bool Game::RegisterApi(lua_State *L) {
   return true;
 }
 
-weak_ptr<Player> Game::GetPlayer(const string &playerName) const {
-  for (auto player : m_Players) {
-    if (player->GetName() == playerName) {
-      return weak_ptr<Player>(player);
-    }
+Player* Game::GetPlayer(int playerId) const {
+  if (playerId > 0 && size_t(playerId) <= m_Players.size()) {
+    return m_Players[playerId-1].get();
   }
   assert(false);
-  return weak_ptr<Player>();
+  // TODO:  generate warning / error for scripts
+  return nullptr;
 }
 
 
@@ -271,9 +269,8 @@ void Game::EndPlayerTurn() {
 
 class NextTurnSystemVisitor : public Galaxy::SystemVisitor {
 public:
-  virtual int operator ()(StarSystem &system) override {
+  virtual void operator ()(StarSystem &system) override {
     system.NextTurn();
-    return 1;
   }
 };
 
@@ -287,11 +284,17 @@ void Game::NextTurn() {
   m_Galaxy.VisitSystems(visitor);
 
   // Move Fleets / transports
-  for (auto player : m_Players) {
+  for (auto& player : m_Players) {
     player->MoveFleets();
   }
 
-  // TODO: Resolve Battles
+  // TODO: Resolve Battles and "Arrive" fleets.
+
+  // Explore systems
+  for (auto& player : m_Players) {
+    // Placeholder
+    player->HandleFleetArrival();
+  }
 }
 
 

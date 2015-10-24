@@ -1,6 +1,9 @@
+#include <assert.h>
 #include <math.h>
 
 #include "fleet.h"
+#include "player.h"
+#include "star_system.h"
 #include "util.h"
 
 extern "C" {
@@ -12,47 +15,79 @@ extern "C" {
 using std::string;
 using std::to_string;
 
-Fleet::Fleet(const Player& owner, double x, double y) :
+Fleet::Fleet(Player& owner, IStarSystemOwner& systemOwner, int systemId) :
   m_Owner(owner)
-  , m_X(x)
-  , m_Y(y)
-  , m_DestX(x)
-  , m_DestY(y)
-  , m_Orbiting(true)
+  , m_SystemOwner(systemOwner)
+  , m_State(ST_ORBITING)
+  , m_X(0.)
+  , m_Y(0.)
+  , m_Orbit(systemId)
+  , m_Target(0)
 {
+  StarSystem* pSystem = systemOwner.GetStarSystem(systemId);
+  assert(pSystem);
+  if (!pSystem) {
+    throw(std::runtime_error("Bad system ID passed to Fleet Constructor"));
+  }
+  m_X = pSystem->m_X;
+  m_Y = pSystem->m_Y;
 }
 
 
-Fleet::Fleet(const Player& owner, lua_State *L) :
+Fleet::Fleet(Player& owner, IStarSystemOwner& systemOwner, lua_State *L) :
   m_Owner(owner)
+  , m_SystemOwner(systemOwner)
+  , m_State(ST_ORBITING)
   , m_X(LoadCheckDouble(L, "x"))
   , m_Y(LoadCheckDouble(L, "y"))
-  , m_DestX(LoadOptDouble(L, "dstx", m_X))
-  , m_DestY(LoadOptDouble(L, "dsty", m_Y))
-  , m_Orbiting(m_X == m_DestX && m_Y == m_DestY)
+  , m_Orbit(LoadOptInteger(L, "orbit", 0))
+  , m_Target(LoadOptInteger(L, "target", 0))
 {
+  int serializedState = LoadOptInteger(L, "state", ST_ORBITING);
+  if (serializedState >= ST_ORBITING && serializedState <= ST_ARRIVING) {
+    m_State = static_cast<FleetState>(serializedState);
+  }
+  // TODO: else issue warning, "Defaulting to Orbiting"
+  // Sanity checks
+  if (m_Target && m_State == ST_ORBITING ||
+    m_Orbit && (m_State != ST_ORBITING && m_State != ST_LAUNCHING)) {
+    throw(std::runtime_error("load error:  Bad fleet state"));
+  }
   lua_pop(L, 1);
 }
 
 
 void Fleet::Save(string &rep) {
-  rep.append("{ x=");
+  rep.append("{ state=");
+  rep.append(to_string(m_State));
+  rep.append(", x=");
   rep.append(to_string(m_X));
   rep.append(", y=");
   rep.append(to_string(m_Y));
-  if (!m_Orbiting) {
-    rep.append(", dstx=");
-    rep.append(to_string(m_DestX));
-    rep.append(", dsty=");
-    rep.append(to_string(m_DestY));
+  if (IsInOrbit() || IsLaunching()) {
+    rep.append(", orbit=");
+    rep.append(to_string(m_Orbit));
+  }
+  if (!IsInOrbit()) {
+    rep.append(", target=");
+    rep.append(to_string(m_Target));
   }
   rep.append("}");
 }
 
 
-void Fleet::SetDestination(double x, double y) {
-  m_DestX = x;
-  m_DestY = y;
+void Fleet::SetDestination(int system) {
+  if (IsInOrbit() || IsLaunching()) {
+    if (system == m_Orbit) {
+      // Cancel launch
+      m_State = ST_ORBITING;
+      m_Target = 0;
+    }
+    else {
+      m_State = ST_LAUNCHING;
+      m_Target = system;
+    }
+  }
 }
 
 
@@ -60,21 +95,38 @@ void Fleet::Move() {
   // TODO:  Fleet speed
   double speed = 1.0;
 
-  if (m_DestX != m_X || m_DestY != m_Y) {
-    double dx = m_DestX - m_X;
-    double dy = m_DestY - m_Y;
+  if (ST_TRAVELING == m_State || ST_LAUNCHING == m_State) {
+    assert(m_Target != 0);
+    StarSystem *pTarget = m_SystemOwner.GetStarSystem(m_Target);
+    double dx = pTarget->m_X - m_X;
+    double dy = pTarget->m_Y - m_Y;
     double distance = sqrt(dx * dx + dy * dy);
     if (distance <= speed) {
-      m_X = m_DestX;
-      m_Y = m_DestY;
-      m_Orbiting = true;
+      m_X = pTarget->m_X;
+      m_Y = pTarget->m_Y;
+      // TODO (merging):  Let the destination system know we're in the vicinity
+      m_State = ST_ARRIVING;
     }
     else {
       double angle = atan2(dy, dx);
       m_X += speed * cos(angle);
       m_Y += speed * sin(angle);
-      m_Orbiting = false;
+      m_State = ST_TRAVELING;
+      m_Orbit = 0;
     }
+  }
+}
+
+
+//! Transition from approaching to arriving.
+// Normally called by the Game class after successful combat,
+// or if no combat occurs.
+void Fleet::Arrive() {
+  if (ST_ARRIVING == m_State) {
+    m_Owner.Explore(m_Target);
+    m_State = ST_ORBITING;
+    m_Orbit = m_Target;
+    m_Target = 0;
   }
 }
 

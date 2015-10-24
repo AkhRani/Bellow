@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include "player.h"
+#include "star_system.h"
 #include "util.h"
 
 extern "C" {
@@ -22,18 +23,22 @@ using namespace std::placeholders;
 #define PRODUCTION_PER_FACTORY 100
 #define FACTORY_COST 10
 
-Player::Player(const string &name) : m_Name(name) {}
+Player::Player(IStarSystemOwner& galaxy, const string &name) :
+  m_SystemOwner(galaxy)
+  , m_Name(name) {}
 
-Player::Player(lua_State *L) :
-  m_Name(LoadString(L, "name"))
+Player::Player(IStarSystemOwner& galaxy, lua_State *L) :
+  m_SystemOwner(galaxy)
+  , m_Name(LoadString(L, "name"))
 {
+  // TODO:  Pass Galaxy to fleets to resolve destinations
   LoadTableOfTables(L, "fleets", bind(&Player::LoadFleet, this, _1, _2));
   LoadTableOfTables(L, "systems", bind(&Player::LoadSystemInfo, this, _1, _2));
   lua_pop(L, 1);
 }
 
 void Player::LoadFleet(lua_State *L, int idx) {
-  m_Fleets.push_back(Fleet(*this, L));
+  m_Fleets.push_back(Fleet(*this, m_SystemOwner, L));
 }
 
 void Player::LoadSystemInfo(lua_State *L, int idx) {
@@ -44,26 +49,28 @@ void Player::Save(string &rep) {
   rep.append("\n  { name=\"");
   rep.append(m_Name);
   rep.append("\",\n   fleets={");
-  for (auto v : m_Fleets) {
+  for (auto& v : m_Fleets) {
     v.Save(rep);
   }
   rep.append("},\n   systems={");
-  for (auto v : m_SystemInfo) {
+  for (auto& v : m_SystemInfo) {
     v.Save(rep);
   }
   rep.append("}\n  }");
 }
 
 
+//! Direct the given fleet to the given system
+// @param fleet Fleet ID, 1-based (TODO)
+// @param system System ID, 1-based
 bool Player::SetFleetDestination(unsigned int fleet, unsigned int system) {
   bool retval(false);
   // Precondition, failure indicates bug.
   assert(system < m_SystemInfo.size() && fleet < GetFleetCount());
   if (system < m_SystemInfo.size() && fleet < GetFleetCount()) {
-    // TODO:  Check Range
+    // TODO:  1-based fleet ID, Check Range
     auto& f = m_Fleets[fleet];
-    SystemInfo& info(m_SystemInfo[system]);
-    f.SetDestination(info.x, info.y);
+    f.SetDestination(system);
     retval = true;
   }
   else {
@@ -76,6 +83,12 @@ bool Player::SetFleetDestination(unsigned int fleet, unsigned int system) {
 void Player::MoveFleets() {
   for (auto& fleet : m_Fleets) {
     fleet.Move();
+  }
+}
+
+void Player::HandleFleetArrival() {
+  for (auto& fleet : m_Fleets) {
+    fleet.Arrive();
   }
 }
 
@@ -113,9 +126,24 @@ void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
   }
 }
 
+//! Explore the given system
+//
+// This is called when a fleet arrives at a star system.
+// If the player has not previously explored this system, this should
+// queue a notification for the player.
+void Player::Explore(unsigned int systemId) {
+  assert(systemId >= 1);
+  StarSystem *pSystem = m_SystemOwner.GetStarSystem(systemId);
+  assert(pSystem);
+  SystemInfo info{ pSystem->m_X, pSystem->m_Y, pSystem->m_Name, 0, 0 };
+  SetSystemInfo(systemId, info);
+}
+
 //! Update the player's view of the given system
 //
 // Note that system IDs are one-based
+// TODO:  This needs some work.  Need to track the game turn to report how "stale"
+// the information is.  Need to support updating only some fields.
 void Player::SetSystemInfo(unsigned int id, const SystemInfo& info) {
   // TODO:  If new info has same or more fields, set up new fields and "staleness"
   if (id >= 1) {
@@ -124,10 +152,7 @@ void Player::SetSystemInfo(unsigned int id, const SystemInfo& info) {
       m_SystemInfo[id - 1] = info;
     }
     else {
-      auto existingInfo = m_SystemInfo[id - 1];
-      // Could move this logic into SystemInfo class
-      bool fresher = true;
-
+      // TODO:  Selectively update info?
       m_SystemInfo[id - 1] = info;
     }
   }

@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "testutils.h"
+#include "mock_game.h"
 
 #include "star_system.h"
 
