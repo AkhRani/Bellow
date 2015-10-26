@@ -69,8 +69,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir "$(TargetDir)\Scripts"
+xcopy /Y /S "$(SolutionDir)\Scripts" "$(TargetDir)\Scripts"
+xcopy /Y /S "$(ProjectDir)*.lua" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -95,14 +96,15 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>mkdir "$(TargetDir)\Scripts"
+xcopy /Y /S "$(SolutionDir)\Scripts" "$(TargetDir)\Scripts"
+xcopy /Y /S "$(ProjectDir)*.lua" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Bellow\star_system.cc" />
     <ClCompile Include="coverage.cc" />
     <ClCompile Include="mock_game.cc" />
+    <ClCompile Include="systemtest.cc" />
     <ClCompile Include="testutils.cc" />
     <ClCompile Include="unittest_fleet.cc" />
     <ClCompile Include="unittest_galaxy.cc" />
@@ -115,6 +117,16 @@
     <ClInclude Include="mock_galaxy.h" />
     <ClInclude Include="mock_game.h" />
     <ClInclude Include="testutils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="systemtest_creation.lua">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="systemtest_exploration.lua" />
+    <None Include="testutils.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

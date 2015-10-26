@@ -33,9 +33,6 @@
     <ClCompile Include="unittest_star_system.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Bellow\star_system.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="unittest_player.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,6 +40,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mock_game.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="systemtest.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,5 +56,14 @@
     <ClInclude Include="mock_game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="systemtest_creation.lua" />
+    <None Include="testutils.lua">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="systemtest_exploration.lua">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

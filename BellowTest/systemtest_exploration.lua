@@ -1,0 +1,8 @@
+ResetFailures()
+ExpectEq({x=5.4545454545455, y=4.4155844155844, name="?"}, GetSystemInfo(10), "Unexplored")
+SetFleetDestination(1, 10)
+EndTurn()
+EndTurn()
+EndTurn()
+EndTurn()
+ExpectEq({x=5.4545454545455, y=4.4155844155844, name="Leo Minor"}, GetSystemInfo(10), "Explored")

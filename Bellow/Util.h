@@ -19,7 +19,6 @@ int LoadCheckInteger(lua_State *L, const char *name);
 int LoadOptInteger(lua_State *L, const char *name, int default);
 
 double LoadCheckDouble(lua_State *L, const char *name);
-double LoadOptDouble(lua_State *L, const char *name, double default);
 
 void LoadTableOfTables(lua_State *L, const char* pField, std::function<void(lua_State*, int)> callback);
 

@@ -506,6 +506,7 @@ int _tmain(int argc, _TCHAR* argv[])
     printf("Error loading utils\n");
   }
   // Create game for testing
+  luaL_dostring(L, "math.randomseed(1234)");
   lua_getglobal(L, "NewGame");
   if (lua_isfunction(L, -1) && !lua_pcall(L, 0, 1, -1)) {
     pGame = new Game(L);

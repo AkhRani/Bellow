@@ -43,6 +43,7 @@ double LoadCheckDouble(lua_State *L, const char *name) {
   return retval;
 }
 
+/*
 double LoadOptDouble(lua_State *L, const char *name, double default) {
   int success(1);
   double retval;
@@ -57,6 +58,7 @@ double LoadOptDouble(lua_State *L, const char *name, double default) {
   LoadCheck(success != 0);
   return retval;
 }
+*/
 
 void LoadTableOfTables(lua_State *L, const char* pField, std::function<void(lua_State*, int)> callback) {
   lua_getfield(L, -1, pField);
