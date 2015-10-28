@@ -19,11 +19,12 @@ function ResetFailures()
 end
 
 function ExpectEq(e, a, desc)
+  local desc = desc or "test"
   local re = Rep(e)
   local ra = Rep(a)
   if re ~= ra then
     local failure = desc .. " failed: expected " .. re .. " actual " .. ra .. "\n"
-    io.write(failure)
+    -- io.write(failure)
     g_Failures = g_Failures .. failure
   end
 end

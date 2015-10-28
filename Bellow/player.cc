@@ -45,6 +45,7 @@ void Player::LoadSystemInfo(lua_State *L, int idx) {
   m_SystemInfo.push_back(SystemInfo::Load(L));
 }
 
+// TODO:  rep->serialized for consistency
 void Player::Save(string &rep) {
   rep.append("\n  { name=\"");
   rep.append(m_Name);
@@ -57,6 +58,12 @@ void Player::Save(string &rep) {
     v.Save(rep);
   }
   rep.append("}\n  }");
+}
+
+
+//! End-of-turn cleanup
+void Player::EndTurn() {
+  m_ExploredSystems.clear();
 }
 
 
@@ -119,7 +126,8 @@ uint32_t Player::GetProductionPerFactory() {
 
 //! Get the player's view of the given system
 //
-// Note that system IDs are one-based
+// @param id    System ID, one-based
+// @param info  Set to player's system info if ID is valid
 void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
   if (0 < id && id <= m_SystemInfo.size()) {
     info = m_SystemInfo[id-1];
@@ -129,14 +137,31 @@ void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
 //! Explore the given system
 //
 // This is called when a fleet arrives at a star system.
-// If the player has not previously explored this system, this should
-// queue a notification for the player.
 void Player::Explore(unsigned int systemId) {
   assert(systemId >= 1);
   StarSystem *pSystem = m_SystemOwner.GetStarSystem(systemId);
   assert(pSystem);
-  SystemInfo info{ pSystem->m_X, pSystem->m_Y, pSystem->m_Name, 0, 0 };
-  SetSystemInfo(systemId, info);
+  // If the player has not previously explored this system,
+  SystemInfo oldInfo;
+  GetSystemInfo(systemId, oldInfo);
+  if (oldInfo.name != pSystem->m_Name) {
+    // queue a notification for the player.
+    m_ExploredSystems.push_back(systemId);
+    // And record system info
+    SystemInfo info{ pSystem->m_X, pSystem->m_Y, pSystem->m_Name, 0, 0 };
+    SetSystemInfo(systemId, info);
+  }
+}
+
+int Player::GetExplorationEventCount() {
+  return m_ExploredSystems.size();
+}
+
+int Player::GetExplorationEvent(int id) {
+  if (0 < id && id <= m_ExploredSystems.size()) {
+    return m_ExploredSystems.at(id-1);
+  }
+  return 0;
 }
 
 //! Update the player's view of the given system

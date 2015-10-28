@@ -57,6 +57,8 @@ public:
   int GetFleetCount();
   Fleet& GetFleet(int fleet);
   bool SetFleetDestination(unsigned int fleet, unsigned int system);
+  int GetExplorationEventCount();
+  int GetExplorationEvent(int id);
   void EndPlayerTurn();
 
 protected:

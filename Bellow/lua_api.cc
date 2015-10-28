@@ -129,6 +129,21 @@ namespace {
     return 1;
   }
 
+  int lua_GetExplorationEventCount(lua_State *L) {
+    Game *pGame = GetGame(L);
+    if (pGame) lua_pushnumber(L, pGame->GetExplorationEventCount());
+    return 1;
+  }
+
+  int lua_GetExplorationEvent(lua_State *L) {
+    Game *pGame = GetGame(L);
+    if (pGame && lua_isnumber(L, -1)) {
+      int id = lua_tointeger(L, -1);
+      lua_pushnumber(L, pGame->GetExplorationEvent(id));
+    }
+    return 1;
+  }
+
 } // namespace
 
 bool RegisterApi(lua_State *L, Game *pGame) {
@@ -139,6 +154,8 @@ bool RegisterApi(lua_State *L, Game *pGame) {
   lua_register(L, "GetFleetCount", lua_GetFleetCount);
   lua_register(L, "GetFleetInfo", lua_GetFleetInfo);
   lua_register(L, "SetFleetDestination", lua_SetFleetDestination);
+  lua_register(L, "GetExplorationEventCount", lua_GetExplorationEventCount);
+  lua_register(L, "GetExplorationEvent", lua_GetExplorationEvent);
   lua_register(L, "EndTurn", lua_EndTurn);
 
   // NOTE:  Could use pushcclosure instead of a global lightuserdata

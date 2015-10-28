@@ -61,3 +61,10 @@ Dump = function (ob)
   end
 end
 
+CheckEvents = function()
+  for i = 1, GetExplorationEventCount() do
+    local id = GetExplorationEvent(i)
+    local info = GetSystemInfo(id)
+    print("Our scouts have explored the " .. info.name .. " system")
+  end
+end

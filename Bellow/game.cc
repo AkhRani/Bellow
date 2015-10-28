@@ -106,6 +106,14 @@ bool Game::SetFleetDestination(unsigned int fleet, unsigned int system) {
 }
 
 
+int Game::GetExplorationEventCount() {
+  return m_Players.at(m_CurrentPlayer)->GetExplorationEventCount();
+}
+
+int Game::GetExplorationEvent(int id) {
+  return m_Players.at(m_CurrentPlayer)->GetExplorationEvent(id);
+}
+
 Player* Game::GetPlayer(int playerId) const {
   if (playerId > 0 && size_t(playerId) <= m_Players.size()) {
     return m_Players[playerId-1].get();
@@ -127,6 +135,7 @@ int Game::GetSystemCount() const {
 
 // End the turn for the current player
 void Game::EndPlayerTurn() {
+  m_Players.at(m_CurrentPlayer)->EndTurn();
   m_CurrentPlayer++;
   if (m_CurrentPlayer >= m_Players.size()) {
     NextTurn();

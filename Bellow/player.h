@@ -32,6 +32,9 @@ public:
   //! Player name
   const std::string &GetName() const { return m_Name; } ;
 
+  //! End-of-turn cleanup
+  void EndTurn();
+
   //! Number of fleets owned by the player
   unsigned int GetFleetCount() const { return m_Fleets.size(); };
   //! Fleet information
@@ -43,6 +46,15 @@ public:
   void MoveFleets();
   //! Allow fleets to explore (deprecated)
   void HandleFleetArrival();
+
+  // TODO:  We have multiple types of notifications.  What's the best way
+  // to deal with that?
+  //! Get number of systems explored this turn
+  int GetExplorationEventCount();
+  //! Get ID of system explored
+  int GetExplorationEvent(int id);
+
+  // Player Attributes
 
   //! Ecological investment to "build" one population
   uint32_t GetPopCost();
@@ -81,6 +93,9 @@ private:
 
   //! Most recent surveys of all star systems
   std::vector<SystemInfo> m_SystemInfo;
+
+  //! Exploration Notifications
+  std::vector<int> m_ExploredSystems;
 };
 
 #endif
