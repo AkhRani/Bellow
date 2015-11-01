@@ -44,14 +44,12 @@ public:
 
   virtual void operator ()(StarSystem &system) override {
     bool owned(false);
-    if (auto planet = system.GetPlanet().lock()) {
-      if (auto owner = planet->GetOwner()) {
-        if (owner == m_pPlayer) {
-          // Owner gets full information.  TODO:  Correct pop / fact
-          SystemInfo info{ system.m_X, system.m_Y, system.m_Name, 10, 10 };
-          owner->SetSystemInfo(system.m_ID, info);
-          owned = true;
-        }
+    if (auto owner = system.GetPlanet().GetOwner()) {
+      if (owner == m_pPlayer) {
+        // Owner gets full information.  TODO:  Correct pop / fact
+        SystemInfo info{ system.m_X, system.m_Y, system.m_Name, 10, 10 };
+        owner->SetSystemInfo(system.m_ID, info);
+        owned = true;
       }
     }
     if (!owned) {

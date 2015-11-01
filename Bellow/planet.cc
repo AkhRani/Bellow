@@ -27,22 +27,30 @@ Planet::Planet(IGame& game, uint32_t maxPop) :
 /** Create a planet from the table on top of the Lua stack.
 * structure: { name = "earth", base_population = 100, population = { amount = 10, invested = 5 } }
 */
-Planet::Planet(IGame &game, lua_State *L) :
-  m_Game(game) {
-  LoadCheck(lua_istable(L, -1));
+Planet::Planet(IGame &game, lua_State *L, const char *fieldname) :
+  m_Game(game)
+  , m_BasePop(0)
+  , m_OwnerId(0)
+  , m_Population(0, 0)
+  , m_Factories(0, 0)
+{
+  if (fieldname) {
+    lua_getfield(L, -1, fieldname);
+  }
 
-  m_BasePop = LoadCheckInteger(L, "base_population");
+  if (lua_istable(L, -1)) {
+    m_BasePop = LoadCheckInteger(L, "base_population");
 
-  lua_getfield(L, -1, "population");
-  m_Population.Load(L);
+    lua_getfield(L, -1, "population");
+    m_Population.Load(L);
 
-  lua_getfield(L, -1, "factories");
-  m_Factories.Load(L);
+    lua_getfield(L, -1, "factories");
+    m_Factories.Load(L);
 
-  m_Population.SetMax(m_BasePop);
+    m_Population.SetMax(m_BasePop);
 
-  m_OwnerId = LoadOptInteger(L, "owner", 0);
-
+    m_OwnerId = LoadOptInteger(L, "owner", 0);
+  }
   lua_pop(L, 1);
 }
 

@@ -1,11 +1,10 @@
 #ifndef STAR_SYSTEM_H
 #define STAR_SYSTEM_H
 
-#include <memory>
 #include <string>
+#include "Planet.h"
 
 class IGame;
-class Planet;
 
 extern "C" {
   struct lua_State;
@@ -27,19 +26,19 @@ public:
   void FinishLoad();
 
   void NextTurn();
-  std::weak_ptr<Planet> GetPlanet();
+  Planet& GetPlanet();
 
   // TODO: Color
-  // TODO:  Const?
   std::string m_Name;
+  // TODO:  Const?
   double m_X, m_Y;
   int m_ID;
 
 private:
   StarSystem();
 
-  // TODO:  All star systems have a planet.  "Empty" is an environment.
-  std::shared_ptr<Planet> m_Planet;
+  // All star systems have a planet.  "Empty" is an environment.
+  Planet m_Planet;
 };
 
 /**

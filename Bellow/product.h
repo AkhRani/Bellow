@@ -23,11 +23,6 @@ class Product {
         m_amount(0),
         m_max(max) {}
 
-    explicit Product(const Product &other)
-      : m_invested(other.m_invested),
-      m_amount(other.m_amount),
-      m_max(other.m_max) {}
-
     Product(uint32_t amount, uint32_t max)
       : m_invested(0),
         m_amount(amount),

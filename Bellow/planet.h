@@ -25,7 +25,7 @@ class Planet {
     Planet(IGame& game, uint32_t maxPop);
 
     //! Deserializing constructor
-    Planet(IGame& game, lua_State *L);
+    Planet(IGame& game, lua_State *L, const char *fieldname = nullptr);
 
     //! Serializer
     void Save(std::string &rep);

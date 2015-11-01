@@ -15,8 +15,6 @@ public:
   virtual void Grow(uint32_t cost, uint32_t capital);
 
 private:
-  explicit Population(const Population &other) {}
-
   uint32_t m_growthRate;
 };
 

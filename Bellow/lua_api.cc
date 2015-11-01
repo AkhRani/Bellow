@@ -117,12 +117,8 @@ namespace {
     if (pGame && lua_isnumber(L, -1) && lua_isnumber(L, -2)) {
       int system = lua_tointeger(L, -1);
       int fleet = lua_tointeger(L, -2);
-      if (fleet > 0 && fleet <= pGame->GetFleetCount() &&
-        system > 0 && system <= pGame->GetSystemCount()) {
-        // TODO:  Move range check to Game (avoid reproducing in apis)
-        if (pGame->SetFleetDestination(fleet - 1, system)) {
-          success = 1;
-        }
+      if (pGame->SetFleetDestination(fleet, system)) {
+        success = 1;
       }
     }
     lua_pushnumber(L, success);

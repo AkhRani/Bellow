@@ -68,15 +68,13 @@ void Player::EndTurn() {
 
 
 //! Direct the given fleet to the given system
-// @param fleet Fleet ID, 1-based (TODO)
+// @param fleet Fleet ID, 1-based
 // @param system System ID, 1-based
 bool Player::SetFleetDestination(unsigned int fleet, unsigned int system) {
   bool retval(false);
-  // Precondition, failure indicates bug.
-  assert(system < m_SystemInfo.size() && fleet < GetFleetCount());
-  if (system < m_SystemInfo.size() && fleet < GetFleetCount()) {
-    // TODO:  1-based fleet ID, Check Range
-    auto& f = m_Fleets[fleet];
+  if (0 < system && system <= m_SystemInfo.size() &&
+    0 < fleet && fleet <= GetFleetCount()) {
+    auto& f = m_Fleets[fleet-1];
     f.SetDestination(system);
     retval = true;
   }
@@ -158,7 +156,7 @@ int Player::GetExplorationEventCount() {
 }
 
 int Player::GetExplorationEvent(int id) {
-  if (0 < id && id <= m_ExploredSystems.size()) {
+  if (0 < id && size_t(id) <= m_ExploredSystems.size()) {
     return m_ExploredSystems.at(id-1);
   }
   return 0;
