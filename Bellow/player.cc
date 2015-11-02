@@ -45,7 +45,6 @@ void Player::LoadSystemInfo(lua_State *L, int idx) {
   m_SystemInfo.push_back(SystemInfo::Load(L));
 }
 
-// TODO:  rep->serialized for consistency
 void Player::Save(string &rep) {
   rep.append("\n  { name=\"");
   rep.append(m_Name);

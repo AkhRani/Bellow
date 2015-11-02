@@ -32,7 +32,7 @@ class Product {
     void Load(lua_State *L);
 
     //! Serializer
-    void Save(std::string &serialized);
+    void Save(std::string &rep);
 
     void SetAmount(uint32_t amount);    //!< Note: Sets invested amount to zero.
     void SetMax(uint32_t max);

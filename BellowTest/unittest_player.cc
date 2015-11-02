@@ -30,7 +30,7 @@ TEST(PlayerTest, LoadSave) {
   EXPECT_EQ(p1.GetFleetCount(), 0);
 
   RunLua(L, 
-    "sysinfo = { { name = \"Sol\", x=.5, y=.6, fact=10, pop=10 } } "
+    "sysinfo = { { name = \"Sol\", x=.5, y=.6, fact=20, pop=30 } } "
     "return { name = \"Kirk\", race = \"Human\", fleets = { { x = 0, y = 0 } }, systems = sysinfo }");
   Player p2(galaxy, L);
   EXPECT_EQ(0, lua_gettop(L));
@@ -41,6 +41,8 @@ TEST(PlayerTest, LoadSave) {
   p2.GetSystemInfo(1, info);
   EXPECT_EQ(.5, info.x);
   EXPECT_EQ(.6, info.y);
+  EXPECT_EQ(20, info.factories);
+  EXPECT_EQ(30, info.population);
   EXPECT_EQ("Sol", info.name);
 
   string serial = "return ";

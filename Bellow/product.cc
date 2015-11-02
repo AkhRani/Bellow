@@ -25,12 +25,12 @@ void Product::Load(lua_State *L) {
   lua_pop(L, 1);
 }
 
-void Product::Save(string &serialized) {
+void Product::Save(string &rep) {
   // growth rate, cost, and max will be recalculated on load
-  serialized.append(" { ");
-  serialized.append(" amount=" + std::to_string(m_amount));
-  serialized.append(", invested=" + std::to_string(m_invested));
-  serialized.append(" }");
+  rep.append(" { ");
+  rep.append(" amount=" + std::to_string(m_amount));
+  rep.append(", invested=" + std::to_string(m_invested));
+  rep.append(" }");
 }
 
 void Product::Grow(uint32_t cost, uint32_t capital) {

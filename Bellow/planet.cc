@@ -54,15 +54,15 @@ Planet::Planet(IGame &game, lua_State *L, const char *fieldname) :
   lua_pop(L, 1);
 }
 
-void Planet::Save(string &serialized) {
-  serialized.append("\n{ name = \"");
-  serialized.append("dummy\"");
-  serialized.append(", base_population = " + to_string(m_BasePop));
-  serialized.append(", population =");
-  m_Population.Save(serialized);
-  serialized.append(", factories =");
-  m_Factories.Save(serialized);
-  serialized.append(" }");
+void Planet::Save(string &rep) {
+  rep.append("\n{ name = \"");
+  rep.append("dummy\"");
+  rep.append(", base_population = " + to_string(m_BasePop));
+  rep.append(", population =");
+  m_Population.Save(rep);
+  rep.append(", factories =");
+  m_Factories.Save(rep);
+  rep.append(" }");
 }
 
 Player* Planet::GetOwner() {

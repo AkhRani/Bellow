@@ -58,11 +58,11 @@ TEST(PlanetTest, Load) {
 TEST(PlanetTest, Save) {
   MockGame game;
   Planet p(game, 100);
-  string serialized = "return ";
-  p.Save(serialized);
+  string rep = "return ";
+  p.Save(rep);
 
   lua_State *L = luaL_newstate();
-  RunLua(L, serialized.c_str());
+  RunLua(L, rep.c_str());
   Planet restored(game, L);
   EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(100, restored.GetMaxPopulation());

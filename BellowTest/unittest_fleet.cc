@@ -109,9 +109,9 @@ TEST(FleetTest, Move) {
     EXPECT_EQ(false, fleet.IsInOrbit());
 
     for (int i = 0; i < scenario.turns - 1; i++) {
-      string serialized("return ");
-      fleet.Save(serialized);
-      RunLua(L, serialized.c_str());
+      string rep("return ");
+      fleet.Save(rep);
+      RunLua(L, rep.c_str());
       Fleet reloaded(p1, game.m_Galaxy, L);
       if (0 == i) {
         EXPECT_EQ(true, reloaded.IsLaunching());

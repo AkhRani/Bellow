@@ -39,10 +39,10 @@ TEST(GalaxyTest, LoadAndSave) {
 
   Galaxy g2 = CreateTwoSystems(game, L);
 
-  string serialized = "return { gal = ";
-  g2.Save(serialized);
-  serialized.append(", other = 123}");
-  RunLua(L, serialized.c_str());
+  string rep = "return { gal = ";
+  g2.Save(rep);
+  rep.append(", other = 123}");
+  RunLua(L, rep.c_str());
   EXPECT_EQ(1, lua_gettop(L));
   Galaxy g3(game, L, "gal");
   g3.FinishLoad();

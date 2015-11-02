@@ -39,9 +39,9 @@ TEST(StarSystemTest, LoadAndSave) {
   EXPECT_EQ(100, withplanet.GetPlanet().GetMaxPopulation());
 
 
-  string serialized = "return ";
-  withplanet.Save(serialized);
-  RunLua(L, serialized.c_str());
+  string rep = "return ";
+  withplanet.Save(rep);
+  RunLua(L, rep.c_str());
   StarSystem loaded(game, L, 1);
   EXPECT_EQ("Betel", loaded.m_Name);
   EXPECT_EQ(.6, loaded.m_X);

@@ -31,14 +31,14 @@ StarSystem::StarSystem(IGame& game, int id, double x, double y) :
 }
 
 
-void StarSystem::Save(string& serialized) {
-  serialized.append("\n{ name = \"");
-  serialized.append(m_Name);
-  serialized.append("\", x = " + std::to_string(m_X));
-  serialized.append(", y = " + std::to_string(m_Y));
-  serialized.append(", planet =");
-  m_Planet.Save(serialized);
-  serialized.append(" }");
+void StarSystem::Save(string& rep) {
+  rep.append("\n{ name = \"");
+  rep.append(m_Name);
+  rep.append("\", x = " + std::to_string(m_X));
+  rep.append(", y = " + std::to_string(m_Y));
+  rep.append(", planet =");
+  m_Planet.Save(rep);
+  rep.append(" }");
 }
 
 

@@ -60,11 +60,11 @@ TEST(ProductTest, Save) {
   lua_State *L = luaL_newstate();
   Product prod(100);
   prod.SetAmount(50);
-  string serialized("return ");
-  prod.Save(serialized);
+  string rep("return ");
+  prod.Save(rep);
 
   Product prod2;
-  RunLua(L, serialized.c_str());
+  RunLua(L, rep.c_str());
   prod2.Load(L);
   EXPECT_EQ(50, prod2.GetMax());
   EXPECT_EQ(50, prod2.GetAmount());

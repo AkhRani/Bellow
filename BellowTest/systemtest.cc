@@ -60,7 +60,7 @@ TEST_F(SystemTest, Creation) {
   EXPECT_EQ(false, luaL_dofile(m_L, "systemtest_creation.lua"));
   EXPECT_EQ(string(""), CheckLuaFailures(m_L));
   // TODO:  Compare loaded game to saved game
-  // std::string serialized;
+  // std::string rep;
 }
 
 TEST_F(SystemTest, Exploration) {

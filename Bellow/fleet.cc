@@ -43,9 +43,9 @@ Fleet::Fleet(Player& owner, IStarSystemOwner& systemOwner, lua_State *L) :
   , m_Orbit(LoadOptInteger(L, "orbit", 0))
   , m_Target(LoadOptInteger(L, "target", 0))
 {
-  int serializedState = LoadOptInteger(L, "state", ST_ORBITING);
-  if (serializedState >= ST_ORBITING && serializedState <= ST_ARRIVING) {
-    m_State = static_cast<FleetState>(serializedState);
+  int savedState = LoadOptInteger(L, "state", ST_ORBITING);
+  if (savedState >= ST_ORBITING && savedState <= ST_ARRIVING) {
+    m_State = static_cast<FleetState>(savedState);
   }
   // TODO: else issue warning, "Defaulting to Orbiting"
   // Sanity checks
@@ -77,6 +77,7 @@ void Fleet::Save(string &rep) {
 
 
 void Fleet::SetDestination(int system) {
+  assert(m_SystemOwner.GetStarSystem(system) != nullptr);
   if (IsInOrbit() || IsLaunching()) {
     if (system == m_Orbit) {
       // Cancel launch
