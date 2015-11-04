@@ -178,13 +178,17 @@ TEST(FleetTest, Exploration) {
   RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
   Player p1(game.m_Galaxy, L);
 
-  SystemInfo info{ .5, .5, "?", 0, 0 };
-  p1.SetSystemInfo(2, info);
+  PlayerSystemInfo unexplored { "?", 0, 0 };
+  p1.SetSystemInfo(2, unexplored );
+  SystemInfo unex;
+  p1.GetSystemInfo(2, unex);
+  EXPECT_EQ("?", unex.name);
 
   Fleet fleet(p1, game.m_Galaxy, 1);
   fleet.SetDestination(2);
   fleet.Move();
   fleet.Arrive();
-  p1.GetSystemInfo(2, info);
-  EXPECT_EQ("dummy", info.name);
+  SystemInfo explored;
+  p1.GetSystemInfo(2, explored);
+  EXPECT_EQ("dummy", explored.name);
 }

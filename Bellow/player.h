@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "system_info.h"
+#include "player_system_info.h"
 #include "fleet.h"
 
 class IStarSystemOwner;
@@ -77,7 +78,9 @@ public:
   void GetSystemInfo(unsigned int systemId, SystemInfo& info) const;
 
   //! Update the player's view of the given system
-  void SetSystemInfo(unsigned int systemId, const SystemInfo& info);
+  void SetSystemInfo(unsigned int systemId, const PlayerSystemInfo& info);
+
+  void SetSystemCount(unsigned int count);
 
 protected:
   void LoadFleet(lua_State *L, int idx);
@@ -92,7 +95,7 @@ private:
   std::vector<Fleet> m_Fleets;
 
   //! Most recent surveys of all star systems
-  std::vector<SystemInfo> m_SystemInfo;
+  std::vector<PlayerSystemInfo> m_SystemInfo;
 
   //! Exploration Notifications
   std::vector<int> m_ExploredSystems;

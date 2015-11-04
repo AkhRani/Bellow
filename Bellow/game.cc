@@ -35,34 +35,10 @@ Game::Game(lua_State *L) :
 
 void Game::FinishLoad() {
   m_Galaxy.FinishLoad();
-}
-
-class UpdateSystemInfoVisitor : public Galaxy::SystemVisitor {
-public:
-  UpdateSystemInfoVisitor(Game* pGame, Player* pPlayer) : m_pGame(pGame), m_pPlayer(pPlayer) {}
-  ~UpdateSystemInfoVisitor() {}
-
-  virtual void operator ()(StarSystem &system) override {
-    bool owned(false);
-    if (auto owner = system.GetPlanet().GetOwner()) {
-      if (owner == m_pPlayer) {
-        // Owner gets full information.  TODO:  Correct pop / fact
-        SystemInfo info{ system.m_X, system.m_Y, system.m_Name, 10, 10 };
-        owner->SetSystemInfo(system.m_ID, info);
-        owned = true;
-      }
-    }
-    if (!owned) {
-      SystemInfo info{ system.m_X, system.m_Y, "?", 0, 0 };
-      m_pPlayer->SetSystemInfo(system.m_ID, info);
-    }
+  for (auto& player : m_Players) {
+    player->SetSystemCount(m_Galaxy.GetSystemCount());
   }
-
-private:
-  Game* m_pGame;
-  Player* m_pPlayer;
-};
-
+}
 
 //! Make sure player system info is up-to-date.
 //
@@ -71,10 +47,15 @@ private:
 //
 void Game::UpdateSystemInfo() {
   // Owned planets
-  for (auto &player : m_Players) {
-    UpdateSystemInfoVisitor v(this, player.get());
-    m_Galaxy.VisitSystems(v);
-  }
+  Galaxy::SysVisitor SetSystemInfo([this] (StarSystem& system) {
+    auto& planet(system.GetPlanet());
+    if (auto owner = planet.GetOwner()) {
+      PlayerSystemInfo info{ system.m_Name, planet.GetFactories(), planet.GetPopulation() };
+      owner->SetSystemInfo(system.m_ID, info);
+    }
+  });
+  m_Galaxy.VisitSystems(SetSystemInfo);
+
   // TODO: Long-range / planetary sensors
   // TODO: Short-range / ship sensors
 }
@@ -83,15 +64,17 @@ void Game::UpdateSystemInfo() {
 Game::~Game() {
 }
 
-// TODO:  return info or pass reference.  Pick one.
 
 void Game::GetSystemInfo(int id, SystemInfo& info) {
+  m_Galaxy.GetSystemInfo(id, info);
   CurrentPlayer().GetSystemInfo(id, info);
 }
+
 
 int Game::GetFleetCount() {
   return m_Players.at(m_CurrentPlayer)->GetFleetCount();
 }
+
 
 Fleet& Game::GetFleet(int fleet) {
   return m_Players.at(m_CurrentPlayer)->GetFleet(fleet);
@@ -108,9 +91,11 @@ int Game::GetExplorationEventCount() {
   return m_Players.at(m_CurrentPlayer)->GetExplorationEventCount();
 }
 
+
 int Game::GetExplorationEvent(int id) {
   return m_Players.at(m_CurrentPlayer)->GetExplorationEvent(id);
 }
+
 
 Player* Game::GetPlayer(int playerId) const {
   if (playerId > 0 && size_t(playerId) <= m_Players.size()) {
@@ -130,6 +115,7 @@ double Game::GetGalaxySize() const {
 int Game::GetSystemCount() const {
   return m_Galaxy.GetSystemCount();
 }
+
 
 // End the turn for the current player
 void Game::EndPlayerTurn() {

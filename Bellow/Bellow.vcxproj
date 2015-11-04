@@ -85,6 +85,7 @@
     <ClInclude Include="lua_api.h" />
     <ClInclude Include="planet.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="player_system_info.h" />
     <ClInclude Include="population.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="product.h" />
@@ -101,6 +102,7 @@
     <ClCompile Include="lua_api.cc" />
     <ClCompile Include="planet.cc" />
     <ClCompile Include="player.cc" />
+    <ClCompile Include="player_system_info.cc" />
     <ClCompile Include="population.cc" />
     <ClCompile Include="product.cc" />
     <ClCompile Include="star_system.cc" />
@@ -108,7 +110,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="system_info.cc" />
     <ClCompile Include="util.cc" />
   </ItemGroup>
   <ItemGroup>

@@ -47,13 +47,13 @@ Fleet::Fleet(Player& owner, IStarSystemOwner& systemOwner, lua_State *L) :
   if (savedState >= ST_ORBITING && savedState <= ST_ARRIVING) {
     m_State = static_cast<FleetState>(savedState);
   }
+  lua_pop(L, 1);
   // TODO: else issue warning, "Defaulting to Orbiting"
   // Sanity checks
   if (m_Target && m_State == ST_ORBITING ||
     m_Orbit && (m_State != ST_ORBITING && m_State != ST_LAUNCHING)) {
     throw(std::runtime_error("load error:  Bad fleet state"));
   }
-  lua_pop(L, 1);
 }
 
 

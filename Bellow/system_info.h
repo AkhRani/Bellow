@@ -8,8 +8,8 @@ extern "C" {
 /**
 * @brief Star system information
 * 
-* This structure holds a player-specific view of the star system.
-* Initially, only color and position are known.
+* This structure holds a player-specific view of the star system, but also
+* includes common / public information from the galaxy.
 */
 #include <string>
 
@@ -26,8 +26,6 @@ struct SystemInfo {
   int factories, population;
 
   // TODO:  Missle Bases, shield, etc.
-  void Save(std::string &rep);
-  static SystemInfo Load(lua_State *L);
 };
 
 #endif

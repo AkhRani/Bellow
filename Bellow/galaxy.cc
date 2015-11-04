@@ -66,20 +66,29 @@ void Galaxy::VisitSystems(SystemVisitor &visitor) {
 }
 
 
-/*
+void Galaxy::VisitSystems(std::function<void(StarSystem&)> &visitor) {
+  for (auto& system : m_Systems) {
+    visitor(system);
+  }
+}
+
+/*! Get common system information.
+ * Sets the info fields that are common and visible for all players.
+ */
 bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info) {
-  // TODO:  Player-based
-  if (id < m_Systems.size()) {
-    StarSystem &system(m_Systems[id]);
+  if (CheckId(id, m_Systems)) {
+    StarSystem &system(m_Systems[id-1]);
     info.x = system.m_X;
     info.y = system.m_Y;
-    info.name = system.m_Name;
     return true;
   }
   return false;
 }
-*/
 
+/*! Deserialize reference.
+ * Serialized clients (e.g. fleets) store a system ID, but use a non-owning
+ * pointer to a star system while running, for convenience.
+ */
 StarSystem* Galaxy::GetStarSystem(int systemId) {
   if (systemId > 0 && size_t(systemId) <= m_Systems.size()) {
     return &m_Systems[systemId - 1];

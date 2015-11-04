@@ -60,6 +60,9 @@
     <ClInclude Include="lua_api.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="player_system_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -92,10 +95,10 @@
     <ClCompile Include="fleet.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="system_info.cc">
+    <ClCompile Include="lua_api.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lua_api.cc">
+    <ClCompile Include="player_system_info.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

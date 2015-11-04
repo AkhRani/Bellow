@@ -84,4 +84,8 @@ TEST(GalaxyTest, SystemAccessors) {
   ValidatingVisitor v;
   galaxy.VisitSystems(v);
   EXPECT_EQ(3, v.m_ExpectedID);
+
+  int count = 0;
+  galaxy.VisitSystems(Galaxy::SysVisitor([&count] (StarSystem& system) { count++; }));
+  EXPECT_EQ(2, count);
 }

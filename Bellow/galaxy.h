@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "planet.h"
 #include "position.h"
@@ -29,22 +30,22 @@ public:
     virtual ~SystemVisitor() {};
     virtual void operator ()(StarSystem &system) = 0;
   };
+  
+  typedef std::function<void(StarSystem&)> SysVisitor;
 
   Galaxy(IGame& game, lua_State *L, const char *field = nullptr); //!< deserializer constructor
   void Save(std::string& rep);  //!< Serializer
   void FinishLoad();
 
-  void AddStarSystem(const std::string &name, const Position &pos, Planet *pPlanet);
-  void AddStarSystem(const std::string &name, Planet *pPlanet);
   void VisitSystems(SystemVisitor &visitor);
+  void VisitSystems(SysVisitor &visitor);
+  bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info);
 
   //! Size of the (square) galaxy, in parsecs
   double Size() const { return m_Size; }
 
   //! Number of systems in the galaxy
   unsigned int GetSystemCount() const { return m_Systems.size(); }
-  // bool GetSystemInfo(unsigned int id, SystemInfo& info);
-  //! Deserialize reference
   StarSystem* GetStarSystem(int id) override;
 
 protected:

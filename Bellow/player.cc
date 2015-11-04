@@ -42,7 +42,7 @@ void Player::LoadFleet(lua_State *L, int idx) {
 }
 
 void Player::LoadSystemInfo(lua_State *L, int idx) {
-  m_SystemInfo.push_back(SystemInfo::Load(L));
+  m_SystemInfo.push_back(PlayerSystemInfo::Load(L));
 }
 
 void Player::Save(string &rep) {
@@ -121,32 +121,44 @@ uint32_t Player::GetProductionPerFactory() {
 }
 
 
-//! Get the player's view of the given system
-//
-// @param id    System ID, one-based
-// @param info  Set to player's system info if ID is valid
+/**! Get the player's view of the given system.
+ *
+ * @param id    System ID, one-based
+ * @param info  Set to player's system info if ID is valid
+ */
 void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
   if (0 < id && id <= m_SystemInfo.size()) {
-    info = m_SystemInfo[id-1];
+    const PlayerSystemInfo& myInfo = m_SystemInfo[id-1];
+    info.name = myInfo.name;
+    info.factories = myInfo.factories;
+    info.population = myInfo.population;
+    // TODO:  last updated turn
   }
 }
 
-//! Explore the given system
-//
-// This is called when a fleet arrives at a star system.
-void Player::Explore(unsigned int systemId) {
-  assert(systemId >= 1);
-  StarSystem *pSystem = m_SystemOwner.GetStarSystem(systemId);
+/**! Explore the given system
+ *
+ * This is called when a fleet arrives at a star system.
+ */
+void Player::Explore(unsigned int id) {
+  assert(id >= 1);
+  StarSystem *pSystem = m_SystemOwner.GetStarSystem(id);
   assert(pSystem);
   // If the player has not previously explored this system,
-  SystemInfo oldInfo;
-  GetSystemInfo(systemId, oldInfo);
-  if (oldInfo.name != pSystem->m_Name) {
-    // queue a notification for the player.
-    m_ExploredSystems.push_back(systemId);
-    // And record system info
-    SystemInfo info{ pSystem->m_X, pSystem->m_Y, pSystem->m_Name, 0, 0 };
-    SetSystemInfo(systemId, info);
+  if (CheckId(id, m_SystemInfo)) {
+    PlayerSystemInfo& myInfo = m_SystemInfo[id - 1];
+    if (myInfo.name != pSystem->m_Name) {
+      // queue a notification for the player.
+      m_ExploredSystems.push_back(id);
+
+      // And record exploration
+      myInfo.name = pSystem->m_Name;
+
+      // TODO:  Game will set factories and population based on presence of fleet
+      auto& planet = pSystem->GetPlanet();
+      myInfo.factories = planet.GetFactories();
+      myInfo.population = planet.GetPopulation();
+    }
   }
 }
 
@@ -161,12 +173,23 @@ int Player::GetExplorationEvent(int id) {
   return 0;
 }
 
+/**! Allocate space for star system info, if needed
+ * This should only need to be called after initial game creation.
+ * Normally, player-specific system information is set by the deserializer,
+ * which should have a full list of data.
+ */
+void Player::SetSystemCount(unsigned int count) {
+  assert(count == m_SystemInfo.size() || 0 == m_SystemInfo.size());
+  m_SystemInfo.resize(count);
+}
+
+
 //! Update the player's view of the given system
 //
 // Note that system IDs are one-based
 // TODO:  This needs some work.  Need to track the game turn to report how "stale"
 // the information is.  Need to support updating only some fields.
-void Player::SetSystemInfo(unsigned int id, const SystemInfo& info) {
+void Player::SetSystemInfo(unsigned int id, const PlayerSystemInfo& info) {
   // TODO:  If new info has same or more fields, set up new fields and "staleness"
   if (id >= 1) {
     if (id > m_SystemInfo.size()) {

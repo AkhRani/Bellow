@@ -13,6 +13,7 @@ CommonMap = function (width, height, size, systemCount, getSystemInfo)
     local x = math.floor((system.x * width + gsize - 1)/ gsize)
     local y = math.floor((system.y * height + gsize - 1)/ gsize)
     if x > 30 or y > 30 or x < 1 or y < 1 then
+      print ("Bad System Info")
       print (system.name, system.x, system.y, x, y)
     end
     rows[y][x] = i

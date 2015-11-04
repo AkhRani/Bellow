@@ -39,8 +39,6 @@ TEST(PlayerTest, LoadSave) {
 
   SystemInfo info;
   p2.GetSystemInfo(1, info);
-  EXPECT_EQ(.5, info.x);
-  EXPECT_EQ(.6, info.y);
   EXPECT_EQ(20, info.factories);
   EXPECT_EQ(30, info.population);
   EXPECT_EQ("Sol", info.name);
@@ -57,8 +55,6 @@ TEST(PlayerTest, LoadSave) {
 
     SystemInfo info;
     p3.GetSystemInfo(1, info);
-    EXPECT_EQ(.5, info.x);
-    EXPECT_EQ(.6, info.y);
     EXPECT_EQ("Sol", info.name);
   }
 }
