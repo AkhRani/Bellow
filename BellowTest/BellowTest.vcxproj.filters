@@ -58,11 +58,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="systemtest_creation.lua" />
     <None Include="testutils.lua">
       <Filter>Source Files</Filter>
     </None>
     <None Include="systemtest_exploration.lua">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="systemtest_creation.lua">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

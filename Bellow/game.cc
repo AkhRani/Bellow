@@ -156,4 +156,7 @@ void Game::NextTurn() {
     // Placeholder
     player->HandleFleetArrival();
   }
+
+  // Scan systems
+  UpdateSystemInfo();
 }

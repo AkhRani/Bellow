@@ -22,8 +22,10 @@ struct SystemInfo {
   std::string name;
 
   // TODO:  Planet type
-  //! Updated while owned or within fleet or scanner range.
-  int factories, population;
+  //! last known number of factories
+  int factories;
+  //! last known population
+  int population;
 
   // TODO:  Missle Bases, shield, etc.
 };

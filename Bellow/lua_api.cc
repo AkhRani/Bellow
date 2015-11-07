@@ -60,7 +60,7 @@ namespace {
       SystemInfo info;
       // TODO:  try/catch for invalid ID
       pGame->GetSystemInfo(id, info);
-      lua_createtable(L, 0, 3);
+      lua_createtable(L, 0, 5);
 
       lua_pushnumber(L, info.x);
       lua_setfield(L, -2, "x");
@@ -70,6 +70,12 @@ namespace {
 
       lua_pushstring(L, info.name.c_str());
       lua_setfield(L, -2, "name");
+
+      lua_pushnumber(L, info.factories);
+      lua_setfield(L, -2, "fact");
+
+      lua_pushnumber(L, info.population);
+      lua_setfield(L, -2, "pop");
     }
     return 1;
   }
