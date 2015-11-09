@@ -38,7 +38,7 @@ TEST(PlayerTest, LoadSave) {
   EXPECT_EQ(p2.GetId(), 1);
 
   SystemInfo info;
-  p2.GetSystemInfo(1, info);
+  p2.GetSystemInfo(0, info);
   EXPECT_EQ(20, info.factories);
   EXPECT_EQ(30, info.population);
   EXPECT_EQ("Sol", info.name);
@@ -55,7 +55,7 @@ TEST(PlayerTest, LoadSave) {
     EXPECT_EQ(p3.GetId(), 2);
 
     SystemInfo info;
-    p3.GetSystemInfo(1, info);
+    p3.GetSystemInfo(0, info);
     EXPECT_EQ("Sol", info.name);
   }
 }
@@ -66,15 +66,15 @@ TEST(PlayerTest, Colonize) {
   lua_State *L = luaL_newstate();
 
   galaxy.AddStarSystem(game, 0., 0.);
-  EXPECT_EQ(nullptr, galaxy.GetStarSystem(1)->GetPlanet().GetOwner());
+  EXPECT_EQ(nullptr, galaxy.GetStarSystem(0)->GetPlanet().GetOwner());
 
   RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
-  Player p1(galaxy, L, 1);
-  p1.CreateFleet(1);
+  Player p1(galaxy, L, 0);
+  p1.CreateFleet(0);
   EXPECT_EQ(p1.GetFleetCount(), 1);
 
-  EXPECT_EQ(false, p1.Colonize(2));
-  EXPECT_EQ(true, p1.Colonize(1));
+  EXPECT_EQ(false, p1.Colonize(1));
+  EXPECT_EQ(true, p1.Colonize(0));
   // Slight oddity caused by the mock game.
-  EXPECT_EQ(game.GetPlayer(1), galaxy.GetStarSystem(1)->GetPlanet().GetOwner());
+  EXPECT_EQ(game.GetPlayer(0), galaxy.GetStarSystem(0)->GetPlanet().GetOwner());
 }

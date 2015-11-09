@@ -23,6 +23,6 @@ double LoadCheckDouble(lua_State *L, const char *name);
 void LoadTableOfTables(lua_State *L, const char* pField, std::function<void(lua_State*, int)> callback);
 
 template<class T> bool CheckId(unsigned int id, T& collection) {
-  return (0 < id && id <= collection.size());
+  return (0 <= id && id < collection.size());
 }
 #endif

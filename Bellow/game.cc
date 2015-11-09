@@ -97,9 +97,9 @@ int Game::GetExplorationEvent(int id) {
 }
 
 
-Player* Game::GetPlayer(int playerId) const {
-  if (playerId > 0 && size_t(playerId) <= m_Players.size()) {
-    return m_Players[playerId-1].get();
+Player* Game::GetPlayer(int id) const {
+  if (CheckId(id, m_Players)) {
+    return m_Players[id].get();
   }
   assert(false);
   // TODO:  generate warning / error for scripts

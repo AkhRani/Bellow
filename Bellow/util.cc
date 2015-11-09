@@ -68,7 +68,7 @@ void LoadTableOfTables(lua_State *L, const char* pField, std::function<void(lua_
       int top = lua_gettop(L);
       lua_rawgeti(L, -1, idx);
       if (lua_istable(L, -1)) {
-        callback(L, idx);
+        callback(L, idx - 1);   // zero-based ID
       }
       else {
         lua_pop(L, 1);

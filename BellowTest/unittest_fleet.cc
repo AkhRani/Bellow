@@ -30,7 +30,7 @@ TEST(FleetTest, LoadSave) {
 
   // Test Save
   SystemInfo info;
-  Fleet fleet(p1, game.m_Galaxy, 1);
+  Fleet fleet(p1, game.m_Galaxy, 0);
   EXPECT_EQ(true, fleet.IsInOrbit());
   EXPECT_EQ(false, fleet.IsLaunching());
 
@@ -80,8 +80,8 @@ TEST(FleetTest, Move) {
   RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
   Player p1(game.m_Galaxy, L);
 
-  int startId = 1;
-  int destId = 2;
+  int startId = 0;
+  int destId = 1;
   for (auto& scenario : scenarios) {
     double destX = scenario.destX;
     double destY = scenario.destY;
@@ -177,18 +177,19 @@ TEST(FleetTest, Exploration) {
   lua_State *L = luaL_newstate();
   RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
   Player p1(game.m_Galaxy, L);
+  p1.SetSystemCount(2);
 
   PlayerSystemInfo unexplored { "?", 0, 0 };
-  p1.SetSystemInfo(2, unexplored );
+  p1.SetSystemInfo(1, unexplored );
   SystemInfo unex;
-  p1.GetSystemInfo(2, unex);
+  p1.GetSystemInfo(1, unex);
   EXPECT_EQ("?", unex.name);
 
-  Fleet fleet(p1, game.m_Galaxy, 1);
-  fleet.SetDestination(2);
+  Fleet fleet(p1, game.m_Galaxy, 0);
+  fleet.SetDestination(1);
   fleet.Move();
   fleet.Arrive();
   SystemInfo explored;
-  p1.GetSystemInfo(2, explored);
+  p1.GetSystemInfo(1, explored);
   EXPECT_EQ("dummy", explored.name);
 }

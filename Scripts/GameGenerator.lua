@@ -171,9 +171,9 @@ function NewGame(planetCount, size, minDistance)
         name = randomNames[i],
         color = "Yellow",
         x = x, y = y,
-        planet = Homeworld(i)
+        planet = Homeworld(i-1)
       })
-      player.fleets = { {x=x, y=y, state=0, orbit=#galaxy.systems} }
+      player.fleets = { {x=x, y=y, state=0, orbit=#galaxy.systems-1} }
     else
       print ("Ran out of space.")
       return nil

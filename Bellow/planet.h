@@ -58,7 +58,7 @@ class Planet {
   private:
     IGame& m_Game;
     uint32_t m_BasePop;   //!< Planet population cap without facilities
-    int m_OwnerId;        //!< Current owner, 0->unowned
+    int m_OwnerId;        //!< Current owner, -1 -> unowned
     Population m_Population; //!< Population
     Product m_Factories;  //!< Factories
 };

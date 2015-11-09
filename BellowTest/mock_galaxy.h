@@ -9,13 +9,13 @@
 class MockGalaxy : public IStarSystemOwner {
 public:
   void AddStarSystem(IGame& game, double x, double y) {
-    int id = m_Systems.size() + 1;
+    int id = m_Systems.size();
     m_Systems.push_back(std::unique_ptr<StarSystem>(new StarSystem(game, id, x, y)));
   }
 
   StarSystem* GetStarSystem(int id) {
     if (CheckId(id, m_Systems)) {
-      return m_Systems.at(id - 1).get();
+      return m_Systems.at(id).get();
     }
     return nullptr;
   }

@@ -22,7 +22,7 @@ TEST(PlanetTest, Creation) {
   EXPECT_EQ(100, p.GetMaxPopulation());
 }
 
-TEST(PlanetTest, Load) {
+TEST(PlanetTest, LoadSave) {
   MockGame game;
   lua_State *L = luaL_newstate();
 
@@ -53,6 +53,20 @@ TEST(PlanetTest, Load) {
   EXPECT_EQ("human", pnew->GetOwner()->GetName());
 
   // TODO:  Test Error Handling
+
+  // Test Save
+  string rep = "return ";
+  pnew->Save(rep);
+  RunLua(L, rep.c_str());
+  Planet loaded(game, L);
+  loaded.FinishLoad();
+  EXPECT_EQ(0, lua_gettop(L));
+  EXPECT_EQ(100, loaded.GetMaxPopulation());
+  EXPECT_EQ(10, loaded.GetPopulation());
+  EXPECT_EQ(200, loaded.GetMaxFactories());
+  EXPECT_EQ(20, loaded.GetFactories());
+  ASSERT_NE(nullptr, loaded.GetOwner());
+  EXPECT_EQ("human", loaded.GetOwner()->GetName());
 }
 
 TEST(PlanetTest, Save) {

@@ -7,8 +7,8 @@ extern "C" {
 #include "lualib.h"
 }
 
-// TODO:  Change game engine / interface to zero-based,
-// add / subtract 1 from IDs going through the Lua interface
+// IDs in game engine are zero-based.  These functions add / subtract 1
+// to make things more natural in lua.
 namespace {
 
   //! Lua user-data name for game object
@@ -58,28 +58,33 @@ namespace {
   int lua_GetSystemInfo(lua_State *L) {
     Game *pGame = GetGame(L);
     if (pGame && lua_isnumber(L, -1)) {
-      int id = lua_tointeger(L, -1);
-      SystemInfo info;
-      // TODO:  try/catch for invalid ID
-      pGame->GetSystemInfo(id, info);
-      lua_createtable(L, 0, 5);
+      int id = lua_tointeger(L, -1) - 1;
+      if (0 <= id && id < pGame->GetSystemCount()) {
+        SystemInfo info;
+        pGame->GetSystemInfo(id, info);
+        lua_createtable(L, 0, 5);
 
-      lua_pushnumber(L, info.x);
-      lua_setfield(L, -2, "x");
+        lua_pushnumber(L, info.x);
+        lua_setfield(L, -2, "x");
 
-      lua_pushnumber(L, info.y);
-      lua_setfield(L, -2, "y");
+        lua_pushnumber(L, info.y);
+        lua_setfield(L, -2, "y");
 
-      lua_pushstring(L, info.name.c_str());
-      lua_setfield(L, -2, "name");
+        lua_pushstring(L, info.name.c_str());
+        lua_setfield(L, -2, "name");
 
-      lua_pushnumber(L, info.factories);
-      lua_setfield(L, -2, "fact");
+        lua_pushnumber(L, info.factories);
+        lua_setfield(L, -2, "fact");
 
-      lua_pushnumber(L, info.population);
-      lua_setfield(L, -2, "pop");
+        lua_pushnumber(L, info.population);
+        lua_setfield(L, -2, "pop");
+        return 1;
+      }
+      else {
+        luaL_error(L, "Invalid System ID");
+      }
     }
-    return 1;
+    return 0;
   }
 
 
@@ -102,10 +107,10 @@ namespace {
   int lua_GetFleetInfo(lua_State *L) {
     Game *pGame = GetGame(L);
     if (pGame && lua_isnumber(L, -1)) {
-      int fleetId = lua_tointeger(L, -1);
-      if (fleetId > 0 && fleetId <= pGame->GetFleetCount()) {
+      int fleetId = lua_tointeger(L, -1) - 1;
+      if (0 <= fleetId && fleetId < pGame->GetFleetCount()) {
         double x, y;
-        Fleet& fleet = pGame->GetFleet(fleetId - 1);
+        Fleet& fleet = pGame->GetFleet(fleetId);
         fleet.GetPosition(x, y);
         lua_createtable(L, 0, 2);
 
@@ -114,19 +119,23 @@ namespace {
 
         lua_pushnumber(L, y);
         lua_setfield(L, -2, "y");
+        return 1;
       }
     }
-    return 1;
+    return 0;
   }
 
   int lua_SetFleetDestination(lua_State *L) {
     Game *pGame = GetGame(L);
     int success = 0;
     if (pGame && lua_isnumber(L, -1) && lua_isnumber(L, -2)) {
-      int system = lua_tointeger(L, -1);
-      int fleet = lua_tointeger(L, -2);
-      if (pGame->SetFleetDestination(fleet, system)) {
-        success = 1;
+      int systemId = lua_tointeger(L, -1) - 1;
+      int fleetId = lua_tointeger(L, -2) - 1;
+      if (0 <= fleetId && fleetId < pGame->GetFleetCount()
+        && 0 <= systemId && systemId < pGame->GetSystemCount()) {
+        if (pGame->SetFleetDestination(fleetId, systemId)) {
+          success = 1;
+        }
       }
     }
     lua_pushnumber(L, success);
@@ -142,8 +151,10 @@ namespace {
   int lua_GetExplorationEvent(lua_State *L) {
     Game *pGame = GetGame(L);
     if (pGame && lua_isnumber(L, -1)) {
-      int id = lua_tointeger(L, -1);
-      lua_pushnumber(L, pGame->GetExplorationEvent(id));
+      int id = lua_tointeger(L, -1) - 1;
+      if (0 <= id && id < pGame->GetExplorationEventCount()) {
+        lua_pushnumber(L, pGame->GetExplorationEvent(id) + 1);
+      }
     }
     return 1;
   }

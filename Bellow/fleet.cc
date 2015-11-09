@@ -54,6 +54,7 @@ Fleet::Fleet(Player& owner, IStarSystemOwner& systemOwner, lua_State *L) :
     m_Orbit && (m_State != ST_ORBITING && m_State != ST_LAUNCHING)) {
     throw(std::runtime_error("load error:  Bad fleet state"));
   }
+  // TODO:  If orbiting, double-check or set position
 }
 
 

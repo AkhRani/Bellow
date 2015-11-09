@@ -57,7 +57,7 @@ TEST(GalaxyTest, LoadAndSave) {
 
 class ValidatingVisitor : public Galaxy::SystemVisitor {
 public:
-  ValidatingVisitor() : m_ExpectedID{ 1 } {};
+  ValidatingVisitor() : m_ExpectedID{ 0 } {};
   virtual void operator ()(StarSystem &system) override { 
     EXPECT_EQ(m_ExpectedID, system.m_ID);
     m_ExpectedID++;
@@ -71,19 +71,19 @@ TEST(GalaxyTest, SystemAccessors) {
   Galaxy galaxy(CreateTwoSystems(game, L));
   EXPECT_EQ(2, galaxy.GetSystemCount());
 
-  StarSystem *pAlphaCenturai = galaxy.GetStarSystem(1);
+  StarSystem *pAlphaCenturai = galaxy.GetStarSystem(0);
   EXPECT_EQ("Alpha Centurai", pAlphaCenturai->m_Name);
-  EXPECT_EQ(1, pAlphaCenturai->m_ID);
+  EXPECT_EQ(0, pAlphaCenturai->m_ID);
 
-  StarSystem *pSol = galaxy.GetStarSystem(2);
+  StarSystem *pSol = galaxy.GetStarSystem(1);
   EXPECT_EQ("Sol", pSol->m_Name);
 
-  EXPECT_EQ(nullptr, galaxy.GetStarSystem(0));
+  EXPECT_EQ(nullptr, galaxy.GetStarSystem(-1));
   EXPECT_EQ(nullptr, galaxy.GetStarSystem(3));
 
   ValidatingVisitor v;
   galaxy.VisitSystems(v);
-  EXPECT_EQ(3, v.m_ExpectedID);
+  EXPECT_EQ(2, v.m_ExpectedID);
 
   int count = 0;
   galaxy.VisitSystems(Galaxy::SysVisitor([&count] (StarSystem& system) { count++; }));

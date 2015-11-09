@@ -76,7 +76,6 @@ void Player::EndTurn() {
 
 //! Create new fleet at the given system
 unsigned int Player::CreateFleet(unsigned int systemId) {
-  // TODO:  zero-based
   size_t nextFleet = m_Fleets.size();
   m_Fleets.push_back(Fleet(*this, m_SystemOwner, systemId));
   return nextFleet;
@@ -87,10 +86,10 @@ unsigned int Player::CreateFleet(unsigned int systemId) {
 // @param fleet Fleet ID, 1-based
 // @param system System ID, 1-based
 bool Player::SetFleetDestination(unsigned int fleet, unsigned int system) {
+  assert (CheckId(system, m_SystemInfo) && CheckId(fleet, m_Fleets));
   bool retval(false);
-  if (0 < system && system <= m_SystemInfo.size() &&
-    0 < fleet && fleet <= GetFleetCount()) {
-    auto& f = m_Fleets[fleet-1];
+  if (CheckId(system, m_SystemInfo) && CheckId(fleet, m_Fleets)) {
+    auto& f = m_Fleets[fleet];
     f.SetDestination(system);
     retval = true;
   }
@@ -168,8 +167,8 @@ uint32_t Player::GetProductionPerFactory() {
  * @param info  Set to player's system info if ID is valid
  */
 void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
-  if (0 < id && id <= m_SystemInfo.size()) {
-    const PlayerSystemInfo& myInfo = m_SystemInfo[id-1];
+  if (CheckId(id, m_SystemInfo)) {
+    const PlayerSystemInfo& myInfo = m_SystemInfo[id];
     info.name = myInfo.name;
     info.factories = myInfo.factories;
     info.population = myInfo.population;
@@ -181,12 +180,12 @@ void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
  * This is called when a fleet arrives at a star system.
  */
 void Player::Explore(unsigned int id) {
-  assert(id >= 1);
+  assert(id >= 0);
   StarSystem *pSystem = m_SystemOwner.GetStarSystem(id);
   assert(pSystem);
   // If the player has not previously explored this system,
   if (CheckId(id, m_SystemInfo)) {
-    PlayerSystemInfo& myInfo = m_SystemInfo[id - 1];
+    PlayerSystemInfo& myInfo = m_SystemInfo[id];
     if (myInfo.name != pSystem->m_Name) {
       // queue a notification for the player.
       m_ExploredSystems.push_back(id);
@@ -207,12 +206,12 @@ int Player::GetExplorationEventCount() {
   return m_ExploredSystems.size();
 }
 
-//! Get ID of system explored
+//! Get (zero-based) ID of system explored, -1 on bad parameter
 int Player::GetExplorationEvent(int id) {
-  if (0 < id && size_t(id) <= m_ExploredSystems.size()) {
-    return m_ExploredSystems.at(id-1);
+  if (CheckId(id, m_ExploredSystems)) {
+    return m_ExploredSystems.at(id);
   }
-  return 0;
+  return -1;
 }
 
 /**! Allocate space for star system info, if needed.
@@ -221,6 +220,7 @@ int Player::GetExplorationEvent(int id) {
  * which should have a full list of data.
  */
 void Player::SetSystemCount(unsigned int count) {
+  // Normally only be called once, number of systems must not change
   assert(count == m_SystemInfo.size() || 0 == m_SystemInfo.size());
   m_SystemInfo.resize(count);
 }
@@ -228,19 +228,10 @@ void Player::SetSystemCount(unsigned int count) {
 
 //! Update the player's view of the given system
 //
-// Note that system IDs are one-based
-// TODO:  This needs some work.  Need to track the game turn to report how "stale"
-// the information is.  Need to support updating only some fields.
+// TODO:  Store the game turn as well, to track how old the info is.
 void Player::SetSystemInfo(unsigned int id, const PlayerSystemInfo& info) {
-  // TODO:  If new info has same or more fields, set up new fields and "staleness"
-  if (id >= 1) {
-    if (id > m_SystemInfo.size()) {
-      m_SystemInfo.resize(id);
-      m_SystemInfo[id - 1] = info;
-    }
-    else {
-      // TODO:  Selectively update info?
-      m_SystemInfo[id - 1] = info;
-    }
+  assert(CheckId(id, m_SystemInfo));
+  if (CheckId(id, m_SystemInfo)) {
+      m_SystemInfo[id] = info;
   }
 }

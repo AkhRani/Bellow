@@ -18,7 +18,7 @@ using std::to_string;
 Planet::Planet(IGame& game, uint32_t maxPop) :
   m_Game(game)
   , m_BasePop(maxPop)
-  , m_OwnerId(0)
+  , m_OwnerId(-1)
   , m_Population(0, maxPop)
   , m_Factories(0, maxPop)
 {
@@ -30,7 +30,7 @@ Planet::Planet(IGame& game, uint32_t maxPop) :
 Planet::Planet(IGame &game, lua_State *L, const char *fieldname) :
   m_Game(game)
   , m_BasePop(0)
-  , m_OwnerId(0)
+  , m_OwnerId(-1)
   , m_Population(0, 0)
   , m_Factories(0, 0)
 {
@@ -49,7 +49,10 @@ Planet::Planet(IGame &game, lua_State *L, const char *fieldname) :
 
     m_Population.SetMax(m_BasePop);
 
-    m_OwnerId = LoadOptInteger(L, "owner", 0);
+    m_OwnerId = LoadOptInteger(L, "owner", -1);
+    // TODO:
+    // if (m_OwnerId >= game.GetPlayerCount())
+    // throw(std::runtime_error("load error:  Bad Planet owner"));
   }
   lua_pop(L, 1);
 }
@@ -57,6 +60,7 @@ Planet::Planet(IGame &game, lua_State *L, const char *fieldname) :
 void Planet::Save(string &rep) {
   rep.append("\n{ name = \"");
   rep.append("dummy\"");
+  rep.append(", owner = " + to_string(m_OwnerId));
   rep.append(", base_population = " + to_string(m_BasePop));
   rep.append(", population =");
   m_Population.Save(rep);
@@ -66,7 +70,7 @@ void Planet::Save(string &rep) {
 }
 
 Player* Planet::GetOwner() {
-  if (m_OwnerId) {
+  if (m_OwnerId >= 0) {
     return m_Game.GetPlayer(m_OwnerId);
   }
   return nullptr;
