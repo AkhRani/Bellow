@@ -7,6 +7,8 @@ extern "C" {
 #include "lualib.h"
 }
 
+// TODO:  Change game engine / interface to zero-based,
+// add / subtract 1 from IDs going through the Lua interface
 namespace {
 
   //! Lua user-data name for game object

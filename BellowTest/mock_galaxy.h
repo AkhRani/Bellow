@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include "star_system.h"
+#include "util.h"
 
 class MockGalaxy : public IStarSystemOwner {
 public:
@@ -13,7 +14,10 @@ public:
   }
 
   StarSystem* GetStarSystem(int id) {
-    return m_Systems.at(id - 1).get();
+    if (CheckId(id, m_Systems)) {
+      return m_Systems.at(id - 1).get();
+    }
+    return nullptr;
   }
 
 private:

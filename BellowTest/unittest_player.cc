@@ -21,21 +21,21 @@ TEST(PlayerTest, LoadSave) {
   MockGalaxy galaxy;
   lua_State *L = luaL_newstate();
 
-  luaL_dostring(L, "empty = { amount = 0, invested = 0 }");
   RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
-
-  Player p1(galaxy, L);
+  Player p1(galaxy, L, 0);
   EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(p1.GetName(), "Kirk");
   EXPECT_EQ(p1.GetFleetCount(), 0);
+  EXPECT_EQ(p1.GetId(), 0);
 
   RunLua(L, 
     "sysinfo = { { name = \"Sol\", x=.5, y=.6, fact=20, pop=30 } } "
     "return { name = \"Kirk\", race = \"Human\", fleets = { { x = 0, y = 0 } }, systems = sysinfo }");
-  Player p2(galaxy, L);
+  Player p2(galaxy, L, 1);
   EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(p2.GetName(), "Kirk");
   EXPECT_EQ(p2.GetFleetCount(), 1);
+  EXPECT_EQ(p2.GetId(), 1);
 
   SystemInfo info;
   p2.GetSystemInfo(1, info);
@@ -47,14 +47,34 @@ TEST(PlayerTest, LoadSave) {
   p2.Save(serial);
   RunLua(L, serial.c_str());
   {
-    Player p3(galaxy, L);
+    Player p3(galaxy, L, 2);
 
     EXPECT_EQ(0, lua_gettop(L));
     EXPECT_EQ(p3.GetName(), "Kirk");
     EXPECT_EQ(p3.GetFleetCount(), 1);
+    EXPECT_EQ(p3.GetId(), 2);
 
     SystemInfo info;
     p3.GetSystemInfo(1, info);
     EXPECT_EQ("Sol", info.name);
   }
+}
+
+TEST(PlayerTest, Colonize) {
+  MockGame game;
+  MockGalaxy galaxy;
+  lua_State *L = luaL_newstate();
+
+  galaxy.AddStarSystem(game, 0., 0.);
+  EXPECT_EQ(nullptr, galaxy.GetStarSystem(1)->GetPlanet().GetOwner());
+
+  RunLua(L, "return { name = \"Kirk\", race = \"Human\" }");
+  Player p1(galaxy, L, 1);
+  p1.CreateFleet(1);
+  EXPECT_EQ(p1.GetFleetCount(), 1);
+
+  EXPECT_EQ(false, p1.Colonize(2));
+  EXPECT_EQ(true, p1.Colonize(1));
+  // Slight oddity caused by the mock game.
+  EXPECT_EQ(game.GetPlayer(1), galaxy.GetStarSystem(1)->GetPlanet().GetOwner());
 }

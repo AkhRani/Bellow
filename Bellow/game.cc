@@ -16,7 +16,7 @@ using namespace std::placeholders;
 
 
 void Game::LoadPlayer(lua_State *L, int idx) {
-  m_Players.push_back(unique_ptr<Player>(new Player(m_Galaxy, L)));
+  m_Players.push_back(unique_ptr<Player>(new Player(m_Galaxy, L, idx)));
 }
 
 

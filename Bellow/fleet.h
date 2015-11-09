@@ -40,6 +40,7 @@ public:
 
   // State accessors
   bool IsInOrbit() { return ST_ORBITING == m_State; }
+  int GetOrbitSystem() { return ST_ORBITING == m_State ? m_Orbit : 0; }
   bool IsLaunching() { return ST_LAUNCHING == m_State; }
   bool IsApproaching() { return ST_APPROACHING == m_State; }
   bool IsArriving() { return ST_ARRIVING == m_State; }
