@@ -1,5 +1,6 @@
 #include <assert.h>
 
+#include "galaxy.h"
 #include "player.h"
 #include "star_system.h"
 #include "util.h"
@@ -24,14 +25,14 @@ using namespace std::placeholders;
 #define FACTORY_COST 10
 
 //! Constructor for testing purposes.  Might get rid of this
-Player::Player(IStarSystemOwner& galaxy, const string &name, unsigned int id) :
+Player::Player(IGalaxy& galaxy, const string &name, unsigned int id) :
   m_SystemOwner(galaxy)
   , m_Name(name)
   , m_Id(id) 
 {}
 
 //! Deserializer constructor
-Player::Player(IStarSystemOwner& galaxy, lua_State *L, unsigned int id) :
+Player::Player(IGalaxy& galaxy, lua_State *L, unsigned int id) :
   m_SystemOwner(galaxy)
   , m_Name(LoadString(L, "name"))
   , m_Id(id)

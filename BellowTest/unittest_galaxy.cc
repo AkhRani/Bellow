@@ -55,16 +55,6 @@ TEST(GalaxyTest, LoadAndSave) {
   lua_pop(L, 2);
 }
 
-class ValidatingVisitor : public Galaxy::SystemVisitor {
-public:
-  ValidatingVisitor() : m_ExpectedID{ 0 } {};
-  virtual void operator ()(StarSystem &system) override { 
-    EXPECT_EQ(m_ExpectedID, system.m_ID);
-    m_ExpectedID++;
-  }
-  int m_ExpectedID;
-};
-
 TEST(GalaxyTest, SystemAccessors) {
   MockGame game;
   lua_State *L = luaL_newstate();
@@ -81,11 +71,7 @@ TEST(GalaxyTest, SystemAccessors) {
   EXPECT_EQ(nullptr, galaxy.GetStarSystem(-1));
   EXPECT_EQ(nullptr, galaxy.GetStarSystem(3));
 
-  ValidatingVisitor v;
-  galaxy.VisitSystems(v);
-  EXPECT_EQ(2, v.m_ExpectedID);
-
   int count = 0;
-  galaxy.VisitSystems(Galaxy::SysVisitor([&count] (StarSystem& system) { count++; }));
+  galaxy.VisitSystems(Galaxy::SystemVisitor([&count] (StarSystem& system) { count++; }));
   EXPECT_EQ(2, count);
 }

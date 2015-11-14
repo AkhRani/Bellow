@@ -8,7 +8,7 @@ extern "C" {
 }
 
 class Player;
-class IStarSystemOwner;
+class IGalaxy;
 
 //! Collection of ships with a common destination
 //
@@ -16,18 +16,15 @@ class IStarSystemOwner;
 // Eventually, will consist of shipCount[SHIP_DESIGNS].
 class Fleet {
 public:
-  Fleet(Player& owner, IStarSystemOwner& systemOwner, lua_State *L);
-  Fleet(Player& owner, IStarSystemOwner& systemOwner, int system);
+  Fleet(Player& owner, IGalaxy& systemOwner, lua_State *L);
+  Fleet(Player& owner, IGalaxy& systemOwner, int system);
   void Save(std::string &rep);
 
   // TODO:  "Position" class?
   void GetPosition(double &x, double &y);
   void SetDestination(int system);
-  //! First stage of fleet movement
   void Move();
-  //! Second stage of fleet movement
   void Approach();
-  //! Third stage of fleet movement
   void Arrive();
 
   enum FleetState {
@@ -47,7 +44,7 @@ public:
 
 private:
   Player& m_Owner;
-  IStarSystemOwner& m_SystemOwner;
+  IGalaxy& m_SystemOwner;
   // TODO:  double m_Speed;
   FleetState m_State;
   double m_X, m_Y;

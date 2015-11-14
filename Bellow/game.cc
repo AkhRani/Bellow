@@ -12,6 +12,7 @@ extern "C" {
 using std::string;
 using std::vector;
 using std::unique_ptr;
+typedef Galaxy::SystemVisitor SystemVisitor;
 using namespace std::placeholders;
 
 
@@ -47,7 +48,7 @@ void Game::FinishLoad() {
 //
 void Game::UpdateSystemInfo() {
   // Owned planets
-  Galaxy::SysVisitor SetSystemInfo([this] (StarSystem& system) {
+  SystemVisitor SetSystemInfo([this] (StarSystem& system) {
     auto& planet(system.GetPlanet());
     if (auto owner = planet.GetOwner()) {
       PlayerSystemInfo info{ system.m_Name, planet.GetFactories(), planet.GetPopulation() };
@@ -128,28 +129,19 @@ void Game::EndPlayerTurn() {
 }
 
 
-class NextTurnSystemVisitor : public Galaxy::SystemVisitor {
-public:
-  virtual void operator ()(StarSystem &system) override {
-    system.NextTurn();
-  }
-};
-
-
 // All players have completed the current turn.  Update.
 void Game::NextTurn() {
-  // Launch transports
-
   // Construction
-  NextTurnSystemVisitor visitor;
-  m_Galaxy.VisitSystems(visitor);
+  m_Galaxy.VisitSystems(SystemVisitor([] (StarSystem& system) { system.NextTurn(); }));
 
-  // Move Fleets / transports
+  // Move Fleets
   for (auto& player : m_Players) {
     player->MoveFleets();
   }
 
   // TODO: Resolve Battles and "Arrive" fleets.
+
+  // Move transports, ground combat
 
   // Explore systems
   for (auto& player : m_Players) {

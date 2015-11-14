@@ -9,7 +9,7 @@
 #include "player_system_info.h"
 #include "fleet.h"
 
-class IStarSystemOwner;
+class IGalaxy;
 
 extern "C" {
   struct lua_State;
@@ -22,8 +22,8 @@ extern "C" {
 class Player {
 public:
   // Construction and serialization
-  Player(IStarSystemOwner& galaxy, const std::string &name, unsigned int id = 0);
-  Player(IStarSystemOwner& galaxy, lua_State *L, unsigned int id = 0);
+  Player(IGalaxy& galaxy, const std::string &name, unsigned int id = 0);
+  Player(IGalaxy& galaxy, lua_State *L, unsigned int id = 0);
   void Save(std::string &rep);
 
   // Fleet management
@@ -69,7 +69,7 @@ protected:
 
 private:
   Player();
-  IStarSystemOwner& m_SystemOwner;
+  IGalaxy& m_SystemOwner;
   std::string m_Name;
   const unsigned int m_Id;
 

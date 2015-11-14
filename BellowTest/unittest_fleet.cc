@@ -193,3 +193,8 @@ TEST(FleetTest, Exploration) {
   p1.GetSystemInfo(1, explored);
   EXPECT_EQ("dummy", explored.name);
 }
+
+// This class tests interactions between the Fleet and Planet classes
+TEST(FleetTest, Transports) {
+
+}

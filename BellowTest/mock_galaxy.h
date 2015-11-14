@@ -6,7 +6,7 @@
 #include "star_system.h"
 #include "util.h"
 
-class MockGalaxy : public IStarSystemOwner {
+class MockGalaxy : public IGalaxy {
 public:
   void AddStarSystem(IGame& game, double x, double y) {
     int id = m_Systems.size();

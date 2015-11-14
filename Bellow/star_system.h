@@ -41,21 +41,4 @@ private:
   Planet m_Planet;
 };
 
-/**
-* @brief Mapping from system ID to system
-* This interface is used to deserialize references to star systems,
-* for fleet destinations and (possibly) player colony lists.
-* It is implemented by Galaxy in the actual game,
-* and by mock objects in the unit tests.
-*/
-class IStarSystemOwner {
-public:
-  virtual ~IStarSystemOwner() {};
-
-  //! Returns pointer to system.
-  // Destruction order must guarantee systems outlive clients,
-  // Or client destructors must not use the pointers.
-  virtual StarSystem* GetStarSystem(int systemId) = 0;
-};
-
 #endif
