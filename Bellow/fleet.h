@@ -2,6 +2,7 @@
 #define FLEET_H
 
 #include <string>
+#include "position.h"
 
 extern "C" {
   struct lua_State;
@@ -12,7 +13,7 @@ class IGalaxy;
 
 //! Collection of ships with a common destination
 //
-// For now, each "fleet" is identical, conceptually equivelent to a scout ship
+// For now, each "fleet" is identical, conceptually equivalent to a scout ship
 // Eventually, will consist of shipCount[SHIP_DESIGNS].
 class Fleet {
 public:
@@ -37,17 +38,17 @@ public:
 
   // State accessors
   bool IsInOrbit() { return ST_ORBITING == m_State; }
-  int GetOrbitSystem() { return ST_ORBITING == m_State ? m_Orbit : 0; }
+  int GetOrbitSystem() { return ST_ORBITING == m_State ? m_Orbit : -1; }
   bool IsLaunching() { return ST_LAUNCHING == m_State; }
   bool IsApproaching() { return ST_APPROACHING == m_State; }
   bool IsArriving() { return ST_ARRIVING == m_State; }
 
 private:
   Player& m_Owner;
-  IGalaxy& m_SystemOwner;
+  IGalaxy& m_Galaxy;
   // TODO:  double m_Speed;
   FleetState m_State;
-  double m_X, m_Y;
+  Position m_Position;
   int m_Orbit;    //!< Star system we are orbiting (if InOrbit or Launching)
   int m_Target;   //!< Star system we are going to (if not InOrbit)
 };

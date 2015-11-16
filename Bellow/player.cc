@@ -26,14 +26,14 @@ using namespace std::placeholders;
 
 //! Constructor for testing purposes.  Might get rid of this
 Player::Player(IGalaxy& galaxy, const string &name, unsigned int id) :
-  m_SystemOwner(galaxy)
+  m_Galaxy(galaxy)
   , m_Name(name)
   , m_Id(id) 
 {}
 
 //! Deserializer constructor
 Player::Player(IGalaxy& galaxy, lua_State *L, unsigned int id) :
-  m_SystemOwner(galaxy)
+  m_Galaxy(galaxy)
   , m_Name(LoadString(L, "name"))
   , m_Id(id)
 {
@@ -45,7 +45,7 @@ Player::Player(IGalaxy& galaxy, lua_State *L, unsigned int id) :
 
 //! Deserializer helper
 void Player::LoadFleet(lua_State *L, int idx) {
-  m_Fleets.push_back(Fleet(*this, m_SystemOwner, L));
+  m_Fleets.push_back(Fleet(*this, m_Galaxy, L));
 }
 
 //! Deserializer helper
@@ -78,7 +78,7 @@ void Player::EndTurn() {
 //! Create new fleet at the given system
 unsigned int Player::CreateFleet(unsigned int systemId) {
   size_t nextFleet = m_Fleets.size();
-  m_Fleets.push_back(Fleet(*this, m_SystemOwner, systemId));
+  m_Fleets.push_back(Fleet(*this, m_Galaxy, systemId));
   return nextFleet;
 }
 
@@ -104,7 +104,7 @@ bool Player::SetFleetDestination(unsigned int fleet, unsigned int system) {
 //! Create a colony, if possible
 bool Player::Colonize(unsigned int systemId) {
   // Sanity check
-  StarSystem *pSystem = m_SystemOwner.GetStarSystem(systemId);
+  StarSystem *pSystem = m_Galaxy.GetStarSystem(systemId);
   if (pSystem != nullptr && pSystem->GetPlanet().GetOwner() == nullptr) {
     // TODO:  Check system's list of orbiting fleets.
     for (auto& fleet : m_Fleets) {
@@ -182,7 +182,7 @@ void Player::GetSystemInfo(unsigned int id, SystemInfo& info) const {
  */
 void Player::Explore(unsigned int id) {
   assert(id >= 0);
-  StarSystem *pSystem = m_SystemOwner.GetStarSystem(id);
+  StarSystem *pSystem = m_Galaxy.GetStarSystem(id);
   assert(pSystem);
   // If the player has not previously explored this system,
   if (CheckId(id, m_SystemInfo)) {

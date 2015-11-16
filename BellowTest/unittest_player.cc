@@ -30,7 +30,7 @@ TEST(PlayerTest, LoadSave) {
 
   RunLua(L, 
     "sysinfo = { { name = \"Sol\", x=.5, y=.6, fact=20, pop=30 } } "
-    "return { name = \"Kirk\", race = \"Human\", fleets = { { x = 0, y = 0 } }, systems = sysinfo }");
+    "return { name = \"Kirk\", race = \"Human\", fleets = { { pos={x = 0, y = 0} } }, systems = sysinfo }");
   Player p2(galaxy, L, 1);
   EXPECT_EQ(0, lua_gettop(L));
   EXPECT_EQ(p2.GetName(), "Kirk");

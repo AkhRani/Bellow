@@ -104,6 +104,7 @@
     <ClCompile Include="player.cc" />
     <ClCompile Include="player_system_info.cc" />
     <ClCompile Include="population.cc" />
+    <ClCompile Include="position.cc" />
     <ClCompile Include="product.cc" />
     <ClCompile Include="star_system.cc" />
     <ClCompile Include="stdafx.cpp">

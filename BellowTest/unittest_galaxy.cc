@@ -15,9 +15,9 @@ using std::string;
 Galaxy CreateTwoSystems(IGame& game, lua_State *L) {
   // Nominal, unowned planet
   RunLua(L, "none = { amount = 0, invested = 0 };"
-    "unowned = { name = \"Sol\", x = 1.5, y = 1.5, "
+    "unowned = { name = \"Sol\", pos = {x = 1.5, y = 1.5}, "
     "planet = { name = \"earth\", base_population = 100, population = none, factories = none } };"
-    "empty = { name = \"Alpha Centurai\", x = 2.9, y = 3.5 };"
+    "empty = { name = \"Alpha Centurai\", pos = { x = 2.9, y = 3.5} };"
     "return { size = 5, systems = { empty, unowned } };");
   Galaxy galaxy(game, L);
   galaxy.FinishLoad();
@@ -31,7 +31,7 @@ TEST(GalaxyTest, LoadAndSave) {
   lua_State *L = luaL_newstate();
 
   // Nominal, empty system
-  RunLua(L, "systems = { { name = \"Sol\", x = .5, y = .5} }; return { size = 5, systems = systems }");
+  RunLua(L, "systems = { { name = \"Sol\", pos = { x = .5, y = .5} } }; return { size = 5, systems = systems }");
   Galaxy noplanet(game, L);
   noplanet.FinishLoad();
   EXPECT_EQ(0, lua_gettop(L));

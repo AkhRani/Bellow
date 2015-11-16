@@ -69,7 +69,7 @@ protected:
 
 private:
   Player();
-  IGalaxy& m_SystemOwner;
+  IGalaxy& m_Galaxy;
   std::string m_Name;
   const unsigned int m_Id;
 

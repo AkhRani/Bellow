@@ -47,7 +47,7 @@ TEST(FleetTest, LoadSave) {
 
   // Test off-nominal loads
   // Shouldn't be orbiting and have a remote destination
-  RunLua(L, "return { x=0, y=0, st=0, target = 1 }");
+  RunLua(L, "return { pos={x=0, y=0}, st=0, target = 1 }");
   EXPECT_THROW(Fleet bad1(p1, game.m_Galaxy, L), std::runtime_error);
 }
 

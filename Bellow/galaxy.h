@@ -28,6 +28,14 @@ public:
   * Destruction order must guarantee systems outlive clients,
   * Or client destructors must not use the pointers. */
   virtual StarSystem* GetStarSystem(int systemId) = 0;
+
+  /**! Moves position towards destination.
+   * Moving this function into the galaxy should make it easier to
+   * handle nebulae and reduce code duplication among things that 
+   * move through the galaxy (fleets, transports, monsters),
+   * @return true if destination was reached
+   */
+  virtual bool Move(Position& position, double speed, int targetSystemId) = 0;
 };
 
 
@@ -42,6 +50,10 @@ public:
   void Save(std::string& rep);  //!< Serializer
   void FinishLoad();
 
+  // IGalaxy implementation
+  StarSystem* GetStarSystem(int id) override;
+  bool Move(Position& position, double speed, int targetSystemId) override;
+
   typedef std::function<void(StarSystem&)> SystemVisitor;
   void VisitSystems(SystemVisitor &visitor);
   bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info);
@@ -49,9 +61,9 @@ public:
   //! Size of the (square) galaxy, in parsecs
   double Size() const { return m_Size; }
 
+
   //! Number of systems in the galaxy
   unsigned int GetSystemCount() const { return m_Systems.size(); }
-  StarSystem* GetStarSystem(int id) override;
 
 protected:
   typedef std::vector<StarSystem> StarSystemColl;

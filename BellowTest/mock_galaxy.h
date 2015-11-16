@@ -13,11 +13,29 @@ public:
     m_Systems.push_back(std::unique_ptr<StarSystem>(new StarSystem(game, id, x, y)));
   }
 
-  StarSystem* GetStarSystem(int id) {
+  StarSystem* GetStarSystem(int id) override {
     if (CheckId(id, m_Systems)) {
       return m_Systems.at(id).get();
     }
     return nullptr;
+  }
+
+  // For now, same as galaxy's implementation
+  bool Move(Position& position, double speed, int target) override {
+    StarSystem *pTarget = GetStarSystem(target);
+    double dx = pTarget->m_Position.x - position.x;
+    double dy = pTarget->m_Position.y - position.y;
+    double distance = sqrt(dx * dx + dy * dy);
+    if (distance <= speed) {
+      position = pTarget->m_Position;
+      return true;
+    }
+    else {
+      double angle = atan2(dy, dx);
+      position.x += speed * cos(angle);
+      position.y += speed * sin(angle);
+      return false;
+    }
   }
 
 private:

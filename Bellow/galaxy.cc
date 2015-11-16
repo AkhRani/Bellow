@@ -15,8 +15,7 @@ using namespace std::placeholders;
 
 void Galaxy::LoadSystem(lua_State *L, int idx) {
   StarSystem sys(m_Game, L, idx);
-  if (sys.m_X >= 0. && sys.m_X <= m_Size &&
-    sys.m_Y >= 0. && sys.m_Y <= m_Size) {
+  if (sys.m_Position.Validate(m_Size)) {
     m_Systems.push_back(sys);
   }
   else {
@@ -73,8 +72,8 @@ void Galaxy::VisitSystems(SystemVisitor &visitor) {
 bool Galaxy::GetSystemInfo(unsigned int id, SystemInfo& info) {
   if (CheckId(id, m_Systems)) {
     StarSystem &system(m_Systems[id]);
-    info.x = system.m_X;
-    info.y = system.m_Y;
+    info.x = system.m_Position.x;
+    info.y = system.m_Position.y;
     return true;
   }
   return false;
@@ -90,4 +89,21 @@ StarSystem* Galaxy::GetStarSystem(int id) {
     return &m_Systems[id];
   }
   return nullptr;
+}
+
+bool Galaxy::Move(Position& position, double speed, int target) {
+  StarSystem *pTarget = GetStarSystem(target);
+  double dx = pTarget->m_Position.x - position.x;
+  double dy = pTarget->m_Position.y - position.y;
+  double distance = sqrt(dx * dx + dy * dy);
+  if (distance <= speed) {
+    position = pTarget->m_Position;
+    return true;
+  }
+  else {
+    double angle = atan2(dy, dx);
+    position.x += speed * cos(angle);
+    position.y += speed * sin(angle);
+    return false;
+  }
 }

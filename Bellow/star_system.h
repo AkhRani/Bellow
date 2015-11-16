@@ -2,7 +2,9 @@
 #define STAR_SYSTEM_H
 
 #include <string>
-#include "Planet.h"
+
+#include "planet.h"
+#include "position.h"
 
 class IGame;
 
@@ -31,7 +33,7 @@ public:
   // TODO: Color
   std::string m_Name;
   // TODO:  Const?
-  double m_X, m_Y;
+  Position m_Position;
   int m_ID;
 
 private:

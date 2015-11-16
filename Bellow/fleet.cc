@@ -16,33 +16,31 @@ extern "C" {
 using std::string;
 using std::to_string;
 
-Fleet::Fleet(Player& owner, IGalaxy& systemOwner, int systemId) :
+Fleet::Fleet(Player& owner, IGalaxy& galaxy, int systemId) :
   m_Owner(owner)
-  , m_SystemOwner(systemOwner)
+  , m_Galaxy(galaxy)
   , m_State(ST_ORBITING)
-  , m_X(0.)
-  , m_Y(0.)
+  , m_Position(0., 0.)
   , m_Orbit(systemId)
-  , m_Target(0)
+  , m_Target(-1)
 {
-  StarSystem* pSystem = systemOwner.GetStarSystem(systemId);
+  StarSystem* pSystem = m_Galaxy.GetStarSystem(systemId);
   assert(pSystem);
   if (!pSystem) {
     throw(std::runtime_error("Bad system ID passed to Fleet Constructor"));
   }
-  m_X = pSystem->m_X;
-  m_Y = pSystem->m_Y;
+  // TODO: m_Position = pSystem->GetPosition or pSystem->GetPosition(m_Position)
+  m_Position = pSystem->m_Position;
 }
 
 
-Fleet::Fleet(Player& owner, IGalaxy& systemOwner, lua_State *L) :
+Fleet::Fleet(Player& owner, IGalaxy& galaxy, lua_State *L) :
   m_Owner(owner)
-  , m_SystemOwner(systemOwner)
+  , m_Galaxy(galaxy)
   , m_State(ST_ORBITING)
-  , m_X(LoadCheckDouble(L, "x"))
-  , m_Y(LoadCheckDouble(L, "y"))
-  , m_Orbit(LoadOptInteger(L, "orbit", 0))
-  , m_Target(LoadOptInteger(L, "target", 0))
+  , m_Position(L)
+  , m_Orbit(LoadOptInteger(L, "orbit", -1))
+  , m_Target(LoadOptInteger(L, "target", -1))
 {
   int savedState = LoadOptInteger(L, "state", ST_ORBITING);
   if (savedState >= ST_ORBITING && savedState <= ST_ARRIVING) {
@@ -51,8 +49,8 @@ Fleet::Fleet(Player& owner, IGalaxy& systemOwner, lua_State *L) :
   lua_pop(L, 1);
   // TODO: else issue warning, "Defaulting to Orbiting"
   // Sanity checks
-  if (m_Target && m_State == ST_ORBITING ||
-    m_Orbit && (m_State != ST_ORBITING && m_State != ST_LAUNCHING)) {
+  if (m_Target >= 0 && m_State == ST_ORBITING ||
+    m_Orbit >= 0 && (m_State != ST_ORBITING && m_State != ST_LAUNCHING)) {
     throw(std::runtime_error("load error:  Bad fleet state"));
   }
   // TODO:  If orbiting, double-check or set position
@@ -62,10 +60,8 @@ Fleet::Fleet(Player& owner, IGalaxy& systemOwner, lua_State *L) :
 void Fleet::Save(string &rep) {
   rep.append("{ state=");
   rep.append(to_string(m_State));
-  rep.append(", x=");
-  rep.append(to_string(m_X));
-  rep.append(", y=");
-  rep.append(to_string(m_Y));
+  rep.append(", ");
+  m_Position.Save(rep);
   if (IsInOrbit() || IsLaunching()) {
     rep.append(", orbit=");
     rep.append(to_string(m_Orbit));
@@ -79,12 +75,12 @@ void Fleet::Save(string &rep) {
 
 
 void Fleet::SetDestination(int system) {
-  assert(m_SystemOwner.GetStarSystem(system) != nullptr);
+  assert(m_Galaxy.GetStarSystem(system) != nullptr);
   if (IsInOrbit() || IsLaunching()) {
     if (system == m_Orbit) {
       // Cancel launch
       m_State = ST_ORBITING;
-      m_Target = 0;
+      m_Target = -1;
     }
     else {
       m_State = ST_LAUNCHING;
@@ -98,27 +94,16 @@ void Fleet::SetDestination(int system) {
  * Normally called after construction.
  */
 void Fleet::Move() {
-  // TODO:  Fleet speed
-  double speed = 1.0;
-
   if (ST_TRAVELING == m_State || ST_LAUNCHING == m_State) {
-    assert(m_Target != 0);
-    StarSystem *pTarget = m_SystemOwner.GetStarSystem(m_Target);
-    double dx = pTarget->m_X - m_X;
-    double dy = pTarget->m_Y - m_Y;
-    double distance = sqrt(dx * dx + dy * dy);
-    if (distance <= speed) {
-      m_X = pTarget->m_X;
-      m_Y = pTarget->m_Y;
+    assert(m_Target >= 0);
+    // TODO:  Fleet speed
+    if (m_Galaxy.Move(m_Position, 1.0, m_Target)) {
       // TODO (merging):  Let the destination system know we're in the vicinity
       m_State = ST_ARRIVING;
     }
     else {
-      double angle = atan2(dy, dx);
-      m_X += speed * cos(angle);
-      m_Y += speed * sin(angle);
       m_State = ST_TRAVELING;
-      m_Orbit = 0;
+      m_Orbit = -1;
     }
   }
 }
@@ -138,6 +123,6 @@ void Fleet::Arrive() {
 }
 
 void Fleet::GetPosition(double &x, double &y) {
-  x = m_X;
-  y = m_Y;
+  x = m_Position.x;
+  y = m_Position.y;
 }

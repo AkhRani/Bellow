@@ -119,8 +119,8 @@ function RandomMinDistance(galaxy, minDistance)
     y = math.random(231) * galaxy.size / 231
     local d = mds + 1
     for k, v in pairs(galaxy.systems) do
-      local dx = v.x - x
-      local dy = v.y - y
+      local dx = v.pos.x - x
+      local dy = v.pos.y - y
       local ds = dx * dx + dy * dy
       if ds < d then
         d = ds
@@ -170,10 +170,10 @@ function NewGame(planetCount, size, minDistance)
       table.insert(galaxy.systems, {
         name = randomNames[i],
         color = "Yellow",
-        x = x, y = y,
+        pos = {x = x, y = y},
         planet = Homeworld(i-1)
       })
-      player.fleets = { {x=x, y=y, state=0, orbit=#galaxy.systems-1} }
+      player.fleets = { {pos={x = x, y = y}, state=0, orbit=#galaxy.systems-1} }
     else
       print ("Ran out of space.")
       return nil
@@ -190,7 +190,7 @@ function NewGame(planetCount, size, minDistance)
       table.insert(galaxy.systems, {
         name = randomNames[i],
         color = "Yellow",
-        x = x, y = y,
+        pos = {x = x, y = y},
         planet = nil
       })
     else
