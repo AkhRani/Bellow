@@ -54,6 +54,7 @@ public:
 
   // Current Player Functions
   void GetSystemInfo(int id, SystemInfo& info);
+  bool SendPopulation(int from, int to, int pop);
   int GetFleetCount();
   Fleet& GetFleet(int fleet);
   bool SetFleetDestination(unsigned int fleet, unsigned int system);

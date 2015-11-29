@@ -27,6 +27,7 @@ public:
   void Save(std::string &rep);
 
   // Fleet management
+  bool SendPopulation(int from, int to, int pop);
   // TODO:  Fleet type and count
   unsigned int CreateFleet(unsigned int systemId);
   unsigned int GetFleetCount() const { return m_Fleets.size(); };

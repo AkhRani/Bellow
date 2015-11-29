@@ -75,6 +75,26 @@ void Player::EndTurn() {
 }
 
 
+/**! Set up transports.
+ * The transports will launch at the end of the turn, before planetary production
+ * occurs.  Currently there are a couple of methods of canceling transportation.
+ * Either set pop to zero, or set from = to.
+ * @return true if the request was valid
+ */
+bool Player::SendPopulation(int from, int to, int pop) {
+  if (CheckId(from, m_SystemInfo) && CheckId(to, m_SystemInfo)) {
+    StarSystem *pFromSystem = m_Galaxy.GetStarSystem(from);
+    assert(pFromSystem != nullptr);
+    Planet &fromPlanet = pFromSystem->GetPlanet();
+    if (fromPlanet.GetOwner() == this) {
+      if (to == from || pop == 0) {
+        // TODO: fromPlanet.SendPopulation(0, 0);
+      }
+    }
+  }
+  return false;
+}
+
 //! Create new fleet at the given system
 unsigned int Player::CreateFleet(unsigned int systemId) {
   size_t nextFleet = m_Fleets.size();
@@ -83,9 +103,10 @@ unsigned int Player::CreateFleet(unsigned int systemId) {
 }
 
 
-//! Direct the given fleet to the given system
-// @param fleet Fleet ID, 1-based
-// @param system System ID, 1-based
+/**! Direct the given fleet to the given system.
+ * @param fleet Fleet ID
+ * @param system System ID
+ */
 bool Player::SetFleetDestination(unsigned int fleet, unsigned int system) {
   assert (CheckId(system, m_SystemInfo) && CheckId(fleet, m_Fleets));
   bool retval(false);
@@ -227,9 +248,10 @@ void Player::SetSystemCount(unsigned int count) {
 }
 
 
-//! Update the player's view of the given system
-//
-// TODO:  Store the game turn as well, to track how old the info is.
+/**! Update the player's view of the given system.
+ *
+ * TODO:  Store the game turn as well, to track how old the info is.
+ */
 void Player::SetSystemInfo(unsigned int id, const PlayerSystemInfo& info) {
   assert(CheckId(id, m_SystemInfo));
   if (CheckId(id, m_SystemInfo)) {

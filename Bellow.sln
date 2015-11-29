@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BellowEngine", "Bellow\Bellow.vcxproj", "{48F708E4-F9A7-406A-9229-CE35E09A1282}"
 EndProject
@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{75C2
 		Scripts\GameGenerator.lua = Scripts\GameGenerator.lua
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BellowFLTK", "BellowFLTK\BellowFLTK.vcxproj", "{4DF392F8-0213-45B4-9247-76C66147D9C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -39,6 +41,10 @@ Global
 		{0D61CB49-E639-4CFF-BADB-E1F8AB803CC7}.Debug|Win32.Build.0 = Debug|Win32
 		{0D61CB49-E639-4CFF-BADB-E1F8AB803CC7}.Release|Win32.ActiveCfg = Release|Win32
 		{0D61CB49-E639-4CFF-BADB-E1F8AB803CC7}.Release|Win32.Build.0 = Release|Win32
+		{4DF392F8-0213-45B4-9247-76C66147D9C6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4DF392F8-0213-45B4-9247-76C66147D9C6}.Debug|Win32.Build.0 = Debug|Win32
+		{4DF392F8-0213-45B4-9247-76C66147D9C6}.Release|Win32.ActiveCfg = Release|Win32
+		{4DF392F8-0213-45B4-9247-76C66147D9C6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -72,6 +72,11 @@ void Game::GetSystemInfo(int id, SystemInfo& info) {
 }
 
 
+bool Game::SendPopulation(int from, int to, int pop) {
+  return  m_Players.at(m_CurrentPlayer)->SendPopulation(from, to, pop);
+}
+
+
 int Game::GetFleetCount() {
   return m_Players.at(m_CurrentPlayer)->GetFleetCount();
 }
